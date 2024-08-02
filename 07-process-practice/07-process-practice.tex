@@ -1,0 +1,222 @@
+\input{../preamble.tex}
+
+\lecturenumber{7}
+\title{Process Practice}
+\version{2.0.0}
+
+\begin{document}
+  \begin{frame}[plain, noframenumbering]
+    \titlepage
+  \end{frame}
+
+  \begin{slide}
+    
+    \slidetitle{A Teaching Operating System}
+
+    \url{https://github.com/mit-pdos/xv6-riscv}
+    \medskip
+
+    Used in MIT graduate OS courses, it is a full OS you can run on the VM
+
+    \leftspace{}You'll run it as a VM using QEmu (yes, a VM in a VM)
+    \bigskip
+  
+    It's a re-implementation of Unix version 6 for RISC-V in C
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Uniprogramming is for Old Batch Processing OSs}
+
+    Uniprogramming: only one process running at a time
+
+    \leftspace{}Two processes are not parallel and not concurrent, no matter
+                 what
+    \medskip
+
+    Multiprogramming: allow multiple processes
+
+    \leftspace{}Two processes can run in parallel or concurrently
+    \bigskip
+
+    Modern operating systems try to run everything in parallel and concurrently
+  \end{slide}
+
+  \begin{slide}
+    \slidetitle{The Scheduler Decides When To Switch}
+
+    To create a process, the operating system has to at least load it into memory
+    \medskip
+
+    When it's waiting, the scheduler (coming later) decides when it's running
+    \medskip
+
+    We're going to first focus on the mechanics of switching processes
+  \end{slide}
+
+  \begin{slide}
+    \slidetitle{The Core Scheduling Loop Changes Running Processes}
+
+    \begin{enumerate}
+      \item Pause the currently running process 
+      \item Save its state, so you can restore it later
+      \item Get the next process to run from the scheduler
+      \item Load the next process' state and let that run
+    \end{enumerate}
+  \end{slide}
+
+  \begin{slide}
+    \slidetitle{We Can Let Processes Themselves, or the Operating System Pause}
+    
+    Cooperative multitasking
+
+    \leftspace{}The processes use a system call to tell the operating system to
+    pause it
+    \medskip
+
+    True multitasking
+
+    \leftspace{}The operating system retains control and pauses processes
+    \bigskip
+
+    For true multitasking the operating system can:
+    \begin{itemize}
+      \item Give processes set time slices
+      \item Wake up periodically using interrupts to do scheduling
+    \end{itemize}
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{Swapping Processes is called Context Switching}
+
+    We've said that at minimum we'd have to save all the current registers
+
+    \leftspace{}We have to save all the values, using the same CPU as we're
+    trying to save
+    \medskip
+
+    There's hardware support for saving state, however you may not want to save
+    everything
+    \medskip
+
+    Context switching is pure overhead, we want it to be as fast as possible
+    \bigskip
+
+    Usually there's a combination of hardware and software to save as little as
+    possible
+  \end{slide}
+
+  \begin{slide}
+    \slidetitle{A New API --- \texttt{pipe}}
+
+    \mintinline{c}{int pipe(int pipefd[2]);}
+    \medskip
+
+    Returns \texttt{0} on success, and \texttt{-1} on failure
+    (and sets \texttt{errno})
+    \medskip
+
+    \texttt{pipe} forms a one-way communication channel using two file
+    descriptors
+
+    \leftspace{}\texttt{pipefd[0]} is the \texttt{read} end of the pipe
+
+    \leftspace{}\texttt{pipefd[1]} is the \texttt{write} end of the pipe
+    \medskip
+
+    You can think of it as a kernel managed buffer
+
+    \leftspace{}Any data written to one end can be read on the other end
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{Aside: Using \& in Your Shell}
+
+    If you use \& at the end of your command, your shell will start that
+    process and return
+
+    \leftspace{}e.g. \mintinline{c}{sleep 1 &}
+    \medskip
+
+    It outputs the \mintinline{c}{pid} and lets you know when it's finished
+    \medskip
+
+    The \mintinline{c}{|} character creates a pipe between two processes
+    \medskip
+
+    The sneaky Bash fork bomb is: \mintinline{c}{:(){ :|:& };:}
+
+    \leftspace{}{\color{pantonewarmred} \bfseries Do not run this command}
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{Let's See the Example}
+
+    See: \texttt{07-process-practice/pipes.c}
+    \medskip
+
+    If we remove the call to \texttt{write} in the parent, the child never exits
+    \medskip
+
+    What happens to the child?
+  \end{slide}
+
+
+  \begin{slide}
+    
+    \slidetitle{Final 2022 Question 1}
+
+    For each program shown below, state whether it will produce the
+    \textbf{same} output each time it is run, or whether it may produce
+    \textbf{different} outputs when run multiple times.
+    Explain why the program behaves like this.
+    \medskip
+
+    \begin{minted}{c}
+int main() {
+  int i = 4;
+  while (i != 0) {
+    int pid = fork();
+    if (pid == 0) {
+      i--;
+    }
+    else {
+      printf("%d\n", i);
+      exit(0);
+    }
+  }
+  return 0;
+}
+    \end{minted}
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{Final 2022 Question 2}
+
+    Same as the previous question, except now there's a \texttt{waitpid}
+    \medskip
+
+    \begin{minted}{c}
+int main() {
+  int i = 4;
+  while (i != 0) {
+    int pid = fork();
+    if (pid == 0) {
+      i--;
+    }
+    else {
+      waitpid(pid, NULL, 0);
+      printf("%d\n", i);
+      exit(0);
+    }
+  }
+  return 0;
+}
+    \end{minted}
+  \end{slide}
+
+\end{document}

@@ -1,0 +1,216 @@
+\input{../preamble.tex}
+
+\title{Midterm Review}
+\lecturenumber{18}
+\version{2.0.0}
+
+\begin{document}
+  \begin{frame}[plain, noframenumbering]
+    \titlepage
+  \end{frame}
+
+  \begin{slide}
+    \slidetitle{There are 3 Major Concepts in This Course}
+
+    You'll learn how the following applies to operating systems:
+    \begin{itemize}
+      \item Virtualization
+      \item Concurrency
+      \item Persistence
+    \end{itemize}
+  \end{slide}
+
+  \begin{slide}
+    \slidetitle{Kernel Interfaces Operate Between CPU Mode Boundaries}
+
+    The lessons from the lecture:
+    \begin{itemize}
+      \item Code running in kernel mode is part of your kernel
+      \item System calls are the interface between user and kernel mode
+        \begin{itemize}
+          \item Every program must use this interface!
+        \end{itemize}
+      \item File format and instructions to define a simple ``Hello world''
+            (in 168 bytes)
+        \begin{itemize}
+          \item Difference between API and ABI
+          \item How to explore system calls
+        \end{itemize}
+      \item Different kernel architectures shift how much code runs in kernel
+            mode
+    \end{itemize}
+  \end{slide}
+
+  \begin{slide}
+    \slidetitle{Operating Systems Provide the Foundation for Libraries}
+
+    We learned:
+    \begin{itemize}
+      \item Dynamic libraries and a comparison to static libraries
+      \begin{itemize}
+        \item How to manipulate the dynamic loader
+      \end{itemize}
+      \item Example of issues from ABI changes without API changes
+    \end{itemize}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Unix Systems Clone Processes with a Parent/Child Relationship}
+
+    \begin{itemize}
+      \item You can only create new processes with \texttt{fork}
+      \item After a \texttt{fork} both processes are exactly the same
+      \begin{itemize}
+        \item except for the value of \texttt{pid} (the child is always 0)
+      \end{itemize}
+      \item The scheduler decides when to run either process
+    \end{itemize}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{You're Responsible for Managing Processes}
+
+    The operating system maintains a strict parent/child relationship
+    \bigskip
+    
+    You should be able to identify (and prevent) the following:
+    \begin{itemize}
+      \item Zombie processes
+      \item Orphan processes
+    \end{itemize}
+
+  \end{slide}
+
+  \begin{slide}
+    \slidetitle{We Explored Basic IPC in an Operating System}
+
+    Some basic IPC includes:
+    \begin{itemize}
+      \item \texttt{read} and \texttt{write} through file descriptors (could be a regular file)
+      \item Redirecting file descriptors for communcation
+      \item Signals
+    \end{itemize}
+    \bigskip
+
+    Signals are like interrupts for user processes
+
+    \leftspace{}The kernel has to handle all 3 kinds of ``interrupts''
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Scheduling Involves Trade-Offs}
+
+    We looked at few different algorithms:
+
+    \begin{itemize}
+      \item First Come First Served (FCFS) is the most basic scheduling algorithm
+      \item Shortest Job First (SJF) is a tweak that reduces waiting time
+      \item Shortest Remaining Time First (SRTF) uses SJF ideas with preemptions
+      \item SRTF optimizes lowest waiting time (or turnaround time)
+      \item Round-robin (RR) optimizes fairness and response time
+    \end{itemize}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Scheduling Gets Even More Complex}
+
+    There are more solutions, and more issues:
+
+    \begin{itemize}
+      \item Introducing priority also introduces priority inversion
+      \item Some processes need good interactivity, others not so much
+      \item Multiprocessors may require per-CPU queues
+      \item Real-time requires predictability
+      \item Completely Fair Scheduler (CFS) tries to model the ideal fairness
+    \end{itemize}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Page Tables Translate Virtual to Physical Addresses}
+
+    The MMU is the hardware that uses page tables, which may:
+    \begin{itemize}
+      \item Be a single large table (wasteful, even for 32-bit machines)
+      \item Use the kernel allocated pages from a free list
+      \item Be a multi-level to save space for sparse allocations
+      \item Use a TLB to speed up memory accesses
+    \end{itemize}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Threads Enable Concurrency}
+
+    We explored threads, and related them to something we already know (processes)
+    \begin{itemize}
+      \item Threads are lighter weight, and share memory by default
+      \item Each process can have multiple threads (but just one at the start)
+    \end{itemize}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Both Processes and (Kernel) Threads Enable Parallelization}
+
+    \begin{itemize}
+      \item Each process can have multiple (kernel) threads
+      \item Most implementations use one-to-one user-to-kernel thread mapping
+      \item The operating system has to manage what happens during a fork, or signals
+      \item We now have synchronization issues
+    \end{itemize}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{A Forking Question}
+
+    Consider the following code:
+
+    \begin{minted}{c}
+int main() {
+  pid_t first = fork();
+  pid_t second = fork();
+  pid_t third = fork();
+  printf("first=%d second=%d third=%d\n", first, second, third);
+}
+    \end{minted}
+    \vspace{1em}
+
+    What is one reasonable set of outputs (assume the initial process is pid 2)?
+    \medskip
+
+    Are the outputs in any specific order?
+    \medskip
+
+    What do the relationships between processes look like?
+
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{Example Midterms}
+
+    This is the style of midterm I typically write:
+
+    \small
+    \url{https://eyolfson.com/media/courses/utoronto/ece344/2023-fall/midterm.pdf}
+
+    \url{https://eyolfson.com/media/courses/utoronto/ece353/2023-winter/midterm.pdf}
+
+    \url{https://eyolfson.com/media/courses/ucla/cs111/21fall/midterm.pdf}
+
+  \end{slide}
+
+\end{document}

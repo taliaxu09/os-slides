@@ -1,0 +1,365 @@
+\input{../preamble.tex}
+
+\lecturenumber{22}
+\title{Locks Implementation}
+\version{2.0.0}
+
+\begin{document}
+  \begin{frame}[plain, noframenumbering]
+    \titlepage
+  \end{frame}
+
+  \begin{slide}
+
+    \slidetitle{
+      You Can Implement Locks in Software
+      
+      with Minimal Hardware
+    }
+
+    Your hardware requirements just have to ensure:
+    \begin{itemize}
+      \item Loads and stores are atomic
+      \item Instructions execute in order
+    \end{itemize}
+    \medskip
+
+    There are 2 main algorithms you could use:
+    
+    \leftspace{}\href{https://en.wikipedia.org/wiki/Peterson\%27s_algorithm}
+    {Peterson's algorithm}
+    and
+    \href{http://en.wikipedia.org/wiki/Lamport\%27s_bakery_algorithm}
+         {Lamport's bakery algorithm}
+    \medskip
+
+    However, they don't scale well, and processors execute
+    out-of-order
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Let's Assume a Magical Atomic Function ---
+                \texttt{compare\_and\_swap}}
+
+    \texttt{compare\_and\_swap(int *p, int old, int new)} is atomic
+
+    \leftspace{}It returns the original value pointed to
+
+    \leftspace{}It only swaps if the original value equals \texttt{old}, and changes it to \texttt{new}
+    \medskip
+
+    Let's give it another shot:
+
+    \begin{minted}[xleftmargin=1em]{c}
+void init(int *l) {
+  *l = 0;
+}
+void lock(int *l) {
+  while (compare_and_swap(l, 0, 1));
+}
+void unlock(int *l) {
+  *l = 0;
+}   
+    \end{minted}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{What We Implement is Essentially a Spinlock}
+
+    Compare and swap is a common atomic hardware instruction
+    \medskip
+
+    On x86 this is the \texttt{cmpxchg} instruction (compare and exchange)
+    \medskip
+
+    However, it still has this ``busy wait'' problem
+    \medskip
+
+    Consider a uniprocessor system, if you can't get the lock, you should yield
+
+    \leftspace{}Let the kernel schedule another process, that may free the lock
+    \medskip
+
+    On a multiprocessor machine, you could try again
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Let's Add a Yield}
+
+    \begin{minted}{c}
+void lock(int *l) {
+  while (compare_and_swap(l, 0, 1)) {
+    thread_yield();
+  }
+}
+    \end{minted}
+
+    Now we have a 
+    \href{https://en.wikipedia.org/wiki/Thundering_herd_problem}{thundering herd}
+    problem
+
+    \leftspace{}Multiple threads may be waiting on the same lock
+    \medskip
+
+    We have no control over who gets the lock next
+
+    \leftspace{}We need to be able to reason about it (FIFO is okay)
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{We Can Add a Wait Queue to the Lock}
+
+    \begin{minted}{c}
+void lock(int *l) {
+  while (compare_and_swap(l, 0, 1)) {
+    // add myself to the lock wait queue
+    thread_sleep();
+  }
+}
+void unlock(int *l) {
+  *l = 0;
+  if (/* threads in wait queue */) {
+    // wake up one thread
+  }
+}
+    \end{minted}
+    \medskip
+
+    There are 2 issues with this:
+    
+    \begin{enumerate}
+      \item lost wakeup, and
+      \item the wrong thread gets the lock
+    \end{enumerate}
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Lost Wakeup Example}
+
+    \begin{minted}[linenos]{c}
+void lock(int *l) {
+  while (compare_and_swap(l, 0, 1)) {
+    // add myself to the wait queue
+    thread_sleep();
+  }
+}
+void unlock(int *l) {
+  *l = 0;
+  if (/* threads in wait queue */) {
+    // wake up one thread
+  }
+}
+    \end{minted}
+    \medskip
+
+    Assume we have thread 1 (T1) and thread 2 (T2), thread 2 holds the lock
+
+    \leftspace{}T1 runs line 2 and fails, swap to T2 that runs lines 10-12, T1
+    runs lines 3 -4
+
+    \leftspace{}\leftspace{}T1 will never get woken up!
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Wrong Thread Getting the Lock Example}
+
+    \begin{minted}[linenos]{c}
+void lock(int *l) {
+  while (compare_and_swap(l, 0, 1)) {
+    // add myself to the wait queue
+    thread_sleep();
+  }
+}
+void unlock(int *l) {
+  *l = 0;
+  if (/* threads in wait queue */) {
+    // wake up one thread
+  }
+}
+    \end{minted}
+    \medskip
+
+    Assume we have T1, T2, and T3. T2 holds the lock, T3 is in queue.
+
+    \leftspace{}T2 runs line 9, swap to T1 which runs line 2 and succeeds
+
+    \leftspace{}\leftspace{}T1 just stole the lock from T3!
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{We Can Use Two Variables to Fix This (One to Guard)}
+
+    \begin{columns}
+      \begin{column}{0.5\textwidth}
+        \begin{minted}{c}
+typedef struct { int lock; int guard;
+                 queue_t *q; } mutex_t;
+
+void lock(mutex_t *m) {
+  while (
+    compare_and_swap(m->guard, 0, 1)
+  );
+  if (m->lock == 0) {
+    m->lock = 1; // acquire mutex
+    m->guard = 0;
+  } else {
+    enqueue(m->q, self);
+    m->guard = 0;
+    thread_sleep();
+    // wakeup transfers the lock here
+  }
+}
+        \end{minted}
+      \end{column}
+      \begin{column}{0.5\textwidth}
+        \begin{minted}{c}
+void unlock(mutex_t *m) {
+  while (
+    compare_and_swap(m->guard, 0, 1)
+  );
+  if (queue_empty(m->q)) {
+    // release lock, no one needs it
+    m->lock = 0; 
+  }
+  else {
+    // direct transfer mutex
+    // to next thread
+    thread_wakeup(dequeue(m->q));
+  }
+  m->guard = 0;
+}
+        \end{minted}
+      \end{column}
+    \end{columns}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{There's STILL A Data Race}
+
+    After a thread calls \texttt{lock}, it could get interrupted right before
+    the \texttt{thread\_sleep}
+    \medskip
+
+    However, it's been added to the wait queue, so \texttt{thread\_wakeup}
+
+    would try to wake up a thread that's not sleeping yet (we know it's about
+    to)
+    \medskip
+
+    We could simply retry the call to \texttt{thread\_wakeup}
+
+    until the thread finally calls \texttt{thread\_sleep}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Remember What Causes a Data Race}
+
+    A data race is when two concurrent actions access the same variable
+
+    and at least one of them is a \textbf{write}
+    \medskip
+
+    We could have any many readers as we want
+
+    \leftspace{}We don't need a mutex as long as nothing writes at the same
+    time
+    \medskip
+
+    We need different lock modes for reading and writing
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Read-Write Locks}
+
+    With mutexes/spinlocks, you have to lock the data,
+
+    \leftspace{}even for a read since you don't know if a write could happen
+    \medskip
+
+    Reads can happen in parallel, as long as there's no write
+    \medskip
+
+    Multiple threads can hold a read lock ({\tt pthread\_rwlock\_rdlock}),
+
+    \leftspace{}but only one thread may hold a write lock ({\tt pthread\_rwlock\_wrlock})
+
+    \leftspace{}and will wait until the current readers are done
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{We Can Use A Guard To Keep Track of Readers}
+
+    \begin{columns}
+      \begin{column}{0.5\textwidth}
+        \begin{minted}{c}
+typedef struct {
+  int nreader;
+  lock_t guard;
+  lock_t lock;
+} rwlock_t;
+
+void write_lock(rwlock_t *l) (
+  lock(&l->lock);
+}
+
+void write_unlock(rwlock_t *l) (
+  unlock(&l->lock);
+}
+        \end{minted}
+      \end{column}
+      \begin{column}{0.5\textwidth}
+        \begin{minted}{c}
+void read_lock(rwlock_t *l) (
+  lock(&l->guard);
+  ++nreader;
+  if (nreader == 1) { // first reader
+    lock(&l->lock);
+  }
+  unlock(&l->guard);
+}
+void read_unlock(rwlock_t *l) (
+  lock(&l->guard);
+  --nreader;
+  if (nreader == 0) { // last reader
+    unlock(&l->lock);
+  }
+  unlock(&l->guard);
+}
+        \end{minted}
+      \end{column}
+    \end{columns}
+
+  \end{slide}
+
+  \begin{slide}
+    \slidetitle{We Want Critical Sections to Protect Against Data Races}
+
+    We should know what data races are, and how to prevent them:
+    \begin{itemize}
+      \item Mutex or spinlocks are the most straightforward locks
+      \item We need hardware support to implement locks
+      \item We need some kernel support for wake up notifications
+      \item If we know we have a lot of readers, we should use a read-write lock
+    \end{itemize}
+  \end{slide}
+
+\end{document}

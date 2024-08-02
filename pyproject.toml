@@ -1,0 +1,12 @@
+[project]
+name = "eyolfson"
+version = "0.0.1"
+dependencies = [
+    "pygments",
+]
+
+[project.entry-points."pygments.styles"]
+eyolfson = "eyolfson.style:EyolfsonStyle"
+
+[tool.setuptools]
+packages = ["eyolfson"]

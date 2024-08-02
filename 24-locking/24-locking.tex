@@ -1,0 +1,407 @@
+\input{../preamble.tex}
+
+\lecturenumber{24}
+\title{Locking}
+\version{2.0.0}
+
+\begin{document}
+
+  \begin{frame}[plain, noframenumbering]
+    \titlepage
+  \end{frame}
+
+  \begin{slide}
+    \slidetitle{Monitors Are Built Into Some Languages}
+
+    With object-oriented programming, developers wanted better ease of use
+    \medskip
+
+    Could mark a method as monitored, and let the compiler handle locking
+
+    \leftspace{}An object can only have one thread active in its monitored
+    methods
+    \medskip
+
+    It's basically one mutex per object, created for you
+
+    \leftspace{}The compiler inserts calls to lock and unlock
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Java's \texttt{synchronized} Keyword is an Example of a Monitor}
+
+    \begin{minted}{c}
+public class Account {
+  int balance;
+  public synchronized void deposit(int amount)  { balance += amount; }
+  public synchronized void withdraw(int amount) { balance -= amount; }
+}
+    \end{minted}
+    \medskip
+
+    the compiler transforms to:
+    \medskip
+
+    \begin{minted}{c}
+public void deposit(int amount) {
+  lock(this.monitor); /* New */
+  balance += amount;
+  unlock(this.monitor); /* New */
+}
+public void withdraw(int amount) {
+  lock(this.monitor); /* New */
+  balance -= amount;
+  unlock(this.monitor); /* New */
+}
+    \end{minted}
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Condition Variables Behave Like Semaphores}
+
+    You can create your own custom queue of threads
+    \medskip
+
+    \begin{minted}{c}
+#include <pthread.h>
+
+int pthread_cond_init(pthread_cond_t *cond,
+                      const pthread_condattr_t *attr)
+int pthread_cond_destroy(pthread_cond_t *cond);
+int pthread_cond_signal(pthread_cond_t *cond);
+int pthread_cond_broadcast(pthread_cond_t *cond);
+int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex);
+int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex,
+                           const struct timespec *abstime);
+    \end{minted}
+    \medskip
+
+    The \texttt{wait} functions add this thread to the queue
+
+    \leftspace{}\texttt{signal} wakes up one thread, \texttt{broadcast} wakes
+    up all threads
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Condition Variables MUST Be Paired with a Mutex}
+
+    Any calls to \texttt{wait} must already hold the mutex
+
+    \leftspace{}(\texttt{signal} and \texttt{broadcast} may not)
+    \medskip
+
+    Why? Think that \texttt{wait} needs to add itself to the queue safely (no
+    data races)
+
+    \leftspace{}It needs the mutex as an argument to unlock it before going to
+    sleep
+
+    \leftspace{}\leftspace{}The thread will hold the locked \texttt{mutex}
+    before and after
+    the call
+    \medskip
+
+    One mutex can also protect multiple condition variables
+    \medskip
+
+    We'll only consider calls to \texttt{wait} and \texttt{signal}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{The \texttt{wait} Call Does Not Contain Data Races}
+
+    Understand what \texttt{wait} does (for condition variables!)
+    \medskip
+
+    The thread calling \texttt{wait}:
+
+    \begin{enumerate}
+      \item Adds itself to the queue for the condition variable
+      \item Unlock the mutex
+      \item Gets blocked (it can no longer be scheduled to run)
+    \end{enumerate}
+    \medskip
+
+    The thread calling \texttt{wait} needs another thread to call \texttt{signal} or
+    \texttt{broadcast},
+
+    then if it's selected:
+
+    \begin{enumerate}
+      \item Gets unblocked (it can be scheduled to run)
+      \item Tries to lock the mutex again, \texttt{wait} returns when it gets it
+    \end{enumerate}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{We Can Use Condition Variables for Our Producer/Consumer}
+
+    \begin{columns}
+      \begin{column}{0.5\textwidth}
+        \begin{minted}{c}
+pthread_mutex_t mutex;
+int nfilled;
+pthread_cond_t has_filled;
+pthread_cond_t has_empty;
+
+void producer() {
+  // produce data
+  pthread_mutex_lock(&mutex);
+  while (nfilled == N) {
+    pthread_cond_wait(&has_empty,
+                      &mutex);
+  }
+  // fill a slot
+  ++nfilled;
+  pthread_cond_signal(&has_filled);
+  pthread_mutex_unlock(&mutex);
+}
+        \end{minted}
+      \end{column}
+      \begin{column}{0.5\textwidth}
+        \begin{minted}{c}
+void consumer() {
+  pthread_mutex_lock(&mutex);
+  while (nfilled == 0) {
+    pthread_cond_wait(&has_filled,
+                      &mutex);
+  }
+  // empty a slot
+  --nfilled;
+  pthread_cond_signal(&has_empty);
+  pthread_mutex_unlock(&mutex);
+  // consume data
+}
+        \end{minted}
+      \end{column}
+    \end{columns}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{What's the Issue with the Following Code?}
+
+    \begin{minted}{c}
+/* Thread 1 */
+pthread_mutex_lock(&mutex);
+while (!condition) {
+  pthread_cond_wait(&cond, &mutex);
+}
+pthread_mutex_unlock(&mutex);
+
+/* Thread 2 */
+condition = true;
+pthread_cond_signal(&cond);
+    \end{minted}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Can We Change the \texttt{while} to an \texttt{if}?}
+
+    \begin{minted}{c}
+/* Thread 1 */
+pthread_mutex_lock(&mutex);
+if (!condition) {
+  pthread_cond_wait(&cond, &mutex);
+}
+// What could happen here?
+pthread_mutex_unlock(&mutex);
+
+/* Thread 2 */
+pthread_mutex_lock(&mutex);
+condition = true;
+pthread_mutex_unlock(&mutex);
+pthread_cond_signal(&cond);
+
+/* Thread 3 */
+pthread_mutex_lock(&mutex);
+condition = false;
+pthread_mutex_unlock(&mutex);
+    \end{minted}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Condition Variables Serve a Similar Purpose as Semaphores}
+
+    You can think of semaphores as a special case of condition variables
+
+    \leftspace{}They go to sleep when the value is 0, when it's greater
+    than 0 they wake up
+    \medskip
+
+    You can implement one using the other, however it can get messy
+    \medskip
+
+    For complex conditions condition variables offer much better clarity
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Locking Granularity is the Extent of Your Locks}
+
+    You need locks to prevent data races
+    \medskip
+
+    Lock large sections of your program, or divide the locks and
+    use smaller sections?
+
+    \leftspace{}What if you want to parallelize your hash table?
+    \medskip
+    
+    Things to consider about locks:
+    \begin{itemize}
+     \item Overhead
+      \item Contention
+      \item Deadlocks
+    \end{itemize}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Locking Overheads}
+
+    \begin{itemize}
+      \item Memory allocated
+      \item Initialization and destruction time
+      \item Time to acquire and release locks
+    \end{itemize}
+
+    The more locks you have, the greater each cost is going to be
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{You Do NOT Want Deadlocks}
+
+    The more locks you have, the more you have to worry about deadlocks
+    \medskip
+
+    Conditions for deadlocking:
+
+    \begin{enumerate}
+      \item Mutual Exclusion (of course for simple locks)
+      \item Hold and Wait (you have a lock and try to acquire another)
+      \item No Preemption (we can't take simple locks away)
+      \item Circular Wait (waiting for a lock held by another process)
+    \end{enumerate}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{A Simple Deadlock Example}
+
+    Consider two processors trying to get two {\it locks}:
+    \medskip
+
+    \begin{columns}
+      \column{0.4\textwidth}
+        {\bf Thread 1}
+
+        \verb+Get Lock 1+
+
+        \verb+Get Lock 2+
+
+        \verb+Release Lock 2+
+
+        \verb+Release Lock 1+
+      \column{0.4\textwidth}
+        {\bf Thread 2}
+
+        \verb+Get Lock 2+
+
+        \verb+Get Lock 1+
+
+        \verb+Release Lock 1+
+
+        \verb+Release Lock 2+
+    \end{columns}
+    \medskip
+
+    T11 gets Lock 1, then T2 gets Lock 2, now
+    they both wait for each other
+
+    \leftspace{}Deadlock
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{You Can Ensure Order to Prevent Deadlocks}
+
+    \begin{minted}{c}
+void f1() {
+    locktype_lock(&l1);
+    locktype_lock(&l2);
+    // protected code
+    locktype_unlock(&l2);
+    locktype_unlock(&ll);    
+}
+    \end{minted}
+    \medskip
+
+    This code will not deadlock, you can only get {\tt l2} if you have
+    {\tt l1}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{You Could Also Prevent A Deadlock by Using {\tt trylock}}
+
+    Remember, for {\tt pthread} there's {\tt trylock} that returns 0 if it gets
+    the lock
+    \medskip
+
+    \begin{minted}{c}
+void f2() {
+    locktype_lock(&l1);
+    while (locktype_trylock(&l2) != 0) {
+        locktype_unlock(&l1);
+        // wait
+        locktype_lock(&l1);
+    }
+    // protected code
+    locktype_unlock(&l2);
+    locktype_unlock(&ll);    
+}
+    \end{minted}
+    \medskip
+
+    This code will not deadlock, it will give up {\tt l1} if it can't get
+    {\tt l2}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{We Explored More Advanced Locking}
+
+    We have another tool to ensure order
+
+    \begin{itemize}
+      \item Condition variables are clearer for complex condition signaling
+      \item Locking granularity matters
+      \item You must prevent deadlocks
+    \end{itemize}
+
+  \end{slide}
+
+\end{document}

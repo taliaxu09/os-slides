@@ -1,0 +1,360 @@
+\input{../preamble.tex}
+
+\lecturenumber{1}
+\title{Why Operating\\Systems?}
+\version{2.0.1}
+
+\begin{document}
+
+\begin{frame}[plain, noframenumbering]
+  \titlepage
+\end{frame}
+
+\begin{slide}
+
+  \slidetitle{I'm Jon, Your Instructor}
+
+  \centering
+  \begin{tikzpicture}[every node/.style={anchor=base, align=center}]
+    \node [visible on=<1>] (eyolfson) {\bfseries \Huge Eyolfson};
+    \node [visible on=<2>] {\bfseries \Huge \color{red} Eyolfson};
+    \node [visible on=<3-4>, anchor=base west] at (eyolfson.base west)
+          {\bfseries \Huge Elf};
+    \node [visible on=<4>, anchor=base east] at (eyolfson.base east)
+          {\bfseries \Huge son};
+    \node [visible on=<5>, anchor=base west] at (eyolfson.base west)
+          {\bfseries \Huge E};
+    \node [visible on=<5>, anchor=base east] at (eyolfson.base east)
+          {\bfseries \Huge lfson};
+    \node [visible on=<6>] {\bfseries \Huge E{\color{blue}yo}lfson};
+  \end{tikzpicture}
+
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{Why Operating Systems?}
+  
+  Understanding the operating system will make you a better programmer
+  \bigskip
+
+  You will either write software that:
+  \begin{itemize}
+    \item Interacts with the operating system
+    \item Is the operating system
+  \end{itemize}
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{Important URLs for Course Resources}
+
+  Public: \url{https://eyolfson.com/}
+  \medskip
+
+  Private: \url{https://q.utoronto.ca/} (Quercus)
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{Labs on GitLab, Discussion on Discord, Streams on YouTube}
+
+  \begin{center}
+    \includegraphics[width=64mm]{gitlab.eps}
+    \bigskip
+
+    \includegraphics[width=64mm]{discord.eps}
+    \bigskip
+
+    \includegraphics[width=64mm]{youtube.eps}
+  \end{center}
+
+  Sign in: \url{https://compeng.gg/discord/join/ece353/}
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{Lecture Attendance is Still Important}
+
+  It's much faster to get feedback from you and clarify if anything is unclear
+  \medskip
+
+  We'll have live coding, I'll be able to explain any happy accidents
+  \medskip
+
+  If there's anything else I can do to make attending a better experience
+  
+  let me know!
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{Evaluation for this Course}
+
+  \centering
+  \begin{tabular}{lll}
+      \textbf{Assessment} & \textbf{Weight} & \textbf{Due Date} \\
+      Lab 0 & 1\% & January 18 \\
+      Lab 1 & 4\% & January 25 \\
+      Lab 2 & 4\% & February 8 \\
+      Midterm Exam & 25\% & February 26 @ 6:30 PM \\
+      Lab 3 & 4\% & February 29 \\
+      Lab 4 & 4\% & March 14 \\
+      Lab 5 & 4\% & March 28 \\
+      Lab 6 & 4\% & April 11 \\
+      Final Exam & 50\% & April 16 to April 30 \\
+  \end{tabular}
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{Academic Honesty Policy}
+
+  You can study together, discuss concepts on Discord
+  \medskip
+
+  Don't post lab code on Discord, any other code is okay
+  \medskip
+
+  Any cheating is not tolerated, and will only hurt you
+\end{slide}
+
+\begin{slide}
+  
+    \slidetitle{The Recommended Books Complement Lectures}
+
+    ``\href{https://pages.cs.wisc.edu/~remzi/OSTEP/}
+           {Operating Systems: Three Easy Pieces}'' \\
+    by \href{http://www.cs.wisc.edu/~remzi/}{Remzi Arpaci-Dusseau}
+    and \href{http://www.cs.wisc.edu/~dusseau/}{Andrea Arpaci-Dusseau}
+    \bigskip
+
+    ``\href{https://en.wikipedia.org/wiki/The_C_Programming_Language}
+           {The C Programming Language}'' \\
+    by \href{https://en.wikipedia.org/wiki/Brian_Kernighan}{Brian Kernighan}
+    and \href{https://en.wikipedia.org/wiki/Dennis_Ritchie}{Dennis Ritchie}
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{Skills You Should Practice Again If Needed}
+
+  C programming and debugging
+  \medskip
+
+  Being able to convert between binary, hex, and decimal
+  \medskip
+
+  Little-endian and big-endian
+  \medskip
+
+  Memory being byte-addressable, memory addresses (pointers)
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{Please Provide Feedback!}
+
+  This course is challenging, please let me know if anything is unclear
+  \medskip
+
+  You can ask interesting questions, all programs interact with the OS
+  \medskip
+
+  By the end of the course you'll be a better programmer
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{An Operating System Manages Resources}
+
+  \centering
+
+  \includegraphics{operating-system-overview.eps}
+
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{There's 3 Core Operating System Concepts}
+
+  \textbf{Virtualization:} share one resource by mimicking
+  
+  \leftspace{}multiple independent copies
+  \bigskip
+
+  \textbf{Concurrency:} handle multiple things happening at the same time
+  \bigskip
+
+  \textbf{Persistence:} retain data consistency even without power
+\end{slide}
+
+\begin{slide}
+
+  ``All problems in computer science can be solved by another level of
+  indirection''
+
+  \begin{flushright}
+    - David Wheeler
+  \end{flushright}
+
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{Our First Abstraction is a Process}
+
+  \textbf{Program:} a file containing all the instructions and data required
+  to run
+  \bigskip
+
+  \textbf{Process:} an instance of running a program
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{The Basic Requirements for a Process}
+
+  \centering
+  \includegraphics{process-basic.eps}
+
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{My First Question to You}
+
+  How are you able to run two different programs at the same time?
+  \medskip
+
+  For example, a ``hello world'' program and another that
+  
+  \leftspace{}counts up one every second
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{Does the OS Allocate Different Stacks For Each Process?}
+
+  The stacks for each process need to be in physical memory
+  \medskip
+
+  One option is the operating system just allocates
+  
+  \leftspace{}any unused memory for the stack
+  \medskip
+
+  Would there be any issues with this?
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{What About Global Variables?}
+
+  The compiler needs to pick an address for each variable when you compile
+  \medskip
+
+  What if we had a global registry of addresses?
+  \medskip
+
+  Would there be any issues with this?
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{Potential Memory Layout for Multiple Processes}
+
+  \centering
+
+  \includegraphics<1>{memory-layout-first.eps}%
+  \includegraphics<2>{memory-layout-second.eps}
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{What Happens If Two Processes Run the Same Program?}
+
+  \inputminted{c}{count.c}
+
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{What Did We Find?}
+
+  Was the address of \mintinline{c}{local} the same between the two processes?
+  \medskip
+
+  Was the address of \mintinline{c}{global} the same between the two processes?
+  \medskip
+
+  What else may be needed for a process?
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{A Process Has Its Own Virtual Memory}
+
+  \centering
+
+  \includegraphics{process-virtual-memory.eps}
+
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{Example Code from This Class}
+
+  All code will be in the ``materials'' repository located:
+
+  \url{https://laforge.eecg.utoronto.ca/ece353/2024-winter/student/materials/}
+  \bigskip
+
+  Compile the code:
+  \begin{minted}{bash}
+cd lectures/01-why-operating-systems
+meson setup build
+meson compile -C build
+  \end{minted}
+  \bigskip
+
+  Execute the code:
+  \begin{minted}{bash}
+build/read-four-bytes <FILE>
+  \end{minted}
+  \bigskip
+
+  Source:
+  \href{https://laforge.eecg.utoronto.ca/ece353/2024-winter/student/materials/-/blob/main/lectures/01-why-operating-systems/read-four-bytes.c}
+       {\ttfamily materials/lectures/01-why-operating-systems/read-four-bytes.c}
+\end{slide}
+
+\begin{slide}
+
+  \slidetitle{Believe It or Not, This Is ``Hello world''}
+
+  \small \ttfamily
+  0x7F 0x45 0x4C 0x46 0x02 0x01 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+  0x00 \newline
+  0x02 0x00 0xB7 0x00 0x01 0x00 0x00 0x00 0x78 0x00 0x01 0x00 0x00 0x00 0x00
+  0x00 \newline
+  0x40 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+  0x00 \newline
+  0x00 0x00 0x00 0x00 0x40 0x00 0x38 0x00 0x01 0x00 0x40 0x00 0x00 0x00 0x00
+  0x00 \newline
+  0x01 0x00 0x00 0x00 0x05 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+  0x00 \newline
+  0x00 0x00 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x01 0x00 0x00 0x00 0x00
+  0x00 \newline
+  0xA8 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xA8 0x00 0x00 0x00 0x00 0x00 0x00
+  0x00 \newline
+  0x00 0x10 0x00 0x00 0x00 0x00 0x00 0x00 0x08 0x08 0x80 0xD2 0x20 0x00 0x80
+  0xD2 \newline
+  0x81 0x13 0x80 0xD2 0x21 0x00 0xA0 0xF2 0x82 0x01 0x80 0xD2 0x01 0x00 0x00
+  0xD4 \newline
+  0xC8 0x0B 0x80 0xD2 0x00 0x00 0x80 0xD2 0x01 0x00 0x00 0xD4 0x48 0x65 0x6C
+  0x6C \newline
+  0x6F 0x20 0x77 0x6F 0x72 0x6C 0x64 0x0A
+\end{slide}
+
+\end{document}

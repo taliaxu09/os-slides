@@ -1,0 +1,518 @@
+\input{../preamble.tex}
+
+\lecturenumber{33}
+\title{Virtual Machines}
+\version{2.0.0}
+
+\begin{document}
+
+  \begin{frame}[plain, noframenumbering]
+    \titlepage
+  \end{frame}
+
+  \begin{slide}
+    
+    \slidetitle{Virtual Machines Abstract an Entire Machine}
+
+    Goal: run multiple operating systems on a single machine
+
+    \leftspace{}Each OS believes they're the only one running
+
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{The Host Has Direct Control Over the Hardware}
+
+    The \textit{hypervisor} or \textit{virtual machine manager} (VMM) controls
+    virtual machines
+
+    \leftspace{}Creation, management, isolation (which hardware is it able to
+    access)
+    \medskip
+
+    There are two kinds of hypervisors: type 1 and type 2
+
+    \leftspace{}Type 1: bare metal hypervisor, it runs directly on the host's
+    hardware
+
+    \leftspace{}\leftspace{}Requires special hardware support
+
+    \leftspace{}Type 2: hosted hypervisor, it simulates a hypervisor and runs
+                 as an application
+
+    \leftspace{}\leftspace{}Slower, but does not require any special hardware
+    \medskip
+
+    A \textit{guest} sees its own virtual copy of the host
+
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{(a) Is a Typical Machine (b) Shows One Machine Running 3 Kernels}
+
+    \begin{center}
+      \includegraphics[width=0.8\textwidth]{non-virtual-machine.png}
+    \end{center}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Virtual Machines are Not Emulation}
+
+    Emulation is typically used to translate one ISA to another
+
+    \leftspace{}e.g. x86\_64 to ARM/RISC-V
+    \medskip
+
+    Our guest operating system executes instructions directly using the same ISA
+
+    \leftspace{}Otherwise, translating instructions is typically slow
+    \medskip
+
+    It's OK for some uses, such as a Nintendo Entertainment System (NES)
+    emulator
+    \medskip
+
+    A virtual machine could use emulation to run a virtual machine for a
+    different ISA
+
+    \leftspace{}Performance would suffer greatly
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Virtual Machines Enable Pause and Play}
+
+    Much like our kernel can pause a process, a hypervisor can pause an OS
+    \medskip
+
+    The hypervisor needs to context switch between  virtual machines
+
+    \leftspace{}It'll save the current state and restores it later
+    \medskip
+
+    We could also move it around, exactly like a process
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Virtual Machines Provide Protection Through Isolation}
+
+    The guests are isolated from each other, and the host
+    \medskip
+
+    The hypervisor and set limits on: CPU time, memory, network bandwidth, etc.
+
+    \leftspace{}A compromised guest only has access to its own virtualized
+                 hardware
+    \medskip
+
+    You can easily roll back the infected virtual machine, or remove it
+
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{Virtual Machines Also Help Consolidation}
+
+    In data centers there are many servers running, often not making use of all
+    resources
+
+    \leftspace{}Servers with different purposes could be sharing the same
+                 hardware
+    \medskip
+
+    Instead of having lightly used physical systems, make them virtual machines
+
+    \leftspace{}Run as many on a single machine as possible
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{A Virtual CPU (VCPU) Is the Key Abstraction}
+
+    For processes, part of the process control block (PCB) acted as a virtual
+    CPU
+
+    \leftspace{}It doesn't virtualize all parts of the CPU, just enough for
+                 user-mode processes
+    \medskip
+
+    The VCPU is a data structure that stores the state of the CPU
+
+    \leftspace{}The hypervisor saves this when the guest isn't running
+    \medskip
+
+    When the virtual machine resumes, like the PCB, it loads the data and
+    resumes
+
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{The Guest Still Uses User and Kernel Modes}
+
+    There are no changes to the guest operating systems
+
+    \leftspace{}A Linux kernel still uses privileged instructions
+    \medskip
+
+    Recall on x86\_64 user mode is ring 3, kernel mode is ring 0
+
+    \leftspace{}A hardware hypervisor (type 1) is ring -1, letting it control
+                 the guest
+    \medskip
+
+    For type 2 hypervisors, the host has to create a virtual kernel and user
+    mode
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{One Strategy is to Trap-and-Emulate}
+
+    For type 2 hypervisors the guest runs on the host in user mode
+
+    \leftspace{}Any privileged instructions generate a trap (wrong mode)
+    \medskip
+
+    The hypervisor should explicitly handle this error
+
+    \leftspace{}Emulate (or simulate) the operation for the guest and resume it
+    \medskip
+
+    This will slow down the otherwise native execution
+
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{Trap-and-Emulate Visually}
+
+    \begin{center}
+      \includegraphics[width=0.75\textwidth]{trap-and-emulate.png}
+    \end{center}
+
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{Trap-and-Emulate Does Not Always Work}
+
+    Some CPUs are not clear between privileged and non-privileged instructions
+
+    \leftspace{}This includes x86\_64, virtual machines didn't exist in the 1970s
+    \medskip
+
+    One example is the \texttt{popf} instruction, it loads the flags register
+    from the stack
+
+    \leftspace{}It behaves differently for both kernel and user mode
+    \medskip
+
+    It does not generate a trap, so you can't trap-and-emulate
+
+    \leftspace{}These \textit{special} instructions need another approach
+
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{Special Instructions Need Binary Translation}
+
+    If the guest VCPU is in user mode, we can run instructions natively
+
+    \leftspace{}in kernel mode, the hypervisor inspects every instruction
+                 before execution
+    \medskip
+
+    Special instructions need to be translated to instructions with the same
+    effect
+
+    \leftspace{}Regular instructions can run natively
+    \medskip
+
+    The kernel uses a CPU instruction to switch from user to kernel mode
+
+    \leftspace{}The hypervisor can handle that using normal trap-and-emulate
+    \medskip
+
+    Overall performance for type 2 hypervisors suffer, but they're adequate
+
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{Binary Translation Visually}
+
+    \begin{center}
+      \includegraphics[width=0.75\textwidth]{binary-translation.png}
+    \end{center}
+
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{One More Hardware Rescue}
+
+    In 2005 Intel introduced virtualization as VT-x and in 2006 AMD did as AMD-V
+
+    \leftspace{}Intel's codename Vanderpool, published as Virtual
+                 Machine Extensions (VMX)
+
+    \leftspace{}AMD's codename Pacifica, published as Secure Virtual
+                 Machine (SVM)
+    \medskip
+
+    This added the concept of ring -1, or hypervisor mode
+    \medskip
+
+    The host kernel claims the hypervisor, and is the only one able to access
+    it
+
+    \leftspace{}It can set the isolation for the guests and what hardware
+                 to virtualize
+
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{Virtualized Scheduling}
+
+    If there is only one CPU on the physical machine, the guest will not know
+
+    \leftspace{}The host could still present multiple virtual CPUs to the guest
+    \medskip
+
+    We now need to map the VCPUs to physical CPUs, or schedule them like
+    processes
+
+    \leftspace{}Like a normal kernel, there will also be hypervisor threads
+
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{One Approach is CPU Assignment}
+
+    If there are more physical cores on the host than all VCPUs, we can map 1:1
+
+    \leftspace{}The host can continue using the spare physical cores
+    \medskip
+
+    If we have to share, things get more complicated (called overcommitting)
+
+    \leftspace{}At equal numbers we can still map 1:1, the hypervisor threads
+                 don't run often
+    \medskip
+
+    We have to use a scheduling algorithm, like we used for processes
+
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{CPU Overcommitment Causes Additional Problems}
+
+    The guest operating system runs too unpredictably for soft real-time tasks
+
+    \leftspace{}It may be context switched out when the user process says not
+    to
+    \medskip
+
+    For example, consider a real-time round robin time slice is 10~ms
+
+    \leftspace{}The guest will not have a consistent slice of 10~ms, it may be
+                 much higher
+    \medskip
+
+    This may make processes miss deadlines they wouldn't have running on the host
+
+    \leftspace{}In this case virtualization has different observable behavior
+
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{Virtualized Memory Management Gets a Lot More Complex}
+
+    Recall: virtual memory allows each process to think it has the entire
+            address space
+    \medskip
+
+    Now the guest kernel thinks it's managing the entire physical address space
+
+    \leftspace{}We have to virtualize that too!
+    \medskip
+
+    The problem gets even worse if memory is overcommitted as well
+
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{Nested Page Tables Enable Virtual Memory for Guest Kernels}
+
+    The guest thinks it controls physical memory, and does page table management
+    \medskip
+
+    The hypervisor maintains a nested page table the re-translates for the guest
+
+    \leftspace{}It translates the guest's page table to the real physical page
+                 table
+    \medskip
+
+    For overcommitted memory the hypervisor can provide double-paging
+
+    \leftspace{}The hypervisor does its own page replacement algorithm
+
+    \leftspace{}\leftspace{}However, the guest may know it's memory access
+    patterns better
+
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{Guests Could Share Pages if They're Duplicates}
+
+    Similar to copy-on-write pages, we can get memory saves by sharing pages
+
+    \leftspace{}This time instead of sharing between processes, share between
+                 guests
+    \medskip
+
+    The hypervisor can do duplicate detection by hashing the contents of pages
+
+    \leftspace{}If two hashes are the same, check they're the same
+                 byte-for-byte
+    \medskip
+
+    If they're the same, we can share them until one of the guests try to write
+
+    \leftspace{}Then we again do copy-on-write as before
+
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{The Hypervisor Provides Virtualized I/O Devices}
+
+    The hypervisor can multiplex one device to multiple virtual machines
+
+    \leftspace{}The hypervisor could also emulate devices that don't
+                 physically exist
+    \medskip
+
+    The hypervisor could also map one physical device to a virtual device
+    one VM
+
+    \leftspace{}The VM has exclusive access to the device, but hypervisor
+                 still translates
+    \medskip
+
+    There is a hardware solution to remove the hypervisor during run-time ---
+    IOMMU
+
+    \leftspace{}The hypervisor maps the devices virtual memory exclusively
+                 to the guest
+
+    \leftspace{}\leftspace{}The VM now actually has exclusive control over the
+    device
+
+    \leftspace{}\leftspace{}\leftspace{}This allows complex GPUs to work at
+    native speeds in VMs
+
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{Virtual Machines Boot from a Virtualized Disk}
+
+    You create a \textit{disk image} that has all the contents of a physical
+    disk
+
+    \leftspace{}It contains partitions, and each partition has a file system
+    \medskip
+
+    Usually, it's one big file (but some formats allow you to split it up)
+
+    \leftspace{}The guest kernel sees it has a normal disk, that it has full
+                 control of
+    \medskip
+
+    The disk image is all you need for the virtual machine, makes it easy to
+    move
+
+    \leftspace{}The \texttt{ova} file you downloaded is basically a disk image
+                 and guest settings
+
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{Virtual Machines Could Be Used to Isolate an Application}
+
+    Assume your application uses a dynamic library (back to Lecture 3)
+
+    \leftspace{}An ABI change would cause your application to no longer work
+
+    \hspace{4em} Even more subtle, the library's behavior could change
+    \medskip
+
+    You may want to freeze your dependencies to deploy it in production
+
+    \leftspace{}Create a virtual machine for it with all the libraries it
+                 needs
+
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{Containers, like Docker, Aim to be Faster}
+
+    The hypervisor sets limits on: CPU time, memory, network bandwidth, etc.
+
+    \leftspace{}What if the kernel supported this directly, without
+                 virtualization?
+    \medskip
+
+    Linux control groups (\texttt{cgroups}) support hypervisor-like
+    limits for processes
+
+    \leftspace{}Isolate a process to a \textit{namespace}
+    \medskip
+
+    You can set other resources a namespace can access (mount points, IPC, etc.)
+    \medskip
+
+    Containers are lighter-weight than full virtual machines, they use a normal
+    kernel
+
+  \end{slide}
+
+  \begin{slide}
+    
+    \slidetitle{Virtual Machines Virtualize a Physical Machine}
+
+    They allow multiple operating systems to share the same hardware
+
+    \begin{itemize}
+      \item Virtual machines provide isolation, the hypervisor allocates
+            resources
+      \item Type 2 hypervisors are slower due to trap-and-emulate and binary
+            translation
+      \item Type 1 hypervisors are supported by hardware, IOMMU speeds up devices
+      \item Hypervisors may overcommit resources and need to physically move VM
+      \item Containers aim to have the benefits of VMs, without the overhead
+    \end{itemize}
+
+  \end{slide}
+
+\end{document}

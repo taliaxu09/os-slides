@@ -1,0 +1,341 @@
+\input{../preamble.tex}
+
+\lecturenumber{6}
+\title{Basic IPC}
+\version{2.0.0}
+
+\begin{document}
+
+  \begin{frame}[plain, noframenumbering]
+    \titlepage
+  \end{frame}
+
+  \begin{slide}
+
+    \slidetitle{IPC is Transferring Bytes Between Two or More Processes}
+
+    Reading and writing files is a form of IPC
+    \medskip
+
+    The read and write system calls allow any bytes
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{A Simple Process Could Write Everything It Reads}
+
+    See: \texttt{06-basic-ipc/read-write-example.c}
+    \medskip
+
+    We \texttt{read} from standard in, and \texttt{write} to standard out
+
+    \leftspace{}Does this remind you of any program you've seen before?
+    \medskip
+
+    If we run it in our terminal without arguments, it'll wait for input
+
+    \leftspace{}Press Ctrl+D when you're done to send end-of-file (EOF)
+  \end{slide}
+
+  \begin{slide}
+    \slidetitle{\texttt{\bfseries read} Just Reads Data from a File Descriptor}
+
+    See: \texttt{man 2 read}
+    \medskip
+
+    There's no EOF character, \texttt{read} just returns 0 bytes read
+
+    \leftspace{}The kernel returns 0 on a closed file descriptor
+    \medskip
+
+    We need to check for errors!
+
+    \leftspace{}Save \texttt{errno} if you're using another function that may
+                  set it
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{\texttt{\bfseries write} Just Writes Data to a File Descriptor}
+
+    See: \texttt{man 2 write}
+    \medskip
+
+    It returns the number of bytes written, you can't assume it's always
+    successful
+
+    \leftspace{}Save \texttt{errno} if you're using another function that may
+                  set it
+    \medskip
+
+    Both ends of the read and write have a corresponding write and read
+
+    \leftspace{}This makes two communication channels with command line programs
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{The Standard File Descriptors Are Powerful}
+
+    We could close standard input (freeing file descriptor 0) and open a file
+    instead
+
+    \leftspace{}Linux uses the lowest available file descriptor for new ones
+    \medskip
+
+    See: \texttt{lecture-06/open-example.c} and \texttt{man 2 open}
+    \medskip
+
+    Without changing the core code, it now works with multiple input types
+
+    \leftspace{}You could type, or use a file
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Your Shell Will Let You Redirect Standard File Descriptors}
+
+    Instead of running \texttt{./open-example open-example.c} we could run:
+
+    \leftspace{}\texttt{./open-example < open-example.c}
+    \medskip
+
+    Your shell will do the \texttt{open} for you and replace the standard input
+
+    \leftspace{}We didn't actually have to write that!
+    \medskip
+
+    You could also redirect across multiple processes
+
+    \leftspace{}\texttt{cat open-example.c | ./open-example} 
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Signals are a Form of IPC that Interrupts}
+
+    You could also press Ctrl+C to stop \texttt{./open-example}
+
+    \leftspace{}This interrupts your programs execution and exits early
+    \medskip
+
+    Kernel sends a number to your program indicating the type of signal
+
+    \leftspace{}Kernel default handlers either ignore the signal or terminate
+    your process
+    \medskip
+
+    Ctrl+C sends \texttt{SIGINT} (interrupt from keyboard)
+    \medskip
+
+    If the default handler occurs the exit code will be 128 + signal number
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{You Can Set Your Own Signal Handlers with \texttt{sigaction}}
+
+    See: \texttt{06-basic-ipc/signal-example.c} and \texttt{man 2 sigaction}
+    \medskip
+
+    You just declare a function that doesn't return a value, and has an \texttt{int} argument
+
+    \leftspace{}The integer is the signal number
+    \medskip
+
+    Some numbers are non-standard, below are a few from Linux x86-64:
+    \begin{itemize}
+      \item 2: \texttt{SIGINT} (interrupt from keyboard)
+      \item 9: \texttt{SIGKILL} (terminate immediately)
+      \item 11: \texttt{SIGSEGV} (memory access violation)
+      \item 15: \texttt{SIGTERM} (terminate)
+    \end{itemize}
+
+  \end{slide}
+
+  \begin{slide}
+    \slidetitle{A Signal Pauses Your Process and Runs the Signal Handler}
+
+    Your process can be interrupted at any point in execution
+
+    \leftspace{}Your process resumes after the signal handler finishes
+    \medskip
+
+    This is an example of concurrency, your process switches execution
+
+    \leftspace{}You have to be careful what you write here
+    \medskip
+
+    Run \texttt{./signal-example} and press Ctrl+C
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{You Need to Account for Interrupted System Calls}
+
+    You should see:
+
+    \leftspace{}\texttt{Ignoring signal 2}
+
+    \leftspace{}\texttt{read: Interrupted system call}
+    \medskip
+
+    We can rewrite it to retry interrupted system calls
+
+    \leftspace{}See: \texttt{06-basic-ipc/signal-example-2.c}
+    \medskip
+
+    Now the program continues when we press Ctrl+C
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{You Can Send Signals to Processes with Their PID}
+
+    You can use the command: \texttt{kill}
+
+    \leftspace{}It is also a system call, taking a \texttt{pid} and signal number
+    \medskip
+
+    Find a processes' ID with \texttt{pidof}, e.g. \texttt{pidof ./signal-example-2}
+    \medskip
+
+    After use \texttt{kill <pid>}, which by default sends \texttt{SIGTERM}
+    \medskip
+
+    Use \texttt{kill -9 <pid>} to tell the kernel to terminate the process
+
+    \leftspace{}Process won't terminate if it's in uninterruptible sleep
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Most Operations Are Non-Blocking}
+
+    A non-blocking call returns immediately, and you check if something occurs
+    \medskip
+
+    To turn \texttt{wait} into a non-blocking call, use \texttt{waitpid} with
+    \texttt{WNOHANG} in \texttt{options}
+    \medskip
+
+    To react to changes to a non-blocking call, we can either use a
+    \textit{poll} or \textit{interrupt}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Polling Continuously Calls the Function and Checks for Changes}
+
+    See: \texttt{06-basic-ipc/wait-poll-example.c}
+    \medskip
+
+    We call \texttt{waitpid} over and over until the child exits
+
+    \leftspace{}Note: some hardware behaves like this,
+
+    \leftspace{}\leftspace{}the kernel may have to check for changes
+    \bigskip
+
+    What's the drawback of this approach?
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{An Interrupt Instead Occurs Right After the Change}
+
+    See: \texttt{06-basic-ipc/wait-interrupt-example.c}
+    \medskip
+
+    Instead of calling \texttt{wait} or \texttt{waitpid} from \texttt{main},
+    we can do it in the interrupt handler
+
+    \leftspace{}The kernel sends the \texttt{SIGCHLD} whenever one of its
+                  children exit
+    \medskip
+
+    This idea also applies to the kernel, hardware can generate interrupts
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Interrupt Handlers Run to Completion}
+
+    See: \texttt{06-basic-ipc/signal-close-example.c}
+    \medskip
+
+    An interrupt may occur while an interrupt handler is already running
+    \bigskip
+
+    All interrupt handler code must be reentrant
+
+    \leftspace{}You need to be able to pause execution,
+
+    \leftspace{}execute another call (to the same function),
+
+    \leftspace{}and resume execution
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{On a RISC-V CPU, There's 3 Terms for ``Interrupts''}
+
+    \textit{Interrupt}
+
+    \leftspace{}Triggered by external hardware,
+
+    \leftspace{}handled by the kernel (needs to respond quickly)
+    \bigskip
+
+    \textit{Exception}
+
+    \leftspace{}Triggered by an instruction (divide by zero, illegal memory
+                  access),
+
+    \leftspace{}default handler is the kernel (calling process suspended),
+
+    \leftspace{}the process can optionally handle some of these themselves
+    \bigskip
+
+    \textit{Trap}
+
+    \leftspace{}Transfer of control to a trap handler caused by either
+
+    \leftspace{}an exception or an interrupt (code that runs)
+    \medskip
+
+    A system call would be a \textit{requested trap}
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{We Explored Basic IPC in an Operating System}
+
+    Some basic IPC includes:
+    \begin{itemize}
+      \item \texttt{read} and \texttt{write} through file descriptors (could be a regular file)
+      \item Redirecting file descriptors for communcation
+      \item Signals
+    \end{itemize}
+    \medskip
+
+    Signals are like interrupts for user processes
+
+    \leftspace{}The kernel has to handle all 3 kinds of ``interrupts''
+
+  \end{slide}
+
+\end{document}

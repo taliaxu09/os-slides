@@ -1,0 +1,112 @@
+\input{../preamble.tex}
+
+\lecturenumber{8}
+\title{Subprocess}
+\version{2.0.0}
+
+\begin{document}
+  \begin{frame}[plain, noframenumbering]
+    \titlepage
+  \end{frame}
+
+  \begin{slide}
+
+    \slidetitle{We Want to Send and Receive Data From a Process}
+
+    \begin{enumerate}
+      \item Create a new process that launches the command line argument
+      \item Send the string \texttt{Testing\textbackslash n} to that process
+      \item Receive any data it writes to standard output
+    \end{enumerate}
+
+  \end{slide}
+
+  \begin{slide}
+    \slidetitle{A More Convenient API -- \texttt{execlp}}
+
+    \begin{minted}{c}
+int execlp(const char *file, const char *arg /* ..., (char *) NULL */);
+    \end{minted}
+    \medskip
+
+    Does not return on success, and \texttt{-1} on failure
+    (and sets \texttt{errno})
+    \medskip
+
+    \texttt{execlp} will let you skip using string arrays (using C varargs),
+
+    and it will also search for executables using the \texttt{PATH} environment
+    variable
+  \end{slide}
+
+  \begin{slide}
+    \slidetitle{Our Final APIs --- \texttt{dup} and \texttt{dup2}}
+
+    \mintinline{c}{int dup(int oldfd);}
+
+    \mintinline{c}{int dup2(int oldfd, int newfd);}
+    \medskip
+
+    Returns a new file descriptor on success, and \texttt{-1} on failure
+    (and sets \texttt{errno})
+    \medskip
+
+    Copies the file descriptor so \texttt{oldfd} and \texttt{newfd} refer to
+    the same thing
+    \medskip
+
+    For \texttt{dup} it'll return the lowest file descriptor
+    \medskip
+
+    For \texttt{dup2} it'll atomically close the \texttt{newfd} argument
+    (if open),
+
+    and then make \texttt{newfd} refer to the same thing
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Coding Example}
+
+    Done live!
+    \medskip
+
+    You can find the template in \texttt{08-subprocess} in the \texttt{materials}
+    repository
+    \medskip
+
+    To compile it, run the following commands:
+    \medskip
+
+    \begin{minted}{console}
+cd lectures/08-subprocess # if not already there
+meson setup build
+meson compile -C build
+    \end{minted}
+    \medskip
+
+    Run the program using: \mintinline{console}{build/subprocess <program>}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Running with \texttt{cat} May Cause Problems}
+
+    Run the program with the following arguments:
+    \medskip
+
+    \begin{minted}{console}
+build/subprocess uname
+build/subprocess cat
+    \end{minted}
+    \medskip
+
+    You have to be careful with the file descriptors!
+    \medskip
+
+    Why might \texttt{cat} not exit when using pipes?
+  \end{slide}
+
+\end{document}

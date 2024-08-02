@@ -1,0 +1,418 @@
+\input{../preamble.tex}
+
+\lecturenumber{23}
+\title{Semaphores}
+\version{2.0.0}
+
+\begin{document}
+
+  \begin{frame}[plain, noframenumbering]
+    \titlepage
+  \end{frame}
+
+  \begin{slide}
+    \slidetitle{Locks Ensure Mutual Exclusion}
+
+    Only one thread at a time can be between the \texttt{lock} and
+    \texttt{unlock} calls
+    \medskip
+
+    It does not help you ensure ordering between threads
+    \medskip
+
+    How would we ensure an ordering between two threads?
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Problem: Make One Thread Always Print First}
+
+    \begin{columns}
+      \column{0.4\textwidth}
+        {\bf Thread 1} (\verb+print_first+)
+
+        \verb+printf("This is first\n");+
+      \column{0.4\textwidth}
+        {\bf Thread 2} (\verb+print_second+)
+
+        \verb+printf("I'm going second\n");+
+    \end{columns}
+    \medskip
+
+    Try executing \texttt{./ordered-print} and see what happens
+    \bigskip
+
+    Recall: \texttt{printf} is thread safe, which you may need to ensure
+
+    \leftspace{}Try executing \texttt{./safe-print} which (oddly) prints using
+                 multiple system calls
+
+    \leftspace{}Practice: ensure \texttt{./safe-print} behaves the same as
+                 \texttt{./ordered-print}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Semaphores are Used for Signaling}
+
+    Semaphores have a {\tt value} that's shared between threads (optionally
+    processes)
+
+    \leftspace{}Think of {\tt value} as an integer that is always $\mathsf{\geq 0}$
+    \medskip
+
+    It has two fundamental operations {\tt wait} and {\tt post}
+
+    \leftspace{}\texttt{wait} decrements the value atomically
+
+    \leftspace{}\texttt{post} increments the value atomically
+    \medskip
+
+    If \texttt{wait} will not return until the value is greater than 0
+    \medskip
+
+    You can initially set \texttt{value} to whatever you want
+
+    \leftspace{}That number of \texttt{wait} calls may occur without any
+    \texttt{post} calls
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Semaphore API is Similar to \texttt{pthread} Locks}
+  
+    \begin{minted}{c}
+#include <semaphore.h>
+
+int sem_init(sem_t *sem, int pshared, unsigned int value)
+int sem_destroy(sem_t *sem);
+
+int sem_wait(sem_t *sem);
+int sem_trywait(sem_t *sem);
+
+int sem_post(sem_t *sem);
+    \end{minted}
+    \medskip
+
+    All functions return 0 on success
+    \medskip
+
+    The \texttt{pshared} argument is a boolean, you can set it to \texttt{1} for
+    IPC
+
+    \leftspace{}For IPC the semaphore needs to be in shared memory
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Problem: Make One Thread Always Print First}
+
+    See \texttt{ordered-print.c} for the full code
+
+    \leftspace{}Note: \texttt{return} statements are removed for space
+    \medskip
+
+    \begin{minted}{c}
+void* print_first(void* arg) {
+  printf("This is first\n");
+}
+
+void* print_second(void* arg) {
+  printf("I'm going second\n");
+}
+
+int main(int argc, char *argv[]) {
+  /* Initialize, create, and join threads */
+}
+    \end{minted}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{This Always Executes \texttt{print\_first}
+                Then \texttt{print\_second}}
+
+    \begin{minted}{c}
+static sem_t sem; /* New */
+
+void* print_first(void* arg) {
+  printf("This is first\n");
+  sem_post(&sem); /* New */
+}
+
+void* print_second(void* arg) {
+  sem_wait(&sem); /* New */
+  printf("I'm going second\n");
+}
+
+int main(int argc, char *argv[])
+{
+  sem_init(&sem, 0, 0); /* New */
+  /* Initialize, create, and join threads */
+}
+    \end{minted}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{No Matter Which Thread Executes First, We Get the Same Order}
+
+    The \texttt{value} is initially 0
+    \medskip
+  
+    Assume \texttt{print\_second} executes first
+
+    \leftspace{}It executes \texttt{sem\_wait}, which is 0, and doesn't
+    continue
+    \medskip
+
+    \texttt{print\_first} doesn't have to wait, it prints first before it
+    increments the \texttt{value}
+    \medskip
+
+    \texttt{print\_second} can then execute its print statement
+    \medskip
+
+    What happens if we initialized the \texttt{value} to 1?
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{We Can Use a Semaphore as a Mutex}
+
+    How?
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Using a Semaphore as a Mutex, Note the \texttt{value}}
+
+    \begin{minted}{c}
+static sem_t sem; /* New */
+static int counter = 0;
+
+void* run(void* arg) {
+    for (int i = 0; i < 100; ++i) {
+        sem_wait(&sem); /* New */
+        ++counter;
+        sem_post(&sem); /* New */
+    }
+}
+
+int main(int argc, char *argv[]) {
+  sem_init(&sem, 0, 1); /* New */
+  /* Initialize, create, and join multiple threads */
+  printf("counter = %i\n", counter);
+}
+    \end{minted}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{
+      Can We Come Up with a Solution for
+
+      a Producer/Consumer Problem?
+    }
+
+    Assume you have a circular buffer (each slot is either empty or filled):
+    \medskip
+
+    \begin{tikzpicture}[>=latex,font=\ttfamily,
+      every node/.style={
+        minimum width=1.5cm,
+        minimum height=1.5em,
+        outer sep=0pt,
+        draw=black,
+        semithick
+      }
+    ]
+      \node at (0,0) (A) {0};
+      \node [anchor=west] at (A.east) (B) {1};
+      \node [anchor=west] at (B.east) (C) {};
+      \node [anchor=west] at (C.east) (D) {};
+      \node [anchor=west] at (D.east) (E) {};
+      \node [anchor=west] at (E.east) (F) {};
+      \node [anchor=west] at (F.east) (G) {n - 1};
+      \draw [->,shorten >=2pt,shorten <=2pt,semithick] (G.north) -- +(0,1em) -| (A);
+
+      \node [below=of C, draw=none] (producer) {\sffamily Producer};
+      \draw [->, semithick] (producer) -- (C);
+
+      \node [below=of E, draw=none] (consumer) {\sffamily Consumer};
+      \draw [->, semithick] (consumer) -- (E);
+    \end{tikzpicture}
+    \medskip
+
+    The producer should write to the buffer (if the buffer is not full)
+
+    The consumer should read from the buffer (if the buffer is not empty)
+    \medskip
+
+    All consumers share an index and all producers share an index
+
+    \leftspace{}In both cases the index is initially 0 and increases
+                 sequentially
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Problem 1: Ensure Producers Never Overwrite Filled Slots}
+
+    \begin{minted}{c}
+static uint32_t buffer_size;
+
+void init_semaphores() {
+  sem_init(&empty_slots, 0, /* ? */);
+}
+void producer() {
+  while (/* ... */) {
+    /* spend time producing data */
+    fill_slot();
+  }
+}
+void consumer() {
+  while (/* ... */) {
+    empty_slot();
+    /* spend time consuming data */
+  }
+}
+    \end{minted}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Use a Semaphore to Track the Number of Empty Slots}
+
+    \begin{minted}{c}
+void init_semaphores() {
+  sem_init(&empty_slots, 0, buffer_size);
+}
+void producer() {
+  while (/* ... */) {
+    /* spend time producing data */
+    sem_wait(&empty_slots); /* New */
+    fill_slot();
+  }
+}
+void consumer() {
+  while (/* ... */) {
+    empty_slot();
+    sem_post(&empty_slots); /* New */
+    /* spend time consuming data */
+  }
+}
+    \end{minted}
+
+    \begin{tikzpicture}[remember picture,
+                        overlay,
+                        shift={(current page.south west)},
+                        show background rectangle]
+    \node [align=right, anchor=south east, inner sep=2mm,
+           xshift=-2.5em, yshift=2.5em]
+          at (\paperwidth, 0)
+          {What is our next problem?};
+    \end{tikzpicture}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Problem 2: Ensure Consumers Never Consume Empty Slots}
+
+    \begin{minted}{c}
+void init_semaphores() {
+  sem_init(&empty_slots, 0, buffer_size);
+  sem_init(&filled_slots, 0, /* ? */);
+}
+void producer() { while (/* ... */) {
+  /* spend time producing data */
+  sem_wait(&empty_slots);
+  fill_slot();
+} }
+void consumer() { while (/* ... */) {
+  empty_slot();
+  sem_post(&empty_slots);
+  /* spend time consuming data */
+} }
+    \end{minted}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{Two Semaphores Ensure Proper Order for Producers and Consumers}
+
+    \begin{minted}{c}
+void init_semaphores() {
+  sem_init(&empty_slots, 0, buffer_size);
+  sem_init(&filled_slots, 0, 0);
+}
+void producer() { while (/* ... */) {
+  /* spend time producing data */
+  sem_wait(&empty_slots);
+  fill_slot();
+  sem_post(&filled_slots); /* New */
+} }
+void consumer() { while (/* ... */) {
+  sem_wait(&filled_slots); /* New */
+  empty_slot();
+  sem_post(&empty_slots);
+  /* spend time consuming data */
+} }
+    \end{minted}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{What Happens If We Initialize Both Semaphore Values to 0?}
+
+    \begin{minted}{c}
+void init_semaphores() {
+  sem_init(&empty_slots, 0, 0);
+  sem_init(&filled_slots, 0, 0);
+}
+void producer() { while (/* ... */) {
+  /* spend time producing data */
+  sem_wait(&empty_slots);
+  fill_slot();
+  sem_post(&filled_slots);
+} }
+void consumer() { while (/* ... */) {
+  sem_wait(&filled_slots);
+  empty_slot();
+  sem_post(&empty_slots);
+  /* spend time consuming data */
+} }
+    \end{minted}
+
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{We Used Semaphores to Ensure Proper Order}
+
+    Previously we ensured mutual exclusion, now we can ensure order
+
+    \begin{itemize}
+      \item Semaphores contain an initial value you choose
+      \item You can increment the value using post
+      \item You can decrement the value using wait (it blocks if the current
+            value is 0)
+      \item You still need to be prevent data races
+    \end{itemize}
+
+  \end{slide}
+
+\end{document}

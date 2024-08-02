@@ -1,0 +1,57 @@
+\input{../preamble.tex}
+
+\lecturenumber{25}
+\title{Parallelization Example}
+\version{2.0.0}
+
+\begin{document}
+
+\begin{frame}[plain, noframenumbering]
+  \titlepage
+\end{frame}
+
+\begin{slide}
+
+  \slidetitle{We're Running a Bank Doing 10,000,000 Transfers}
+
+  We have a simulation that can create varying number of accounts
+  \medskip
+
+  Each account has a unique ID, and a balance (starting with \$1 000)
+  \medskip
+
+  We generate transfers between random accounts for 10\% of their current
+  balance
+  \medskip
+
+  They must call \mintinline{c}{securely_connect_to_bank} before starting the
+  transfer
+
+\end{slide}
+
+\begin{slide}
+
+  \slidetitle{Coding Example}
+
+  Done live! We'll have data races and deadlocks
+  \medskip
+
+  Our goal is to be faster than 11 seconds
+  \medskip
+
+  You can find the template in the \texttt{examples} repository
+  \bigskip
+
+  To compile it, run the following commands:
+
+  \begin{minted}[xleftmargin=1em]{console}
+cd lectures/25-parallelization-example # if not already there
+meson setup build
+meson compile -C build
+  \end{minted}
+  \medskip
+
+  Run the program using: \mintinline{console}{./banksim <num_accounts>}
+\end{slide}
+
+\end{document}
