@@ -120,23 +120,23 @@
 
     \slidetitle{File system: How to manage a persistent device?}
 
-    You have a 1 MB file named foo stored in the directory /bar
+    You have a \textbf{1 MB file} named foo stored in the directory /bar
     \begin{itemize}
-        \item What is the full path name of the file?
+        \item What is the \textbf{full path name} of the file?
     \end{itemize}
     \bigskip
 
     How are files organized on the disk? 
     \begin{itemize}
-        \item What data structures are used to store the data of the file?
-        \item The metadata?
-        \item The location?
+        \item What \textbf{data structures} are used to store the data of the file?
+        \item The \textbf{metadata}?
+        \item The \textbf{location}?
     \end{itemize}
     \bigskip
 
     How do you access data on the disk?
     \begin{itemize}
-        \item When you open/write/read the file, what function calls are evoked?
+        \item When you open/write/read the file, what \textbf{function calls} are evoked?
         \item If we write another 1MB data to /bar/foo, where does this data go?
         \item Which structures on the disks are read from and written to?
     \end{itemize}
@@ -177,6 +177,331 @@
 
 \begin{slide}
 
+    \slidetitle{What is a file?}
+
+    Textbook: A named collection of related information that is recorded on secondary storage.
+    \bigskip
+
+    For most users, the basic unit of interaction with a file system is a file.
+    \bigskip
+
+    \begin{itemize}
+        \item Is a directory a file?
+        \item Is a process a file?
+        \item Is a device a file?
+    \end{itemize}
+
 \end{slide}
 
+\begin{slide}
+    
+    \slidetitle{Usual layout of a POSIX Filesystem}
+
+    POSIX is a set of standards that provides a common interface for operating systems.
+  
+
+    \begin{center}
+        \begin{tikzpicture}[node distance=-2mm and 5mm]
+
+        \node[draw,rectangle,minimum width=40,minimum height=20] (root)  {/};
+        \node[draw,rectangle,minimum width=40,minimum height=20,yshift=-20] (etc) [below=of root] {etc};
+        \node[draw,rectangle,minimum width=40,minimum height=20] (dev) [left=of etc] {dev};
+        \node[draw,rectangle,minimum width=40,minimum height=20] (bin) [left=of dev] {bin};
+        \node[draw,rectangle,minimum width=40,minimum height=20] (home) [right=of etc] {home};
+        \node[draw,rectangle,minimum width=40,minimum height=20] (mnt) [right=of home] {mnt};
+    
+        \node[draw,rectangle,minimum width=40,minimum height=20,yshift=-20] (talia) [below=of home] {talia};
+        \node[draw,rectangle,minimum width=40,minimum height=20,yshift=-20] (todotxt) [below=of talia] {todo.txt};
+    
+        \node[draw,rectangle,minimum width=40,minimum height=20,yshift=-20] (usb) [below=of mnt] {usb};
+    
+        \draw[->] (root.south) -- (bin.north);
+        \draw[->] (root.south) -- (dev.north);
+        \draw[->] (root.south) -- (etc.north);
+        \draw[->] (root.south) -- (home.north);
+        \draw[->] (root.south) -- (mnt.north);
+        \draw[->] (home.south) -- (talia.north);
+        \draw[->] (mnt.south) -- (usb.north);
+        \draw[->] (talia.south) -- (todotxt.north);
+    
+        \end{tikzpicture}
+    \end{center}
+
+    Working Directory: /home/talia
+    \begin{itemize}
+        \item What is the absolute and relative path to \textbf{todo.txt}?
+              To \textbf{usb}?
+    \end{itemize}
+
+\end{slide}
+  
+\begin{slide}
+    
+    \slidetitle{POSIX Filesystem}
+
+    todo.txt Relative: ./todo.txt
+
+    todo.txt Absolute: /home/jon/todo.txt
+
+    usb Relative: ../../mnt/usb
+
+    usb Absolute: /mnt/usb
+    \bigskip
+
+    Special symbols:
+
+    \leftspace{}. --- Current directory
+    
+    \leftspace{}.. ---  Parent directory
+
+    \leftspace{}$\mathsf{\sim}$ --- User's home directory (\$HOME)
+    \bigskip
+
+    Relative paths are calculated from current working directory (\$PWD)
+
+\end{slide}
+
+\begin{slide}
+    
+    \slidetitle{You Can Access Files Sequentially or Randomly}
+
+    \textbf{Sequential access}
+    \begin{itemize}
+        \item Each read advances the position inside the file
+        \item Writes are appended and the position set to the end afterwards
+    \end{itemize}
+	\bigskip
+
+    \textbf{Random access}
+    \begin{itemize}
+        \item Records can be read/written to the file in any order
+        \item A specific position is required for each operation
+    \end{itemize}
+
+\end{slide}
+  
+\begin{slide}
+    
+    \slidetitle{POSIX Filesystem}
+
+    \begin{minted}{c}
+int open(const char *pathname, int flags, mode_t mode);
+
+// flags can specify which operations: O_RDWR,O_WRONLY, O_RDWR
+// also: O_APPEND moves the position to the end of the file initially
+
+off_t lseek(int fd, off_t offset, int whence);
+
+// lseek changes the position to the offset
+// whence can be one of: SEEK_SET, SEEK_CUR, SEEK_END
+//   set makes the offset absolute, cur and end are both relative
+  \end{minted}
+
+\end{slide}
+
+\begin{slide}
+    
+    \slidetitle{File Tables Are Stored in the Process Control Block (PCB)}
+
+    \begin{tikzpicture}[node distance=0mm and 0mm,scale=0.8, every node/.style={transform shape}]
+      \node[rectangle,draw,minimum width=100,minimum height=100] (pcb1)      {};
+      \node[rectangle,minimum width=100,minimum height=20,yshift=-20] (pcb11) [above=of pcb1] {PCB 1};
+      \node[rectangle,draw,minimum width=80,minimum height=20,xshift=0,yshift=-10] (lof11) [below=of pcb11] {0};
+      \node[rectangle,draw,minimum width=80,minimum height=20] (lof12) [below=of lof11] {1};
+      \node[rectangle,draw,minimum width=80,minimum height=20] (lof13) [below=of lof12] {2};
+
+
+      \node[rectangle,draw,minimum width=100,minimum height=100,yshift=-20] (pcb2)   [below=of pcb1]   {};
+      \node[rectangle,minimum width=100,minimum height=20,yshift=-20] (pcb21) [above=of pcb2] {PCB 2};
+      \node[rectangle,draw,minimum width=80,minimum height=20,xshift=0,yshift=-10] (lof21) [below=of pcb21] {0};
+      \node[rectangle,draw,minimum width=80,minimum height=20] (lof22) [below=of lof21] {1};
+      \node[rectangle,draw,minimum width=80,minimum height=20] (lof23) [below=of lof22] {2};
+
+      \node[rectangle,draw,minimum width=100,minimum height=20,xshift=40,yshift=40] (gof1)   [right=of pcb1]   {position};
+      \node[rectangle,draw,minimum width=100,minimum height=20] (gof2)   [below=of gof1]   {flags};
+      \node[rectangle,draw,minimum width=100,minimum height=20] (gof3)   [below=of gof2]   {*vnode};
+
+      \node[rectangle,draw,minimum width=100,minimum height=20] (gof4)   [below=of gof3]   {position};
+      \node[rectangle,draw,minimum width=100,minimum height=20] (gof5)   [below=of gof4]   {flags};
+      \node[rectangle,draw,minimum width=100,minimum height=20] (gof6)   [below=of gof5]   {*vnode};
+
+      \node[rectangle,draw,minimum width=100,minimum height=20] (gof7)   [below=of gof6]   {position};
+      \node[rectangle,draw,minimum width=100,minimum height=20] (gof8)   [below=of gof7]   {flags};
+      \node[rectangle,draw,minimum width=100,minimum height=20] (gof9)   [below=of gof8]   {*vnode};
+
+      \node[rectangle,draw,minimum width=100,minimum height=50,xshift=40,yshift=-25] (vnode1)  [right=of gof1]    {vnode File A};
+      \node[rectangle,draw,minimum width=100,minimum height=50,yshift=-25] (vnode2)  [below=of vnode1]    {vnode File B};
+
+      \draw[->] (lof11.east) -- (gof1.north west);
+      \draw[->] (lof12.east) -- (gof4.north west);
+      \draw[->] (lof21.east) -- (gof7.north west);
+
+      \draw[->] (gof3.east) -- (vnode1.west);
+      \draw[->] (gof6.east) -- (vnode2.west);
+      \draw[->] (gof9.east) -- (vnode2.west);        
+    \end{tikzpicture}
+	
+\end{slide}
+  
+ \begin{slide}
+    
+    \slidetitle{Each Process Contains a File Table in its PCB}
+
+     A \textbf{Fie Descriptor} is an \textbf{index} in the table
+    \bigskip
+
+     Each item points to a system-wide \textit{global open file \textbf{(GOF)} table}
+    \bigskip
+
+     The GOF table holds information about the \textbf{seek position} and \textbf{flags}
+	\begin{itemize}
+		\item It also points to a \textit{VNode} (supports read/write/etc)
+	\end{itemize}
+    \bigskip
+
+     A \textbf{vnode} (virtual mode) holds information about the file
+	\begin{itemize}
+	    \item vnodes can represent regular files, pipes, network sockets, etc.
+	\end{itemize}
+
+ \end{slide}
+
+ \begin{slide}
+    
+    \slidetitle{What happens in a fork?}
+
+    PCB is copied – local open file table gets inherited
+	\bigskip
+	
+	Both PCBs point to the same Global Open Table entry
+
+ \end{slide}
+
+ \begin{slide}
+    
+    \slidetitle{Both Processes Point to the Same GOF Entry}
+
+    \begin{tikzpicture}[node distance=0mm and 0mm,scale=0.8, every node/.style={transform shape}]
+      
+      \node[rectangle,draw,minimum width=100,minimum height=100] (pcb1)      {};
+      \node[rectangle,minimum width=100,minimum height=20,yshift=-20] (pcb11) [above=of pcb1] {PCB 1};
+      \node[rectangle,draw,minimum width=80,minimum height=20,xshift=0,yshift=-10] (lof11) [below=of pcb11] {0};
+      \node[rectangle,draw,minimum width=80,minimum height=20] (lof12) [below=of lof11] {1};
+      \node[rectangle,draw,minimum width=80,minimum height=20] (lof13) [below=of lof12] {2};
+
+
+      \node[rectangle,draw,minimum width=100,minimum height=100,yshift=-20] (pcb2)   [below=of pcb1]   {};
+      \node[rectangle,minimum width=100,minimum height=20,yshift=-20] (pcb21) [above=of pcb2] {PCB 2};
+      \node[rectangle,draw,minimum width=80,minimum height=20,xshift=0,yshift=-10] (lof21) [below=of pcb21] {0};
+      \node[rectangle,draw,minimum width=80,minimum height=20] (lof22) [below=of lof21] {1};
+      \node[rectangle,draw,minimum width=80,minimum height=20] (lof23) [below=of lof22] {2};
+
+      \node[rectangle,draw,minimum width=100,minimum height=20,xshift=40,yshift=-40] (gof1)   [right=of pcb1]   {position};
+      \node[rectangle,draw,minimum width=100,minimum height=20] (gof2)   [below=of gof1]   {flags};
+      \node[rectangle,draw,minimum width=100,minimum height=20] (gof3)   [below=of gof2]   {*vnode};
+
+      \node[rectangle,draw,minimum width=100,minimum height=50,xshift=40] (vnode1)  [right=of gof3]    {vnode File A};
+
+      \draw[->] (lof11.east) -- (gof1.north west);
+      \draw[->] (lof21.east) -- (gof1.north west);
+
+      \draw[->] (gof3.east) -- (vnode1.west);    
+
+    \end{tikzpicture}
+
+\end{slide}
+
+\begin{slide}
+    
+    \slidetitle{How many LOF and GOF Entries Exist? What is the Relationship?}
+
+    \begin{minted}{c}
+open("todo.txt", O_RDONLY);
+fork();
+open("b.txt", O_RDONLY);
+    \end{minted}
+    \medskip
+
+    Assume there are no previously opened files (not even the standard ones)
+
+ \end{slide}
+
+ \begin{slide}
+    
+    \slidetitle{There are 2 LOF Entries Each, and 3 GOF Entries}
+
+    \begin{tikzpicture}[node distance=0mm and 0mm,scale=0.8, every node/.style={transform shape}]
+        
+      \node[rectangle,draw,minimum width=100,minimum height=100] (pcb1)      {};
+      \node[rectangle,minimum width=100,minimum height=20,yshift=-20] (pcb11) [above=of pcb1] {Parent};
+      \node[rectangle,draw,minimum width=80,minimum height=20,xshift=0,yshift=-10] (lof11) [below=of pcb11] {0};
+      \node[rectangle,draw,minimum width=80,minimum height=20] (lof12) [below=of lof11] {1};
+
+
+      \node[rectangle,draw,minimum width=100,minimum height=100,yshift=-20] (pcb2)   [below=of pcb1]   {};
+      \node[rectangle,minimum width=100,minimum height=20,yshift=-20] (pcb21) [above=of pcb2] {Child};
+      \node[rectangle,draw,minimum width=80,minimum height=20,xshift=0,yshift=-10] (lof21) [below=of pcb21] {0};
+      \node[rectangle,draw,minimum width=80,minimum height=20] (lof22) [below=of lof21] {1};
+
+      \node[rectangle,draw,minimum width=100,minimum height=20,xshift=40,yshift=40] (gof1)   [right=of pcb1]   {position};
+      \node[rectangle,draw,minimum width=100,minimum height=20] (gof2)   [below=of gof1]   {flags};
+      \node[rectangle,draw,minimum width=100,minimum height=20] (gof3)   [below=of gof2]   {*vnode};
+
+      \node[rectangle,draw,minimum width=100,minimum height=20] (gof4)   [below=of gof3]   {position};
+      \node[rectangle,draw,minimum width=100,minimum height=20] (gof5)   [below=of gof4]   {flags};
+      \node[rectangle,draw,minimum width=100,minimum height=20] (gof6)   [below=of gof5]   {*vnode};
+
+      \node[rectangle,draw,minimum width=100,minimum height=20] (gof7)   [below=of gof6]   {position};
+      \node[rectangle,draw,minimum width=100,minimum height=20] (gof8)   [below=of gof7]   {flags};
+      \node[rectangle,draw,minimum width=100,minimum height=20] (gof9)   [below=of gof8]   {*vnode};
+
+      \node[rectangle,draw,minimum width=100,minimum height=50,xshift=40,yshift=-25] (vnode1)  [right=of gof1]    {vnode todo.txt};
+      \node[rectangle,draw,minimum width=100,minimum height=50,yshift=-25] (vnode2)  [below=of vnode1]    {vnode b.txt};
+
+      \draw[->] (lof11.east) -- (gof1.north west);
+      \draw[->] (lof12.east) -- (gof4.north west);
+      \draw[->] (lof21.east) -- (gof1.north west);
+      \draw[->] (lof22.east) -- (gof7.north west);
+
+      \draw[->] (gof3.east) -- (vnode1.west);
+      \draw[->] (gof6.east) -- (vnode2.west);
+      \draw[->] (gof9.east) -- (vnode2.west);        
+
+    \end{tikzpicture}
+ \end{slide}
+
+\begin{slide}
+
+	\slidetitle{What happens in Fork?}
+	
+	\inputminted{c}{f1.c}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{What happens in Fork?}
+	
+	\inputminted{c}{f2.c}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{What happens in Fork?}
+	
+	\inputminted{c}{f3_ppt.c}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Reading}
+
+    Textbook 
+    \begin{itemize}
+        \item 13.1 File Concept
+        \item 13.2 Access Methods
+    \end{itemize}
+\end{slide}
 \end{document}
