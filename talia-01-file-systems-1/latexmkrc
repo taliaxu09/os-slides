@@ -4,4 +4,4 @@ $postscript_mode = $dvi_mode = 0;
 $xelatex = 'xelatex -no-pdf -shell-escape -synctex=15 %O %S';
 $pdf_previewer = 'okular';
 
-@default_files = ('01-why-operating-systems.tex');
+@default_files = ('talia-01-file-systems-1.tex');

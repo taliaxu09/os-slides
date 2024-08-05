@@ -1,0 +1,182 @@
+\input{../preamble.tex}
+
+\lecturenumber{1}
+\title{File\\Systems}
+\version{1.0.0}
+
+\begin{document}
+
+\begin{frame}[plain, noframenumbering]
+    \titlepage
+\end{frame}
+
+\begin{slide}
+
+    \slidetitle{I'm Talia, your instructor}
+	
+    I am a lecturer in the Computer Systems Group.
+    \bigskip
+
+    I am about to receive my PhD from TU Delft.
+    \bigskip
+
+   I previously went to University of Toronto for BASc and MASc.
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{I'm Talia, your instructor}
+
+    I worked at a few industry places, mostly as an intern 
+    \begin{itemize}
+    	\item Canada: IBM, Arista Networks, Amazon
+	\item US: Reach Power (startup)
+	\item UK: Nokia Bell Labs
+    \end{itemize}
+
+    \bigskip
+    My research interest is 
+    \begin{itemize}
+	\item Using light for communication and sensing
+	\item Novel sensing systems for health / mental well-beings
+	\item Generally involvesome hardware or embedded systems
+    \end{itemize}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{I'm Talia, your instructor}
+
+    Office: 303s-592
+    \bigskip
+
+    Office hours: Mondays \& Fridays 1 pm - 2 pm
+    \bigskip
+
+    Email: talia.xu@auckland.ac.nz
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Please provide feedback}
+
+    Let me know what you like, dislike, or want to see more of
+    \bigskip
+    
+    I'm open to suggestions!
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{These books complement lectures}
+
+    ``\href{https://pages.cs.wisc.edu/~remzi/OSTEP/}
+	   {Operating Systems: Three Easy Pieces}'' \\
+    by \href{http://www.cs.wisc.edu/~remzi/}{Remzi Arpaci-Dusseau}
+    and \href{http://www.cs.wisc.edu/~dusseau/}{Andrea Arpaci-Dusseau}
+    \bigskip
+
+    ``\href{https://en.wikipedia.org/wiki/Modern_Operating_Systems}
+           {Modern Operating Systems}'' \\
+    by \href{https://en.wikipedia.org/wiki/Andrew_S._Tanenbaum}{Andrew S. Tanenbaum}
+    \bigskip
+							      
+    Test: You are only responsible for what have been covered in class.
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Why should we care about OS?}
+
+    \href{https://youtu.be/9lBbqH_1KS4?feature=shared}
+           {Distinguished Lecture by Amin Vahdat}
+    \bigskip
+
+    \begin{itemize}
+        \item \textbf{End of Moore's Law:} The traditional approach of relying on exponential hardware improvement is no longer sustainable.
+        \item \textbf{Shifting Demands:} The growing demand for machine learning and data processing requires a different approach to computing infrastructure.
+        \item \textbf{System-Level Optimization:} Optimizing the entire system, rather than individual components, can unlock greater gains in capacity and capability.
+    \end{itemize}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{File System: How to manage a persistent device?}
+
+    What are the APIs?
+    \bigskip
+
+    What are the important aspects of the implementation?
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{File system: How to manage a persistent device?}
+
+    You have a 1 MB file named foo stored in the directory /bar
+    \begin{itemize}
+        \item What is the full path name of the file?
+    \end{itemize}
+    \bigskip
+
+    How are files organized on the disk? 
+    \begin{itemize}
+        \item What data structures are used to store the data of the file?
+        \item The metadata?
+        \item The location?
+    \end{itemize}
+    \bigskip
+
+    How do you access data on the disk?
+    \begin{itemize}
+        \item When you open/write/read the file, what function calls are evoked?
+        \item If we write another 1MB data to /bar/foo, where does this data go?
+        \item Which structures on the disks are read from and written to?
+    \end{itemize}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{File system is an abstract concept}
+
+    A File system describes a way of organizing and storing files on a storage device.
+
+    \includegraphics[width=64mm]{file-system-hardware.jpg}
+    
+    What are some requirements of a file system?
+    \begin{itemize}
+        \item \textbf{Availability:} Ensure data can be accessed and used reliably.
+        \item \textbf{Permanence:} Store data permanently (or an approximation of it).
+        \item \textbf{Concurrent Access:} Make data sharable with other programs or users
+    \end{itemize}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{File system implementations are design choices}
+
+    \includegraphics[width=64mm]{file-system-implementation.png}
+    
+    Some popular file system implementations: 
+    \begin{itemize}
+        \item Unix (Linux and Mac)
+        \item Windows
+        \item Specialized system (Mainframe)
+    \end{itemize}
+
+\end{slide}
+
+\begin{slide}
+
+\end{slide}
+
+\end{document}
