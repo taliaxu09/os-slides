@@ -269,4 +269,68 @@
 
 \end{slide}
 
+\begin{slide}
+
+    \slidetitle{Communication protocols}
+
+    \includegraphics[width=100mm]{tcp-udp.png}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Communication protocols}
+
+    \includegraphics[width=100mm]{tcp-udp-2.png}
+
+\end{slide}
+    
+\begin{slide}
+
+    \slidetitle{Remote service - stateful}
+
+    Server knows:
+    \begin{itemize}
+        \item who has the file open
+        \item for what type of access
+        \item and where it is in the file etc.
+        \item When the client calls open, it receives an identifier to be used to access the file.
+        \item Looks very similar to traditional local file access to the client process.
+        \item Efficient, the needed data may be read ahead by the server.
+        \item Information about the file is held in memory.
+        \item If the server crashes
+        \begin{itemize}
+            \item it is difficult to start again since all the state information is lost.
+        \end{itemize}
+        \item Server has problems with processes which die
+        \begin{itemize}
+            \item needs to occasionally check.
+        \end{itemize}
+    \end{itemize}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Remote service - stateless}
+
+    Server does not maintain information on the state of the system. It merely responds to requests.
+    \bigskip
+
+    Open and close calls don’t send messages to the server. Handled locally. (Except for access privileges.)
+    \bigskip
+
+    Requesting processor has topass all the extra information with each read/write
+    \begin{itemize}
+        \item e.g., the current file location the process is reading from, accesibility
+    \end{itemize}
+    \bigskip
+
+    Server doesn't have to worry about processes stopping
+    \bigskip
+
+    No complicated recovery process if the server goes down
+    
+\end{slide}
+    
 \end{document}
