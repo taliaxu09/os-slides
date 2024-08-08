@@ -1,0 +1,336 @@
+\input{../preamble.tex}
+
+\lecturenumber{1}
+\title{File\\Systems}
+\version{1.0.0}
+
+\begin{document}
+
+\begin{frame}[plain, noframenumbering]
+    \titlepage
+\end{frame}
+
+\begin{slide}
+    \slidetitle{To read a file}
+
+    \textbf{The high level idea}
+    \begin{itemize}
+        \item Perform a path lookup
+        \item Traverse the path until we get the file’s inode
+        \item The root inode is typically 2 in a Unix file system
+        \item Once we have the inode of the file, we can start to read its data
+    \end{itemize}
+    \bigskip
+
+    Example: We want to read an 8 KB file /foo/bar
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{To read a file}
+
+    Example: We want to read an 8 KB file /foo/bar
+    \bigskip
+
+    First we need to open the file.
+    \bigskip
+
+    \includegraphics[width=120mm]{read-file-1.png}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{To read a file}
+
+    Example: We want to read an 8 KB file /foo/bar
+    \bigskip
+
+    Now we have the file open.
+    \bigskip
+
+    Each block is 4 KB, we must perform read twice.
+    \bigskip
+
+    \includegraphics[width=120mm]{read-file-2.png}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{To write a file}
+
+    \textbf{The high level idea}
+    \begin{itemize}
+        \item Similar to read – need to traverse the path to the file
+        \item Unlike read – may need to allocate a file/block
+        \item Block allocation updates multiple structures
+    \end{itemize}
+    \bigskip
+
+    Example: We want to create and write to an 8 KB file /foo/bar
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{To write a file}
+
+    Example: We want to create and write to an 8 KB file /foo/bar
+    \bigskip
+
+    \includegraphics[width=130mm]{write-file-1.png}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{To write a file}
+
+    Example: We want to create and write to an 8 KB file /foo/bar
+    \bigskip
+
+    File now exists but it is empty.
+    \bigskip
+
+    We need to perform 2 writes of 4 KB each.
+    \bigskip
+
+    \includegraphics[width=130mm]{write-file-2.png}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Sharing a file}
+
+    \includegraphics[width=50mm]{sharing-data-1.png}
+    \bigskip
+
+    What are the different ways User B and User C can share a file?
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Sharing a file}
+
+    Hard Links are pointers to inodes.
+
+    \medskip
+    \includegraphics[width=22mm]{hard-link.png}
+    \medskip
+
+    Deleting a file only removes one hard link.
+    
+    The file can still be accessed
+
+    \medskip
+    \includegraphics[width=55mm]{hard-link-removal.png}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Sharing a file}
+
+    Soft links are paths to another file.
+
+    \medskip
+    \includegraphics[width=75mm]{symbolic-link.png}
+    \bigskip
+
+    When resolving the file, the file system is redirected somewhere else, so: 
+    \begin{itemize}
+        \item Soft link targets do not need to exist 
+        \item Soft link targets can be deleted without notice of the soft link 
+        \item Unresolvable soft links lead to an exception
+    \end{itemize}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Cycles in Directory Graph}
+
+    \includegraphics[width=60mm]{cycles-directory-graph.png}
+    \bigskip
+
+    Why are cyclic loops a problem?
+
+    How do we solve this?
+
+\end{slide}
+
+\begin{slide}
+    
+    \slidetitle{Filesystem Example Problem}
+
+    \begin{minted}{console}
+touch todo.txt
+ln todo.txt b.txt
+ln -s todo.txt c.txt
+mv todo.txt d.txt
+rm b.txt
+    \end{minted}
+    \medskip
+
+    How does the FS look like before and after the mv and rm commands?
+
+\end{slide}
+
+\begin{slide}
+    
+    \slidetitle{Filesystem Example Solution (1)}
+
+    \begin{minted}{console}
+touch todo.txt
+ln todo.txt b.txt
+ln -s todo.txt c.txt
+mv todo.txt d.txt
+rm b.txt
+    \end{minted}
+    \medskip
+
+    Before mv:
+    \medskip
+
+    \begin{tikzpicture}[node distance=0mm and 0mm]
+      \node[rectangle,draw,minimum width=80,minimum height=20] (inode1)   {inode 1};
+      \node[rectangle,draw,minimum width=80,minimum height=20,xshift=-30,yshift=20] (fileA)  [left=of inode1] {todo.txt};
+      \node[rectangle,draw,minimum width=80,minimum height=20,xshift=-30,yshift=-20] (fileB)  [left=of inode1] {b.txt};
+      \node[rectangle,draw,minimum width=80,minimum height=20,xshift=-30] (fileC)  [left=of fileA] {c.txt};
+  
+      \draw[->] (fileA.east) -- (inode1.west);
+      \draw[->] (fileB.east) -- (inode1.west);
+      \draw[->] (fileC.east) -- (fileA.west);
+    \end{tikzpicture}
+
+\end{slide}
+
+\begin{slide}
+    
+    \slidetitle{Filesystem Example Solution (2)}
+
+    \begin{minted}{console}
+touch todo.txt
+ln todo.txt b.txt
+ln -s todo.txt c.txt
+mv todo.txt d.txt
+rm b.txt
+    \end{minted}
+    \medskip
+
+    After mv:
+    \medskip
+
+    \begin{tikzpicture}[node distance=0mm and 0mm]
+
+      \node[rectangle,draw,minimum width=80,minimum height=20] (inode1)   {inode 1};
+      \node[rectangle,draw,minimum width=80,minimum height=20,xshift=-30,yshift=30,fill=black,text=white] (fileA)  [left=of inode1] {todo.txt};
+      \node[rectangle,draw,minimum width=80,minimum height=20,xshift=-30] (fileB)  [left=of inode1] {b.txt};
+      \node[rectangle,draw,minimum width=80,minimum height=20,xshift=-30,yshift=-30] (fileD)  [left=of inode1] {d.txt};
+      \node[rectangle,draw,minimum width=80,minimum height=20,xshift=-30] (fileC)  [left=of fileA] {c.txt};
+  
+      \draw[->] (fileD.east) -- (inode1.west);
+      \draw[->] (fileB.east) -- (inode1.west);
+      \draw[->] (fileC.east) -- (fileA.west);
+    \end{tikzpicture}
+
+\end{slide}
+
+\begin{slide}
+    
+    \slidetitle{Filesystem Example Solution (3)}
+
+    \begin{minted}{console}
+touch todo.txt
+ln todo.txt b.txt
+ln -s todo.txt c.txt
+mv todo.txt d.txt
+rm b.txt
+    \end{minted}
+    \medskip
+
+    After rm:
+    \medskip
+
+    \begin{tikzpicture}[node distance=0mm and 0mm]
+      \node[rectangle,draw,minimum width=80,minimum height=20] (inode1)   {inode 1};
+      \node[rectangle,draw,minimum width=80,minimum height=20,xshift=-30,yshift=30,fill=black,text=white] (fileA)  [left=of inode1] {todo.txt};
+      \node[rectangle,draw,minimum width=80,minimum height=20,xshift=-30,yshift=-30] (fileD)  [left=of inode1] {d.txt};
+      \node[rectangle,draw,minimum width=80,minimum height=20,xshift=-30] (fileC)  [left=of fileA] {c.txt};
+    
+      \draw[->] (fileD.east) -- (inode1.west);
+      \draw[->] (fileC.east) -- (fileA.west);
+    \end{tikzpicture}
+
+\end{slide}
+
+\begin{slide}
+    
+    \slidetitle{What Data is Stored in an inode?}
+    \small
+    \begin{itemize}
+        \item[a] Filename
+        \item[b] Containing Directory name
+        \item[c] File Size 
+        \item[d] File type
+        \item[e] \# of soft links to file
+        \item[f] location of soft links 
+        \item[g] \# of hard links to file  
+        \item[h] location of hard links
+        \item[i] access rights
+        \item[j] timestamps
+        \item[k] file contents
+        \item[l] ordered list of data blocks     
+    \end{itemize}
+    
+\end{slide}
+
+\begin{slide}
+    
+    \slidetitle{What Data is Stored in an inode? Solution}
+    \small
+    \begin{itemize}
+        \item[a] Filename \textit{No. Names are stored in directories}
+        \item[b] Containing Directory name \textit{No. File can be in multiple dirs}
+        \item[c] File Size \textit{Yes}
+        \item[d] File type \textit{Yes}
+        \item[e] \# of soft links to file \textit{No (they are unknown)}
+        \item[f] location of soft links \textit{No (they are unknown)}
+        \item[g] \# of hard links to file \textit{Yes (to know when to erase the file, check \texttt{stat})}
+        \item[h] location of hard links \textit{No (they are unknown to the inode)}
+        \item[i] access rights \textit{Yes}
+        \item[j] timestamps \textit{Yes}
+        \item[k] file contents \textit{Sometimes}
+        \item[l] ordered list of data blocks \textit{Yes, by definition} 
+    \end{itemize}
+
+\end{slide}
+  
+\begin{slide}
+
+    \slidetitle{Symbolic and Hard Links - More Practise}
+    
+	What is the output?
+	\bigskip
+	
+    \begin{minted}[fontsize=\scriptsize, escapeinside=]{console}
+1    $ echo "hello world" > my_file
+2    $ cat my_file
+3    $ ln -s my_file my_symbolic_link
+4    $ ln my_file my_hard_link
+5    $ cat my_symbolic_link
+6    $ cat my_hard_link
+7    $ rm my_file
+8    $ cat my_symbolic_link
+9    $ cat my_hard_link
+10   $ cat my_file
+11   $ echo "hello world again!" > my_file
+12   $ cat my_symbolic_link
+13   $ cat my_hard_link
+    \end{minted}
+    
+\end{slide}
+\end{document}
