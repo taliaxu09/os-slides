@@ -1,0 +1,3 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{n}{openat}\PYG{p}{(}\PYG{n}{AT\PYGZus{}FDCWD}\PYG{p}{,}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{empty}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{O\PYGZus{}WRONLY}\PYG{esc}{O_CREAT}\PYG{n}{O\PYGZus{}NOCTTY}\PYG{err}{|}\PYG{n}{O\PYGZus{}NONBLOCK}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mo}{0666}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{3}\PYG{p}{;}
+\end{Verbatim}

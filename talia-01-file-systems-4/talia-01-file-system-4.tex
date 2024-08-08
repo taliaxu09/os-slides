@@ -1,0 +1,272 @@
+\input{../preamble.tex}
+
+\lecturenumber{1}
+\title{File\\Systems}
+\version{1.0.0}
+
+\begin{document}
+
+\begin{frame}[plain, noframenumbering]
+    \titlepage
+\end{frame}
+
+\begin{slide}
+
+    \slidetitle{What can happen on a crash?}
+
+    Assume we are creating and writing to a new file /foo/bar
+
+    Write in general (not just the first write)
+    \medskip
+
+    \includegraphics[width=130mm]{system-crash-1.png}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{What can happen on a crash?}
+    
+    Assume we are creating and writing to a new file /foo/bar
+    \bigskip
+
+    A crash after the completion of:
+    \begin{itemize}
+        \item Step   1-5: No corruption.
+        \item Step     6: i-node bitmap points to garbage data.
+        \item Step   7-9: Inconsistent metadata.
+        \item Step 10-12: No corruption.  
+        \item Step    13: data bitmap points to garbage data.
+        \item Step    14: Corrupted data.
+        \item Step    15: The new data cannot be found. 
+    \end{itemize}
+
+\end{slide}
+
+
+\begin{slide}
+    
+    \slidetitle{What can happen on a crash?}
+
+    \textbf{Lost Files:} New files being created might not be fully registered in the directory structure, leading to them being "lost" even if their data exists on disk.
+    \bigskip
+
+    \textbf{Inaccessible Files:} Existing files might become inaccessible due to corrupted metadata or lost pointers to their data blocks.
+    \bigskip
+    
+    \textbf{Incorrect File Sizes:} The file system might report incorrect file sizes due to incomplete writes or metadata updates.
+    \bigskip
+
+    \textbf{Inconsistent Metadata:} Applications trying to access affected files might crash, freeze, or produce errors due to the inconsistencies.
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Recovery from failure}
+
+    \textbf{Consistency checking} compares data in directory structure with data blocks on disk, and tries to fix inconsistencies.
+    \begin{itemize}
+        \item Tools: fsck for Unix systems, chkdsk for Windows.
+        \item Scanning the entire disk, slow, very slow ...
+    \end{itemize}
+    \bigskip
+
+    \textbf{Journaling:} A system that keeps track of changes that will be made in the file system to ensure data integrity.
+    \bigskip
+
+    \textbf{Versioning and Snapshots:} Maintain historical versions or states of files and systems to roll back when needed.
+    \bigskip
+
+    \textbf{Backup and Restore:} Periodic backups to external devices or cloud storage, ensuring data can be restored from a known good state.
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Journaling (a.k.a Write-Ahead Logging)} 
+
+    Used by many modern file systems: 
+    \begin{itemize}
+        \item Linux (ext3, ext4), Windows (NTFS), IBM (JFS)
+    \end{itemize}
+    \bigskip
+
+    First write down what you are going to do, and then carry out the action
+    \bigskip
+
+    \includegraphics[width=80mm]{journaling-1.png}
+    \medskip
+
+    \includegraphics[width=80mm]{journaling-2.png}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Journaling (a.k.a Write-Ahead Logging)} 
+
+    Physical journal
+    \begin{itemize}
+        \item all changed data is recorded in the journal first
+    \end{itemize}
+    \bigskip
+
+    Logical journal
+    \begin{itemize}
+        \item only changed metadata (like inode tables, directory structures) is recorded
+    \end{itemize}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Journaling (a.k.a Write-Ahead Logging)} 
+
+    What if absolute data integrity is crucial?
+    \begin{itemize}
+        \item for example, in banking, aviation systems, stock exchange?
+    \end{itemize}
+    \bigskip
+    
+    How do we ensure that data integrity is always maintained?
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{ZFS}
+    
+    What happens if system crashes before each step can be completed?
+    \bigskip
+
+    \includegraphics[width=65mm]{zfs.jpg}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Why distributed system? An example}
+
+    2004: Facebook started on a single server
+    \begin{itemize}
+        \item Web server front end to assemble each user’s page. 
+        \item Database to store posts, friend lists, etc.
+    \end{itemize}
+    \medskip
+
+    2008: 100M users
+    \medskip
+
+    2010: 500M users
+    \medskip
+
+    2012: 1B users
+    \medskip
+
+    2019: 2.5B users
+    \medskip
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Why distributed system?}
+
+    Nature of the application
+    \begin{itemize}
+        \item Multiplayer games
+        \item Collaborative Projects \& Cloud App
+    \end{itemize}
+    \bigskip
+
+    Availability despite unreliable components 
+    \begin{itemize}
+        \item A service shouldn’t fail when one computer does. • 
+    \end{itemize}
+    \bigskip
+
+    Conquer geographic separation 
+    \begin{itemize}
+        \item A web request in NZ is faster served by a server in NZ than by a server in US.
+    \end{itemize}
+    \bigskip
+
+    Scale up capacity 
+    \begin{itemize}
+        \item More CPU cycles, more memory, more storage
+    \end{itemize}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{What is a distributed system?}
+
+    \begin{exampleblock}{}
+          {\large ``A collection of loosely coupled nodes interconnected by a communication network.''}
+            \vskip5mm
+              \hspace*\fill{\small--- textbook}
+    \end{exampleblock}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{What is a distributed system?}
+
+    \includegraphics[width=65mm]{dfs-definition-1.png}
+    \bigskip
+
+    \textbf{Independent components or elements}
+    \begin{itemize}
+        \item software processes or hardware used to run a process, store data, etc.
+    \end{itemize}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{What is a distributed system?}
+
+    \includegraphics[width=65mm]{dfs-definition-2.png}
+    \bigskip
+
+    \textbf{Independent components or elements} that are \textbf{connected by a network.}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{What is a distributed system?}
+
+    \includegraphics[width=80mm]{dfs-definition-4.png}
+    \bigskip
+
+    \textbf{Independent components or elements} that are \textbf{connected by a network} and \textbf{communicate by passing messages} to achieve a common goal, appearing as \textbf{a single coherent system}.
+    \bigskip
+
+    When one (or more) component fails, the system does not fail.
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{The client-server model}
+
+    \includegraphics[width=80mm]{client-server-model.png}
+    \bigskip
+
+    Unstructured communication 
+    \begin{itemize}
+        \item Use shared memory or shared data structures
+    \end{itemize}
+
+    Structured communication 
+    \begin{itemize}
+        \item Message-oriented model
+    \end{itemize}
+
+\end{slide}
+
+\end{document}

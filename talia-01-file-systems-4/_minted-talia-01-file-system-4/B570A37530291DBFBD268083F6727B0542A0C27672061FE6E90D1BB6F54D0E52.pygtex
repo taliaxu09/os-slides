@@ -1,0 +1,15 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+go}{1    \PYGZdl{} echo \PYGZdq{}hello world\PYGZdq{} \PYGZgt{} my\PYGZus{}file}
+\PYG{g+go}{2    \PYGZdl{} cat my\PYGZus{}file}
+\PYG{g+go}{3    \PYGZdl{} ln \PYGZhy{}s my\PYGZus{}file my\PYGZus{}symbolic\PYGZus{}link}
+\PYG{g+go}{4    \PYGZdl{} ln my\PYGZus{}file my\PYGZus{}hard\PYGZus{}link}
+\PYG{g+go}{5    \PYGZdl{} cat my\PYGZus{}symbolic\PYGZus{}link}
+\PYG{g+go}{6    \PYGZdl{} cat my\PYGZus{}hard\PYGZus{}link}
+\PYG{g+go}{7    \PYGZdl{} rm my\PYGZus{}file}
+\PYG{g+go}{8    \PYGZdl{} cat my\PYGZus{}symbolic\PYGZus{}link}
+\PYG{g+go}{9    \PYGZdl{} cat my\PYGZus{}hard\PYGZus{}link}
+\PYG{g+go}{10   \PYGZdl{} cat my\PYGZus{}file}
+\PYG{g+go}{11   \PYGZdl{} echo \PYGZdq{}hello world again!\PYGZdq{} \PYGZgt{} my\PYGZus{}file}
+\PYG{g+go}{12   \PYGZdl{} cat my\PYGZus{}symbolic\PYGZus{}link}
+\PYG{g+go}{13   \PYGZdl{} cat my\PYGZus{}hard\PYGZus{}link}
+\end{Verbatim}
