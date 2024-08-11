@@ -1,0 +1,79 @@
+\input{../preamble.tex}
+
+\lecturenumber{1}
+\title{File\\Systems}
+\version{1.0.0}
+
+\begin{document}
+
+\begin{frame}[plain, noframenumbering]
+    \titlepage
+\end{frame}
+
+\begin{slide}
+
+    \slidetitle{Remote Procedue Calls (RPC)}
+
+    RPC abstract attempts to make remote procedure calls look like local ones.
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Sending a remote call}
+
+    \inputminted[fontsize=\scriptsize]{c}{wmsg.c}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Remote Procedure Calls (RPC)}
+
+    Purpose: to make the process of executing code on a remote machine as simple and straightforward as calling a local function.
+    \bigskip
+
+    RPC has two components: a stub generator and a run-time library.
+    \bigskip
+
+    \includegraphics[width=120mm]{rpc.png}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Interface definition language (IDL) of an adder}
+
+    \inputminted{python}{Adder.idl}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Server and client code with RPC}
+
+    \inputminted{python}{server.py}
+    \bigskip
+
+    \inputminted{python}{client.py}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Stub generator}
+    
+    \textbf{Marshalling/Unmarshalling}: Converting data structures into byte streams for transmission (marshalling) and reconstructing them on the receiving end (unmarshalling).
+    \bigskip
+
+    \textbf{Buffering}: Temporarily storing data in memory to optimize transmission.
+    \bigskip
+
+    \textbf{Message Transmission}: Sending and receiving messages over the network.
+    \bigskip
+
+    Server and client code can focus solely on implementing the core application logic.
+
+\end{slide}
+
+\end{document}
