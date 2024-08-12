@@ -1,0 +1,7 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{g+go}{touch todo.txt}
+\PYG{g+go}{ln todo.txt b.txt}
+\PYG{g+go}{ln \PYGZhy{}s todo.txt c.txt}
+\PYG{g+go}{mv todo.txt d.txt}
+\PYG{g+go}{rm b.txt}
+\end{Verbatim}

@@ -1,0 +1,6 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{class} \PYG{n+nc}{CalculatorServicer}\PYG{p}{(}\PYG{n}{calculator\PYGZus{}pb2\PYGZus{}grpc}\PYG{o}{.}\PYG{n}{CalculatorServicer}\PYG{p}{)}\PYG{p}{:}
+    \PYG{k}{def} \PYG{n+nf}{Add}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{,} \PYG{n}{request}\PYG{p}{,} \PYG{n}{context}\PYG{p}{)}\PYG{p}{:}
+        \PYG{n+nb}{sum} \PYG{o}{=} \PYG{n}{request}\PYG{o}{.}\PYG{n}{num1} \PYG{o}{+} \PYG{n}{request}\PYG{o}{.}\PYG{n}{num2}
+        \PYG{k}{return} \PYG{n}{calculator\PYGZus{}pb2}\PYG{o}{.}\PYG{n}{AddReply}\PYG{p}{(}\PYG{n+nb}{sum}\PYG{o}{=}\PYG{n+nb}{sum}\PYG{p}{)}
+\end{Verbatim}

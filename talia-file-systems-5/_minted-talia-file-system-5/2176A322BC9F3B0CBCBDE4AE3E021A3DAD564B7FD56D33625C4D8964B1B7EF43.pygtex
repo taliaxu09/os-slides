@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{n+nb}{cd}\PYG{+w}{ }lectures/01\PYGZhy{}why\PYGZhy{}operating\PYGZhy{}systems
+meson\PYG{+w}{ }setup\PYG{+w}{ }build
+meson\PYG{+w}{ }compile\PYG{+w}{ }\PYGZhy{}C\PYG{+w}{ }build
+\end{Verbatim}
