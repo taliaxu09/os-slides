@@ -171,6 +171,65 @@
 
 \begin{slide}
 
+    \slidetitle{An example scenario}
+
+    For a web-based service to be available, both the server and the web server need to be operational.
+    \bigskip
+
+    In this scenario, both the server and the web server are hosted on a single machine.
+    \bigskip
+
+    This machine has a 10\% chance of failure.
+    \bigskip
+
+    What is the overall availability of the service, assuming no other components fail?
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{An example scenario}
+
+    Now the server and the web server are each hosted on a different machine.
+    \bigskip
+
+    Each machine has a 10\% chance of failure.
+    \bigskip
+
+    What is the overall availability of the service, assuming no other components fail?
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{An example scenario}
+
+    As the service grows, the user base expands, and more content is required.
+    \bigskip
+
+    To support this, 10 machines are dedicated to the servers, and another 10 are allocated for the web servers.
+    \bigskip
+
+    Each machine has a 10\% chance of failure.
+    \bigskip
+
+    What is the overall availability of the service, assuming no other components fail?
+
+\end{slide}
+
+\begin{slide}
+    
+    \slidetitle{An example scenario}
+
+    The service provider aims to reduce their failure rate to below 1\% by creating replicas of their servers and web servers.
+    \bigskip
+
+    How many replicas are needed?
+
+\end{slide}
+
+\begin{slide}
+
     \slidetitle{Why distributed system?}
 
     Nature of the application
