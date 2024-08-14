@@ -1,0 +1,29 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{foomsg}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{u\PYGZus{}int32\PYGZus{}t}\PYG{+w}{ }\PYG{n}{len}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n+nf}{send\PYGZus{}foo}\PYG{p}{(}\PYG{k+kt}{char}\PYG{+w}{ }\PYG{o}{*}\PYG{n}{contents}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Calculate the message length}
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{content\PYGZus{}len}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{strlen}\PYG{p}{(}\PYG{n}{contents}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{msglen}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{sizeof}\PYG{p}{(}\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{foomsg}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{content\PYGZus{}len}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Allocate buffer}
+\PYG{+w}{    }\PYG{k+kt}{char}\PYG{+w}{ }\PYG{o}{*}\PYG{n}{buf}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{malloc}\PYG{p}{(}\PYG{n}{msglen}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{buf}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb}{NULL}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{perror}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Failed to allocate buffer}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{return}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{foomsg}\PYG{+w}{ }\PYG{o}{*}\PYG{n}{fm}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{foomsg}\PYG{+w}{ }\PYG{o}{*}\PYG{p}{)}\PYG{n}{buf}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{fm}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZgt{}}\PYG{n}{len}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{htonl}\PYG{p}{(}\PYG{n}{content\PYGZus{}len}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{memcpy}\PYG{p}{(}\PYG{n}{buf}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{k}{sizeof}\PYG{p}{(}\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{foomsg}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{contents}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{content\PYGZus{}len}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Write to the output socket}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{write}\PYG{p}{(}\PYG{n}{outsock}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{buf}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{msglen}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{\PYGZhy{}1}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{perror}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Failed to write to socket}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{n}{free}\PYG{p}{(}\PYG{n}{buf}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

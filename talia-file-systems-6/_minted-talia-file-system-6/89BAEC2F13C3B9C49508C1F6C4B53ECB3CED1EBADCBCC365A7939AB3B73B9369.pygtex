@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{n}{stub} \PYG{o}{=} \PYG{n}{calculator\PYGZus{}pb2\PYGZus{}grpc}\PYG{o}{.}\PYG{n}{CalculatorStub}\PYG{p}{(}\PYG{n}{channel}\PYG{p}{)}
+\PYG{n}{numbers} \PYG{o}{=} \PYG{n}{calculator\PYGZus{}pb2}\PYG{o}{.}\PYG{n}{AddRequest}\PYG{p}{(}\PYG{n}{num1}\PYG{o}{=}\PYG{n}{num1}\PYG{p}{,} \PYG{n}{num2}\PYG{o}{=}\PYG{n}{num2}\PYG{p}{)}
+\PYG{n}{response} \PYG{o}{=} \PYG{n}{stub}\PYG{o}{.}\PYG{n}{Add}\PYG{p}{(}\PYG{n}{numbers}\PYG{p}{)}
+\end{Verbatim}
