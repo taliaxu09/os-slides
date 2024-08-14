@@ -1,0 +1,167 @@
+\input{../preamble.tex}
+
+\lecturenumber{1}
+\title{Memory}
+\version{1.0.0}
+
+\begin{document}
+
+\begin{frame}[plain, noframenumbering]
+    \titlepage
+\end{frame}
+
+\begin{slide}
+
+    \slidetitle{Not all virtual memory is mapped to physical memory}
+
+    \includegraphics[width=50mm]{unmapped-mem.png}
+
+\end{slide}
+
+\begin{slide}
+    
+    \slidetitle{What Should We Do About the Page Table Size?}
+
+    Most programs don't use all the virtual memory space, how can we take
+    advantage?
+
+\end{slide}
+  
+\begin{slide}
+    
+    \slidetitle{We Can Make Our Page Table Fit on a Page}
+
+    \centering
+    \includegraphics{single-level-page-table-small.eps}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Multi-Level Page Tables Save Space for Sparse Allocations}
+
+    \centering
+    \includegraphics{multi-level-page-table.eps} 
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Page Allocation Uses A Free List}
+
+    Given physical pages, the operating system maintains a free list (linked
+    list)
+    \medskip
+
+    The unused pages themselves contain the \texttt{next} pointer in the free list
+
+    \leftspace{}Physical memory gets initialized at boot
+    \medskip
+
+    To allocate a page, you remove it from the free list
+
+    \leftspace{}To deallocate a page you add it back to the free list
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Insight: Use a Page for Each Smaller Page Table}
+
+    There are 512 ($\mathsf{2^9}$) entries of 8 bytes($\mathsf{2^3}$) each,
+    which is 4096 bytes
+    \medskip
+
+    The PTE for L(N) points to the page table for L(N-1)
+    \medskip
+
+    You follow these page tables until L0 and that contains the \texttt{PPN}
+
+\end{slide}
+
+\begin{slide}
+    
+    \slidetitle{The Smaller Page Tables are Just Like Arrays}
+
+    Instead of:
+
+    \leftspace{}\mintinline{c}{int page_table[512] // What's the size of this?}
+
+    or
+
+    \leftspace{}%
+    \mintinline{c}{x = page_table[2]; // What's the offset of index 2?}
+    \medskip
+
+    You have:
+
+    \leftspace{}\mintinline{c}{PTE page_table[512]}
+
+    where:
+
+    \leftspace{}\mintinline{c}{sizeof(page_table) == PAGE_SIZE}
+
+    and
+
+    \leftspace{}%
+    \mintinline{c}{sizeof(page_table) = number of entries * sizeof(PTE)}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Consider Just One Additional Level}
+
+    Assume our process uses just one virtual address at \texttt{0x3FFFF008}
+
+    \leftspace{}or \texttt{0b11\_1111\_1111\_1111\_1111\_0000\_0000\_1000}
+
+    \leftspace{}or \texttt{0b111111111\_111111111\_000000001000}
+    \medskip
+
+    We'll just consider a 30-bit virtual address with a page size of 4096 bytes
+
+    \leftspace{}We would need a 2 MiB page table if we only had one
+    ($\mathsf{2^{18} \times 2^{3}}$)
+    \medskip
+
+    Instead, we have a 4 KiB L1 page table ($\mathsf{2^9 \times 2^{3}}$) and a 4
+    KiB L0 page table
+
+    \leftspace{}Total of 8 KiB instead of 2 MiB
+    \medskip
+
+    Note: worst case if we used all virtual addresses we would consume 2 MiB + 4
+    KiB
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Translating \texttt{3FFFF008} with 2 Page Tables}
+
+    Consider the L1 table with the entry:
+
+	\begin{center}
+		{\ttfamily
+		\begin{tabular}{rl}
+		  Index & PPN \\
+		  511   & 0x8 \\
+		\end{tabular}}
+		\end{center}
+		\medskip
+
+		Consider the L0 table located at \texttt{0x8000} with the entry:
+		\begin{center}
+		{\ttfamily
+		\begin{tabular}{rl}
+		  Index & PPN \\
+		  511   & 0xCAFE \\
+		\end{tabular}}
+    \end{center}
+    
+    The final translated physical address would be: \texttt{0xCAFE008}
+
+\end{slide}
+  
+\end{document}
