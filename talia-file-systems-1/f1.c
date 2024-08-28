@@ -3,14 +3,12 @@
 #include <unistd.h>
 
 int main() {
-    FILE *file;
-    file = fopen("test.txt", "w");
+    FILE *file = fopen("f1.txt", "w");
     
     // Fork the process
     pid_t pid = fork();
     
     fputs("hello\n", file);
-    fputs("hello again\n", file);
 
     return 0;
 }

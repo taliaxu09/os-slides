@@ -6,6 +6,13 @@
 
 \begin{document}
 
+\begin{slide}
+	Please sit close to the front of the class to help me save my voice =)
+	\bigskip
+	
+	Please sit close to someone if possible for in-class discussions.
+\end{slide}
+
 \begin{frame}[plain, noframenumbering]
     \titlepage
 \end{frame}
@@ -52,7 +59,7 @@
     Office: 303s-592
     \bigskip
 
-    Office hours: Mondays \& Fridays 1 pm - 2 pm
+    Office hours: Monday 1 pm - 2 pm \& Friday 12 pm - 1 pm
     \bigskip
 
     Email: talia.xu@auckland.ac.nz
@@ -67,7 +74,18 @@
     \bigskip
     
     I'm open to suggestions!
+	\bigskip
+	
+	Feedback through Discord: mtxu
 
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Acknowledgement}
+	
+	The slide template and course materials are built on Jon Eyolfson's slides.
+	
 \end{slide}
 
 \begin{slide}
@@ -86,6 +104,20 @@
     \bigskip
 							      
     Test: You are only responsible for what have been covered in class.
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{We will cover the following topics}
+	
+	File Systems
+	\bigskip
+	
+	Memory
+	\bigskip
+	
+	Security (if time permits)
 
 \end{slide}
 
@@ -120,11 +152,35 @@
 
     \slidetitle{File system: How to manage a persistent device?}
 
-    You have a \textbf{1 MB file} named foo stored in the directory /bar
+    You have a 1 MB file named \textbf{foo} stored in the directory \textbf{/bar}
     \begin{itemize}
-        \item What is the \textbf{full path name} of the file?
+        \item What is the \textbf{full path name} of foo?
+		\item Your working directory is /bar, what is the \textbf{relative path name} of foo?
+		\item Your working directory is /bar/sbar, what is the \textbf{relative path name} of foo?
     \end{itemize}
-    \bigskip
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{File system: How to manage a persistent device?}
+
+    You have a 1 MB file named \textbf{foo} stored in the directory \textbf{/bar}
+    \begin{itemize}
+        \item What is the \textbf{full path name} of foo?
+		\item You are in the directory /bar, what is the \textbf{relative path name} of foo?
+		\item You are in a subdirectory /bar/sbar, what is the \textbf{relative path name} of foo?
+    \end{itemize}
+	\bigskip
+	
+	What happens in the file system when you enter a path name to retrieve a file?
+	\bigskip
+	
+	Can you create a flowchart to illustrate this process?
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{File system: How to manage a persistent device?}
 
     How are files organized on the disk? 
     \begin{itemize}
@@ -164,15 +220,25 @@
 
     \slidetitle{File system implementations are design choices}
 
-    \includegraphics[width=64mm]{file-system-implementation.png}
-    
-    Some popular file system implementations: 
-    \begin{itemize}
-        \item Unix (Linux and Mac)
-        \item Windows
-        \item Specialized system (Mainframe)
-    \end{itemize}
-
+	\begin{minipage}{0.45\textwidth}
+        \includegraphics[width=54mm]{file-system-implementation.png}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.52\textwidth}
+		Performance (Speed) is also important.
+		\bigskip
+		
+		Performance is application specific.
+		\bigskip
+		
+		Some popular file system implementations: 
+		\begin{itemize}
+			\item Unix (Linux and Mac)
+			\item Windows
+			\item Specialized system (Mainframe)
+		\end{itemize}
+    \end{minipage}
+	    
 \end{slide}
 
 \begin{slide}
@@ -279,7 +345,7 @@
     \end{itemize}
 
 \end{slide}
-  
+
 \begin{slide}
     
     \slidetitle{POSIX Filesystem}
@@ -298,7 +364,7 @@ off_t lseek(int fd, off_t offset, int whence);
   \end{minted}
 
 \end{slide}
-
+  
 \begin{slide}
     
     \slidetitle{File Tables Are Stored in the Process Control Block (PCB)}
@@ -490,7 +556,15 @@ open("b.txt", O_RDONLY);
 
 	\slidetitle{What happens in Fork?}
 	
-	\inputminted{c}{f3_ppt.c}
+	\inputminted{c}{f2_new.c}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{What happens in Fork?}
+	
+	\inputminted{c}{f3.c}
 
 \end{slide}
 

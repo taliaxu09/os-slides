@@ -1,33 +1,18 @@
+#include <fcntl.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 
-int main() {
-    FILE *file;
-    file = fopen("test.txt", "w");
-    fputs("hello\n", file);
-    fputs("hello again\n", file);
-    fclose(file);
-
-    file = fopen("test.txt", "r");
-    // Fork the process
-    pid_t pid = fork();
-     
-    if (pid == 0) {
-        // Child process
-        char line[256];
-        if (fgets(line, sizeof(line), file) != NULL) {
-            printf("Child read: %s", line);
-        }
-    } else {
-        // Parent process
-        //sleep(1);
-        char line[256];
-        if (fgets(line, sizeof(line), file) != NULL) {
-            printf("Parent read: %s", line);
-        }
-    }
-
-    return 0;
+void read_file(int fd) {
+    char buffer[4096] = {0};
+    ssize_t bytes_read = read(fd, buffer, sizeof(buffer) - 1);
+    printf("pid %d read %zd bytes: %s\n", getpid(), bytes_read, buffer);
 }
 
+int main(void) {
+    int fd1 = open("a.txt", O_RDONLY);
+    fork();
+    int fd2 = open("b.txt", O_RDONLY);
+    read_file(fd1);
+    read_file(fd2);
+    return 0;
+}
