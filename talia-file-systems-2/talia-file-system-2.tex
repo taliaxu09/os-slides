@@ -6,6 +6,13 @@
 
 \begin{document}
 
+\begin{slide}
+	Please sit close to the front of the class to help me save my voice =)
+	\bigskip
+	
+	Please sit close to someone if possible for in-class discussions.
+\end{slide}
+
 \begin{frame}[plain, noframenumbering]
     \titlepage
 \end{frame}
@@ -34,6 +41,26 @@
 
 \begin{slide}
 
+    \slidetitle{POSIX Filesystem}
+
+    \begin{minted}{c}
+int open(const char *pathname, int flags, mode_t mode);
+
+// flags can specify which operations: O_RDWR,O_WRONLY, O_RDWR
+// also: O_APPEND moves the position to the end of the file initially
+
+int close(int fd);
+
+// close() closes a file descriptor, so that it no longer 
+// refers to any file and may be reused.
+
+// returns 0 on success.
+  \end{minted}
+  
+\end{slide}
+
+\begin{slide}
+
     \slidetitle{File system APIs}
 
     \textbf{Create}
@@ -52,8 +79,6 @@ openat(AT_FDCWD, "empty", O_WRONLY|O_CREAT|O_NOCTTY|O_NONBLOCK, 0666) = 3
 utimensat(0, NULL, NULL, 0) = 0
 	\end{minted}
 
-    \bigskip
-    Can you do the same with open()?
 \end{slide}
 
 \begin{slide}
