@@ -146,6 +146,41 @@
 
 \begin{slide}
 
+	\slidetitle{Why distributed systems?}
+	
+	What if we need more performance than a single CPU?
+	\bigskip
+	
+	Vertical Scaling: use more powerful systems / multiprocessors
+	\begin{itemize}
+		\item But these have scaling limits and cost \$
+	\end{itemize}
+	\bigskip
+	
+	Horizontal Scaling: distributed load across more systems
+	\begin{itemize}
+		\item Distributed systems allow us to achieve massive performance
+	\end{itemize}
+
+\end{slide}
+
+\begin{slide}
+	
+	\slidetitle{Why distributed systems?}
+	
+	Cache data close to where it is needed.
+	\bigskip
+	
+	Caching vs. replication
+	\begin{itemize}
+		\item Replication: multiple copies of data for increased fault tolerance
+		\item Caching: temporary copies of frequently accessed data closer to where it’s needed.
+	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+
     \slidetitle{Why distributed system? An example}
 
     2004: Facebook started on a single server
@@ -307,6 +342,80 @@
 
     When one (or more) component fails, the system does not fail.
 
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Core challenges in distributed systems design}
+	
+	Cuncurrency
+	\bigskip
+	
+	Latency
+	\bigskip
+	
+	Partial Failure
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Concurrency}
+
+	Lots of requests may occur at the same time.
+	\bigskip
+	
+	Need to deal with concurrent requests.
+	\begin{itemize}
+		\item Need to ensure consistency of all data.
+		\item Understand critical sections \& mutual exclusion.
+		\item Beware: mutual exclusion (locking) can affect performance.
+	\end{itemize}
+	\bigskip
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Concurrency}
+
+	We often replicate data (or cache it) – need to update all replicas
+	\begin{itemize}
+		\item Replication adds complexity
+		\item All operations must appear to occur in the same order on all replicas
+		\item Need to worry about out-of-order messages, undelivered messages, dead replicas
+	\end{itemize}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Latency}
+	
+	Network messages may take a long time to arrive.
+	\bigskip
+	
+	Synchronous network model
+	\begin{itemize}
+		\item There is some upper bound, \textit{T}, between when a node sends a message and another node receives it.
+		\item Knowing \textit{T} enables a node to distinguish between a node that has failed and a node that is taking a long time to respond.
+	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Latency}
+	
+	Partially synchronous network model
+	\begin{itemize}
+		\item There’s an upper bound for message communication but the programmer doesn’t know it – it has to be discovered.
+		\item Protocols will operate correctly only if all messages are received within some time, \textit{T}.
+		\begin{itemize}
+			\item We cannot make assumptions on the delay time distribution
+		\end{itemize}
+	\end{itemize}
+	
 \end{slide}
 
 \begin{slide}

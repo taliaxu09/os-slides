@@ -1,9 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{g+gp}{\PYGZdl{} }strace\PYG{+w}{ }rm\PYG{+w}{ }empty\PYGZus{}5mb.txt
-\PYG{g+go}{openatexecve(\PYGZdq{}/usr/bin/rm\PYGZdq{}, [\PYGZdq{}rm\PYGZdq{}, \PYGZdq{}empty\PYGZus{}5mb.txt\PYGZdq{}], 0x7ffec6aa3788 /* 62 vars */) = 0}
-\PYG{g+go}{…}
-
-\PYG{g+go}{newfstatat(AT\PYGZus{}FDCWD, \PYGZdq{}empty\PYGZus{}5mb.txt\PYGZdq{}, \PYGZob{}st\PYGZus{}mode=S\PYGZus{}IFREG|0664, st\PYGZus{}size=5242880, ...\PYGZcb{}, AT\PYGZus{}SYMLINK\PYGZus{}NOFOLLOW) = 0}
-\PYG{g+go}{faccessat2(AT\PYGZus{}FDCWD, \PYGZdq{}empty\PYGZus{}5mb.txt\PYGZdq{}, W\PYGZus{}OK, AT\PYGZus{}EACCESS) = 0}
-\PYG{g+go}{unlinkat(AT\PYGZus{}FDCWD, \PYGZdq{}empty\PYGZus{}5mb.txt\PYGZdq{}, 0) = 0}
-\end{Verbatim}
