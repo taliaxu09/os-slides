@@ -420,85 +420,350 @@
 
 \begin{slide}
 
-    \slidetitle{The client-server model}
+	\slidetitle{Latency}
+	
+	Asynchronous network model
+	\begin{itemize}
+		\item Messages can take arbitrarily long to reach a peer node.
+		\item This is what we get from the Internet!
+	\end{itemize}
+	\bigskip
+	
+	Asynchronous networks can be a pain.
+	\bigskip
+	
+	Messages may take an unpredictable amount of time.
+	\begin{itemize}
+		\item We may think a message is lost but it’s really delayed.
+		\item May lead to retransmissions -> duplicate messages
+		\item May lead us to assume a service is dead when it isn’t.
+		\item May cause messages to arrive in a different order.
+	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Latency}
+	
+	Speed up data access via caching – temporary copies of data.
+	\bigskip
+	
+	Keep data close to where it’s processed to maximize efficiency.
+	\begin{itemize}
+		\item Memory vs. disk.
+		\item Local disk vs. remote server.
+		\item Remote memory vs. remote disk.
+	\end{itemize}
+	\bigskip
+	
+	Cache coherence: cached data can become stale.
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Partial Failure}
+	
+	Failure is a fact of life in distributed systems!
+	\bigskip
+	
+	In local systems, failure is usually total (all-or-nothing).
+	\bigskip
+	
+	In distributed systems, we get partial failure.
+	\begin{itemize}
+		\item A component can fail while others continue to work.
+		\item Failure of a network link is indistinguishable from a remote server failure.
+	\end{itemize}
+	\bigskip
+	
+	No global state.
+	\begin{itemize}
+		\item There is no global state that can be examined to determine errors.
+		\item There is no agent that can determine which components failed and inform everyone else.
+	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Handling Failure}
+	
+	Handle detection, recovery, and restart.
+	\bigskip
+	
+	Availability = fraction of time system is usable.
+	\begin{itemize}
+		\item Achieve with redundancy.
+		\item But keeping all copies consistent is an issue!
+	\end{itemize}
+	\bigskip
+	
+	Reliability is how long the system can run without failing.
+	\begin{itemize}
+		\item Includes ensuring data does not get lost.
+		\item includes security.
+	\end{itemize}
+	\bigskip
+	
+	If a system recovers quickly from filure, is it highly available? is it highly reliable?
+	
+\end{slide}
+
+\begin{slide}
+	
+	\slidetitle{Increasing availability through redundancy}
+	
+	Redundancy comes from repliated components.
+	\begin{itemize}
+		\item Service can run even if some systems die.
+	\end{itemize}
+	\bigskip
+	
+	If the probability that any one system down is 5\%, what is the probability that two systems are down at the same time?
+	\bigskip
+	
+	What is the uptime in both cases?
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Security}
+	
+	Traditionally managed by operating systems
+	\begin{itemize}
+		\item Users authenticate themselves to the system
+		\item Each user has a unique user ID (UID)
+		\item Access permissions = \textit{f}(UID)
+	\end{itemize}
+	\bigskip
+	
+	Now applications must take responsibility for
+	\begin{itemize}
+		\item Identification
+		\item Authentication
+		\item Access control
+		\item Encryption, tamper detection
+		\item Audit trail
+	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+	
+	\slidetitle{Security}
+	
+	The environment:
+	\begin{itemize}
+		\item Public networks, remotely-managed services, 3rd party services
+		\item Trust: do you trust how the 3rd party services are written \& managed?
+	\end{itemize}
+	\bigskip
+	
+	Some issues:
+	\begin{itemize}
+		\item Malicious interference, bad user input, impersonation of users \& services
+		\item Protocol attacks, input validation attacks, time-based attacks, replay attacks
+	\end{itemize}
+	\bigskip
+	
+	Rely on cryptography (hashes, cryptography) for identity management, authentication, encryption, tamper detection
+	\bigskip
+	
+	User also wants convenience.
+	\begin{itemize}
+		\item Single sign-on, no repeated entering of login credentials
+	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Other considerations}
+	
+	Scaling up and scaling down
+	\begin{itemize}
+		\item Need to be able to add and remove components
+		\item Impacts failure handling
+		\begin{itemize}
+			\item If failed components are removed, the system should still work
+			\item If replacements are brought in, the system should integrate them
+		\end{itemize}
+	\end{itemize}
+	\bigskip
+	
+	Algorithms and environment
+	\begin{itemize}
+		\item Distributable vs. centralized algorithms
+		\item Programming languages
+		\item APIs and frameworks
+	\end{itemize}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Service Models - Centralized}
+	
+	No networking
+	\bigskip
+	
+	Traditional time-sharing system
+	\bigskip
+	
+	Single workstation or PC or direct connection of multiple terminals to a computer.
+	\bigskip
+	
+	One or several CPUs.
+	\bigskip
+	
+	Not easily scalable.
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Service Models - The client-server model}
 
     \includegraphics[width=80mm]{client-server-model.png}
     \bigskip
 
-    Unstructured communication 
-    \begin{itemize}
-        \item Use shared memory or shared data structures
-    \end{itemize}
-
-    Structured communication 
-    \begin{itemize}
-        \item Message-oriented model
-    \end{itemize}
+    Clients send requests to servers
+	\bigskip
+	
+	A server is a system that runs a service
+	\bigskip
+	
+	Clients do not communicate with each other.
 
 \end{slide}
 
 \begin{slide}
 
-    \slidetitle{Communication protocols}
-
-    \includegraphics[width=100mm]{tcp-udp.png}
-
-\end{slide}
-
-\begin{slide}
-
-    \slidetitle{Communication protocols}
-
-    \includegraphics[width=100mm]{tcp-udp-2.png}
-
-\end{slide}
-    
-\begin{slide}
-
-    \slidetitle{Remote service - stateful}
-
-    Server knows:
-    \begin{itemize}
-        \item who has the file open
-        \item for what type of access
-        \item and where it is in the file etc.
-        \item When the client calls open, it receives an identifier to be used to access the file.
-        \item Looks very similar to traditional local file access to the client process.
-        \item Efficient, the needed data may be read ahead by the server.
-        \item Information about the file is held in memory.
-        \item If the server crashes
-        \begin{itemize}
-            \item it is difficult to start again since all the state information is lost.
-        \end{itemize}
-        \item Server has problems with processes which die
-        \begin{itemize}
-            \item needs to occasionally check.
-        \end{itemize}
-    \end{itemize}
+	\slidetitle{Multi-tier architecture in networked systems}
+	
+	\includegraphics[width=90mm]{multi-tier-concept.png}
+	
+	Each tier
+	\begin{itemize}
+		\item runs as a network service
+		\item is accessed by surrounding tiers
+	\end{itemize}
 
 \end{slide}
 
 \begin{slide}
 
-    \slidetitle{Remote service - stateless}
+	\slidetitle{Multi-tier example}
+	
+	\includegraphics[width=110mm]{multi-tier-example.png}
+	
+\end{slide}
 
-    Server does not maintain information on the state of the system. It merely responds to requests.
-    \bigskip
+\begin{slide}
+	
+	\slidetitle{Service Models - microservices model}
+	
+	\begin{minipage}{0.48\textwidth}
+		\includegraphics[width=60mm]{microservice-model.png}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.5\textwidth}
+		Collection of autonomous services
+		\bigskip
+		
+		Each service:
+		\begin{itemize}
+			\item Runs independently
+			\item Has a well-defined interface
+			\item May be shared by multiple applications
+		\end{itemize}
+		\bigskip
+		
+		Main application coordinates interactions
+	\end{minipage}
+	
+\end{slide}
 
-    Open and close calls don’t send messages to the server. Handled locally. (Except for access privileges.)
-    \bigskip
+\begin{slide}
 
-    Requesting processor has topass all the extra information with each read/write
-    \begin{itemize}
-        \item e.g., the current file location the process is reading from, accesibility
-    \end{itemize}
-    \bigskip
+	\slidetitle{Service Models - peer-to-peer model (P2P)}
+	
+	\begin{minipage}{0.66\textwidth}
+		No reliance on servers
+		\bigskip
+		
+		Machines (peers) communicate with each other
+		\bigskip
+		
+		Goals: Robustness and self-scalability
+		\bigskip
+		
+		Examples: BitTorrent, Skype
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.3\textwidth}
+		\includegraphics[width=25mm]{p2p.png}
+	\end{minipage}
+	
+\end{slide}
 
-    Server doesn't have to worry about processes stopping
-    \bigskip
+\begin{slide}
 
-    No complicated recovery process if the server goes down
-    
+	\slidetitle{Service Models - hybrid model}
+	
+	Many peer-to-peer architectures still rely on a server
+	\begin{itemize}
+		\item Look up, track users
+		\item Track content
+		\item Coordinate access
+	\end{itemize}
+	\bigskip
+	
+	But traffic-intensive workloads are delegated to peers
+	\medskip
+	
+	\includegraphics[width=80mm]{hybrid-model.png}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Cloud computing}
+	
+	Resources are provided as a network (internet) service
+	\medskip
+	
+	Software as a Service (SaaS)
+	\begin{itemize}
+		\item Remotely hosted software: email, productivity, games, ...
+		\item Salesforce.com, Google Apps, Microsoft 365
+	\end{itemize}
+	\medskip
+	
+	Platform as a Service (PaaS)
+	\begin{itemize}
+		\item Execution runtimes, databases, web servers, development environments, ...
+		\item Google App Engine, AWS Elastic Beanstalk
+	\end{itemize}
+	\medskip
+	
+	Infrastructure as a Service (IaaS)
+	\begin{itemize}
+		\item Computer + storage + networking: VMs, storage servers, load balancers
+		\item Microsoft Azure, Google Compute Engine, Amazon Web Services
+	\end{itemize}
+	\medskip
+	
+	Storage
+	\begin{itemize}
+		\item remote file storage
+		\item Dropbox, Box, Google Drive, OneDrive, ...
+	\end{itemize}
+	
+
 \end{slide}
     
 \end{document}

@@ -3,12 +3,166 @@
 \lecturenumber{1}
 \title{File\\Systems}
 \version{1.0.0}
-
+ 
 \begin{document}
 
 \begin{frame}[plain, noframenumbering]
     \titlepage
 \end{frame}
+
+\begin{slide}
+	
+	\slidetitle{Inter-computer communication}
+	
+	Without shared memory, computers need a network to communicate.
+	\bigskip
+	
+	\includegraphics[width=80mm]{inter-computer-comm.png}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Modes of connection: two design approaches}
+	
+	Circuit switching (virtual circuit)
+	\begin{itemize}
+		\item Dedicated path (route) established at setup
+		\item Guaranteed (fixed) bandwidth - routers commit to resources
+		\item Typically fixed-length packets (cells), each cell only need a virtual circuit ID
+		\item Constant latency
+	\end{itemize}
+	\bigskip
+	
+	Packet switching (datagram)
+	\begin{itemize}
+		\item Shared connection; competition for use with others
+		\item Data is broken into chunks called packets
+		\item Each packet contains a desitnation address
+		\item Available bandwidth is up to channel capacity (often smaller)
+		\item Variable latency
+	\end{itemize}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Network protocol layering}
+	
+	Most popular model of guiding (not specifying) ptotocol layrs is the OSI reference model.
+	\medskip
+	
+	\begin{minipage}{0.3\textwidth}
+	\includegraphics[width=35mm]{OSI-model.png}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.68\textwidth}
+		7. Application: HTTP, email, FTP
+		\medskip
+		\smallskip
+		
+		6. Presentation: XDR, MIME, JSON, XML
+		\medskip
+		\smallskip
+		
+		5. Session: HTTP 1.1, SSL
+		\medskip
+		\smallskip
+		
+		4. Transport: TCP, UDP
+		\medskip
+		\smallskip
+		
+		3. Network: IP, X.25
+		\medskip
+		\smallskip
+		
+		2. Data Link: Ethernet MAC, PPP
+		\medskip
+		\smallskip
+		
+		1. Physical: USB, Bluetooth, Wi-Fi radios
+	\end{minipage}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Protocol Encapsulation}
+	
+	At any layer:
+	\begin{itemize}
+		\item The higher-level protocol headers are just treated like data
+		\item Lower-level protocol headers can be ignored
+	\end{itemize}
+	
+	\includegraphics[width=100mm]{protocol-encapsulation.png}
+	
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Communication protocols}
+
+    \includegraphics[width=100mm]{tcp-udp.png}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Communication protocols}
+
+    \includegraphics[width=100mm]{tcp-udp-2.png}
+
+\end{slide}
+    
+\begin{slide}
+
+    \slidetitle{Remote service - stateful}
+
+    Server knows:
+    \begin{itemize}
+        \item who has the file open
+        \item for what type of access
+        \item and where it is in the file etc.
+        \item When the client calls open, it receives an identifier to be used to access the file.
+        \item Looks very similar to traditional local file access to the client process.
+        \item Efficient, the needed data may be read ahead by the server.
+        \item Information about the file is held in memory.
+        \item If the server crashes
+        \begin{itemize}
+            \item it is difficult to start again since all the state information is lost.
+        \end{itemize}
+        \item Server has problems with processes which die
+        \begin{itemize}
+            \item needs to occasionally check.
+        \end{itemize}
+    \end{itemize}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Remote service - stateless}
+
+    Server does not maintain information on the state of the system. It merely responds to requests.
+    \bigskip
+
+    Open and close calls don’t send messages to the server. Handled locally. (Except for access privileges.)
+    \bigskip
+
+    Requesting processor has topass all the extra information with each read/write
+    \begin{itemize}
+        \item e.g., the current file location the process is reading from, accesibility
+    \end{itemize}
+    \bigskip
+
+    Server doesn't have to worry about processes stopping
+    \bigskip
+
+    No complicated recovery process if the server goes down
+    
+\end{slide}
 
 \begin{slide}
 
