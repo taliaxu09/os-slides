@@ -102,18 +102,167 @@
 
 \begin{slide}
 
-    \slidetitle{Communication protocols}
-
-    \includegraphics[width=100mm]{tcp-udp.png}
+	\slidetitle{IP Addressing}
+	
+	Each network endpoint has a unique IP address
+	\begin{itemize}
+		\item No relation to an ethernet address
+		\item IPv4: 32-bit address
+			\begin{itemize}
+				\item uoa.auckland.ac.nz = 130.216.5.170
+			\end{itemize}
+		\item IPv6: 128-bit address
+			\begin{itemize}
+				\item www.google.com = 2404:6800:4006:804::2004
+			\end{itemize}
+	\end{itemize}
+	\bigskip
+	
+	Data is broken into packets. Each packet contains
+	\begin{itemize}
+		\item source and destination IP addresses
+		\item Header checksum
+		\item Data
+	\end{itemize}
 
 \end{slide}
 
 \begin{slide}
 
-    \slidetitle{Communication protocols}
+	\slidetitle{Communication over IP}
+	
+	\includegraphics[width=100mm]{comm-over-ip.png}
+	\bigskip
+	
+	TCP: Reliable, in-order byte stream
+	\bigskip
+	
+	UDP: Unreliable, message stream (order not guarantedd)
+	
+\end{slide}
 
-    \includegraphics[width=100mm]{tcp-udp-2.png}
+\begin{slide}
 
+	\slidetitle{Transport Layer}
+	
+	We want to communicate between applications
+	\bigskip
+	
+	The transport layger gives us logical "channels" for communication
+	\begin{itemize}
+		\item Processes can write to and receive from these channels.
+	\end{itemize}
+	\bigskip
+	
+	Two transport layer protocols in IP are TCP and UDP
+	\begin{itemize}
+		\item A port number identifies a unique channel on each computer
+	\end{itemize}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{UDP}
+	
+	All traffic goes to a socket that reads from a host address and port.
+	\bigskip
+	
+	\includegraphics[width=110mm]{udp.png}
+	\bigskip
+	
+	A server creates a socket to receive messages on a specific port number. 
+	\bigskip
+	
+	Packets sent from different processes and/or systems all arrive on the same socket on the server.
+	
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{TCP}
+
+	Unique channels identified by
+	\begin{itemize}
+		\item {Remote host, Remote port, Local host, Local port}
+		\item One socket for listening for new connections on a local host, port
+		\item Separate communication socket for each "connection"
+	\end{itemize}
+	\bigskip
+	
+    \includegraphics[width=100mm]{tcp.png}
+	\bigskip
+	
+	A server creates a socket to listen for connections on a specific port number.
+	\bigskip
+	
+	Each connection results in a new socket at the server.
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{UDP or TCP?}
+	
+	\begin{itemize}
+		\item Web Browsing
+		\item Online Gaming
+		\item File Transfer
+		\item Zoom
+		\item Video Streaming
+		\item Music Streaming
+	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Protocols}
+	
+	Set of rules (\& customs) for communicating
+	\bigskip
+	
+	Exist at different levels:
+	\begin{itemize}
+		\item Exist at each layer of the network stack
+		\item Meaning of bytes
+		\item Sequence of request \& response messages
+	\end{itemize}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Software interaction model}
+	
+	Socket API: all we get from the OS to access the network
+	\bigskip
+	
+	Socket = distinct end-to-end communication channels
+	\bigskip
+	
+	Line-oriented, text-based protocols common
+	\begin{itemize}
+		\item Not efficient but easy to debug and use
+	\end{itemize}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Problems with the socket APIs}
+	
+	The sockets interface forces a read/write mechanism
+	\bigskip
+	
+	\includegraphics[width=100mm]{socket-api-problem.png}
+	\bigskip
+	
+	Programming is often easier with a functional interface
+	\bigskip
+	
+	To make distributed computing look more like centralized computing, I/O (read/write) is not the way to go.
+	
 \end{slide}
     
 \begin{slide}
@@ -182,16 +331,53 @@
 
 \begin{slide}
 
-    \slidetitle{Remote Procedure Calls (RPC)}
+	\slidetitle{Implementing RPC}
+	
+	No architectural support for remote procedure calls.
+	\bigskip
+	
+	Simulate it with tools we have (local procedure calls)
+	\bigskip
+	
+	\includegraphics[width=120mm]{implement-rpc.png}
 
-    Purpose: to make the process of executing code on a remote machine as simple and straightforward as calling a local function.
-    \bigskip
+\end{slide}
 
-    RPC has two components: a stub generator and a run-time library.
-    \bigskip
+\begin{slide}
 
-    \includegraphics[width=120mm]{rpc.png}
+    \slidetitle{Implementing RPC}
 
+    Create stub functions:
+	\begin{itemize}
+		\item to make it appear to the user that the call is local
+	\end{itemize}
+	\bigskip
+	
+	On the clinet:
+	\begin{itemize}
+		\item The stub function (proxy) has the function’s interface
+		\item Packages parameters and calls the server
+	\end{itemize}
+	\bigskip
+	
+	On the server:
+	\begin{itemize}
+		\item The stub function (skeleton) receives the request and calls the local function
+	\end{itemize}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Interface Definition Language (IDL)}
+	
+	Allow programmer to specify remote procedure interfaces
+	\begin{itemize}
+		\item (names, parameters, return values)
+	\end{itemize}
+
+	An IDL looks similar to function prototypes.
+	
 \end{slide}
 
 \begin{slide}
@@ -228,6 +414,24 @@
 
     Server and client code can focus solely on implementing the core application logic.
 
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{RPC Benefits}
+
+	RPC gives us a procedure call interface
+	\bigskip
+	
+	Writing applications is simplified
+	\begin{itemize}
+		\item RPC hides all network code into stub functions
+		\item Application programmers don't have to worry about details
+		\begin{itemize}
+			\item Sockets, port numbers, byte ordering
+		\end{itemize}
+	\end{itemize}
+	
 \end{slide}
 
 \end{document}
