@@ -10,4 +10,425 @@
     \titlepage
 \end{frame}
 
+\begin{slide}
+
+	\slidetitle{Accessing files}
+	
+	File sharing with socket-based programs
+	\bigskip
+	
+	HTTP, FPT, telnet:
+	\begin{itemize}
+		\item Explicit access
+		\item User-directed connection to access remote resources
+	\end{itemize}
+	\bigskip
+	
+	We want more transparency
+	\begin{itemize}
+		\item Allow user to access remote resources just as local ones
+	\end{itemize}
+	\bigskip
+	
+	NAS: Networked Attached Storage
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Remote File Service Components}
+	
+	Remote file access network protocol
+	\begin{itemize}
+		\item Request access to, look up, and access remote files and directories
+	\end{itemize}
+	\bigskip
+	
+	Remote file server
+	\begin{itemize}
+		\item Provides file access interface to clients
+	\end{itemize}
+	\bigskip
+	
+	Remote file client (driver)
+	\begin{itemize}
+		\item Client side interface for file and directory service
+		\item File system driver under VFS layer will provide access transparency
+		\begin{itemize}
+			\item Remote files will be accessed in the same way as local files
+		\end{itemize}
+	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Accessing Remote Files}
+	
+	For maximum transparency, implement the client module as a file system type under VFS
+	\medskip
+	
+	\includegraphics[width=110mm]{accessing-remote-files.png} 
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Stateful or Stateless design?}
+	
+	Stateful: Server maintains client-specific state
+	\begin{itemize}
+		\item File locking is possible
+		\item Better performance in processing requests
+	\end{itemize}
+	\bigskip
+	
+	Stateless: Server maintains no information on client accesses
+	\begin{itemize}
+		\item Each request must identify file and offsets
+		\item Server and Client can crash and recover		
+		\item Problem if file is deleted on server
+	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{File service model}
+	
+	Upload/Download model
+	\begin{itemize}
+		\item Read file: copy file from server to client
+		\item Write file: copy file from client to server
+		\item Advantage: 
+		\begin{itemize}
+			\item Simple
+		\end{itemize}
+		\item Problem: 
+		\begin{itemize}
+			\item Wasteful: what if client needs small piece?
+			\item Problematic: what if client doesn’t have enough space?
+			\item Consistency: what if others need to modify the same file?
+		\end{itemize}
+	\end{itemize}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{File service model}
+	
+	Remote access model
+	\begin{itemize}
+		\item File service provides functional interface
+		\begin{itemize}
+			\item create, delete, read bytes, write bytes, etc…
+		\end{itemize}
+		\item Advantage: 
+		\begin{itemize}
+			\item Client gets only what’s needed
+			\item Server can manage coherent view of file system
+		\end{itemize}
+		\item Problem: 
+		\begin{itemize}
+			\item Possible server and network congestion
+			\item Servers are accessed for duration of file access
+			\item Same data may be requested repeatedly
+		\end{itemize}
+	\end{itemize}
+
+\end{slide}
+
+\begin{slide}
+	
+	\slidetitle{Semantics of file sharing - Sequential Semantics} 
+	
+	Read returns result of last write
+	
+	Easily achieved if
+	\begin{itemize}
+		\item Only one server
+		\item Clients do not cache data
+	\end{itemize}
+	\bigskip
+	
+	But
+	\begin{itemize}
+		\item Performance problems if no cache
+		\begin{itemize}
+			\item Obsolete data
+		\end{itemize}
+		\item We can write-through
+		\begin{itemize}
+			\item Must notify clients holding copies
+			\item Requires extra state, generates extra traffic
+		\end{itemize}
+	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Semantics of file sharing - Session Semantics} 
+
+	Relax the rules
+	\begin{itemize}
+		\item Changes to an open file are initially visible only to the process (or machine) that modified it.
+		\item Need to hide or lock file under modification from other clients
+		\item Last process to modify the file wins.
+	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Approaches to caching}
+	
+	Write-through
+	\begin{itemize}
+		\item What if another client reads its own (out-of-date) cached copy?
+		\item All accesses will require checking with server
+		\item Or … server maintains state and sends invalidations
+	\end{itemize}
+	\bigskip
+	
+	Delayed writes (write-behind)
+	\begin{itemize}
+		\item Data can be buffered locally (watch out for consistency – others won’t see updates!)
+		\item Remote files updated periodically
+		\item One bulk wire is more efficient than lots of little writes
+		\item Problem: semantics become ambiguous
+	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Approaches to caching}
+	
+	Read-ahead (prefetch)
+	\begin{itemize}
+		\item Request chunks of data before it is needed.
+		\item Minimize wait when it actually is needed.
+	\end{itemize}
+	\bigskip
+	
+	Write on close
+	\begin{itemize}
+		\item Admit that we have session semantics.
+	\end{itemize}
+	\bigskip
+	
+	Centralized control
+	\begin{itemize}
+		\item Keep track of who has what open and cached on each node.
+		\item Stateful file system with signaling traffic.
+	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Case study: NFS}
+	
+	Network File System
+	\bigskip
+	
+	Sun Microsystems
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{NFS design goals}
+	
+	Any machine can be a client or server
+	\medskip
+	
+	Must support diskless workstations
+	\begin{itemize}
+		\item Remote device files refer back to local drivers so we can access our devices
+	\end{itemize}
+	\medskip
+	
+	Heterogeneous systems
+	\begin{itemize}
+		\item Not 100\% for all UNIX system call options
+	\end{itemize}
+	\medskip
+	
+	Access transparency: normal file system calls
+	\medskip
+	
+	Recovery from failure
+	\medskip
+	
+	High Performance
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{NFS transport protocol}
+	
+	For the first few versions NFS ran over UDP using Sun Remote Procedure Calls.
+	\bigskip
+	
+	Why was UDP chosen?
+	\begin{itemize}
+		\item Slightly faster than TCP
+		\item No connection to maintain (or lose)
+		\item NFS is designed for Ethernet LAN environment - relatively reliable
+		\item UDP has error detection (drops bad packets) but no retransmission
+			\begin{itemize}
+				\item NFS retries lost RPC requests
+			\end{itemize}
+	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{NFS: mounting protocol}
+	
+	Send pathname to server
+	\bigskip
+	
+	Request permission to access contents
+	\medskip
+	
+	\includegraphics[width=70mm]{mounting-protocol-client.png} 
+	\medskip
+	
+	Server returns file handle
+	\begin{itemize}
+		\item File device \#, inode \#, instance \#
+	\end{itemize}
+	\medskip
+	
+	\includegraphics[width=90mm]{mounting-protocol-server.png}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{NFS: directory and file access protocol}
+	
+	First, perform a lookup RPC
+	\begin{itemize}
+		\item returns file handle and attributes
+	\end{itemize}
+	\bigskip
+	
+	lookup is not like open
+	\begin{itemize}
+		\item No infromation is stored on server
+	\end{itemize}
+	
+	handle passed as a parameter for other file access functions
+	\begin{itemize}
+		\item e.g. read(handle, offset, count)
+	\end{itemize}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{NFS Performance}
+	
+	Usually slower than local
+	\bigskip
+	
+	Improve by caching at client
+	\begin{itemize}
+		\item Goal: reduce number of remote operations
+		\item Cache results of read, readlink, getattr, lookup, readdir
+		\item Cache file data at client (buffer cache)
+		\item cache file attribute information at client
+		\item Cache pathname bindings for faster lookups
+	\end{itemize}
+	\bigskip
+	
+	Server side
+	\begin{itemize}
+		\item Caching is "automatic" via buffer cache
+		\item All NFS writes are write-through to disk to avoid unexpected data loss if server dies
+	\end{itemize}
+
+\end{slide}
+
+\begin{slide}
+	
+	\slidetitle{Inconsistencies may arise}
+	
+	Try to resolve by validation
+	\begin{itemize}
+		\item Save timestamp of file
+		\item When file opened or server contacted for new block
+		\begin{itemize}
+			\item Compare last modification time
+			\item If remote is more recent, invalidate cached data
+		\end{itemize}
+	\end{itemize}
+	\bigskip
+	
+	Always invalidate data after some time
+	\begin{itemize}
+		\item After 3 seconds for open files (data blocks)
+		\item After 30 seconds for directories
+	\end{itemize}
+	\bigskip
+	
+	If data block is modified, it is:
+	\begin{itemize}
+		\item Marked dirty
+		\item Scheduled to be written
+		\item Flushed on file close
+	\end{itemize}
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Improving read performance}
+	
+	Transfer data in large chunks
+	\begin{itemize}
+		\item 8K bytes default
+	\end{itemize} 
+	\bigskip
+	
+	Read-ahead
+	\begin{itemize}
+		\item Optimize for sequential file access
+		\item Send requests to read disk blocks before they are requested by the application
+	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Problems with NFS}
+	
+	File consistency
+	\medskip
+	
+	Assumes clocks are synchronized
+	\medskip
+	
+	Open with append cannot be guaranteed to work
+	\medskip
+	
+	Locking cannot work
+	\begin{itemize}
+		\item Separate lock manager added (but this adds stateful behavior)
+	\end{itemize}
+	\medskip
+	
+	No reference counting of open files
+	\begin{itemize}
+		\item You can delete a file you (or others) have open!
+	\end{itemize}
+
+\end{slide}
+
 \end{document}
