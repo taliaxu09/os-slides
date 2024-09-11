@@ -1,0 +1,6 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n+nf}{open}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{char}\PYG{+w}{ }\PYG{o}{*}\PYG{n}{pathname}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{flags}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{mode\PYGZus{}t}\PYG{+w}{ }\PYG{n}{mode}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{c+c1}{// flags can specify which operations: O\PYGZus{}RDWR,O\PYGZus{}WRONLY, O\PYGZus{}RDWR}
+\PYG{c+c1}{// also: O\PYGZus{}APPEND moves the position to the end of the file initially}
+\end{Verbatim}

@@ -434,4 +434,89 @@
 	
 \end{slide}
 
+\begin{slide}
+
+	\slidetitle{RPC Compiler}
+	
+	\includegraphics[width=110mm]{rpc-compiler.png}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{RPC Challenges}
+	
+	Parameter passing
+	\begin{itemize}
+		\item Pass by value or pass by reference?
+		\item All data must be sent in a pointerless representation
+	\end{itemize}
+	\bigskip
+	
+	Service binding
+	\begin{itemize}
+		\item How do we register and locate the server endpoint?
+		\item Central database listing all services and their corresponding host \& port \#?
+		\item Or a database of services running on each server?
+	\end{itemize}
+	\bigskip
+	
+	Transport protocol
+	\begin{itemize}
+		\item TCP? UDP? 
+	\end{itemize}
+	\bigskip
+	
+\end{slide}
+	
+\begin{slide}
+	
+	\slidetitle{RPC Challenges}
+	
+	Error handling
+	\begin{itemize}
+		\item Opportunities for failure
+	\end{itemize}
+	\bigskip
+	
+	Performance
+	\begin{itemize}
+		\item RPC is slower .. a lot slower than a local procedure call
+	\end{itemize}
+	\bigskip
+	
+	Security
+	\begin{itemize}
+		\item messages may be visible over network – do we need to hide them?
+		\item Authenticate client?
+		\item Authenticate server?
+	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Semantics of Remote Procedure Calls}
+	
+	Local procedure call: executed exactly once each time it's invoked
+	\bigskip
+	
+	Most RPC systems will offer either
+	\begin{itemize}
+		\item at least once semantics (client might retry)
+		\item or at most once semantics (client will not retry)
+	\end{itemize}
+	\bigskip
+	
+	Decide which to use based on the application
+	\begin{itemize}
+		\item idempotent functions: may be called any number of times without harm
+		\item non-idempotent functions: those with side-effects
+	\end{itemize}
+	\bigskip
+	
+	Ideally – design your application to be idempotent … and stateless
+	
+\end{slide}
+
 \end{document}
