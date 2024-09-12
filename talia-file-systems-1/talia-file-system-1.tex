@@ -1,6 +1,6 @@
 \input{../preamble.tex}
 
-\lecturenumber{1}
+\lecturenumber{19} 
 \title{File\\Systems}
 \version{1.0.0}
 
@@ -59,7 +59,7 @@
     Office: 303s-592
     \bigskip
 
-    Office hours: Monday 1 pm - 2 pm \& Friday 12 pm - 1 pm
+    Office hours: Monday 1 pm - 2 pm \& Friday 1 pm - 2 pm
     \bigskip
 
     Email: talia.xu@auckland.ac.nz
@@ -84,8 +84,14 @@
 
 	\slidetitle{Acknowledgement}
 	
-	The slide template and course materials are built on Jon Eyolfson's slides.
-	Also credits to Paul Krzyzanowski.
+	The slide template and content are built on materials from 
+	\bigskip
+	
+	Professor Jon Eyolfson
+	\medskip
+	
+	Professor  Paul Krzyzanowski
+	\medskip
 	
 \end{slide}
 
@@ -114,11 +120,17 @@
 	
 	File Systems
 	\bigskip
+
+	Distributed File Systems \& Distributed Systems
+	\bigskip
 	
 	Memory
 	\bigskip
 	
-	Security (if time permits)
+	Security
+	\bigskip
+	
+	(if time permits) Device Drivers
 
 \end{slide}
 
@@ -149,35 +161,35 @@
 
 \end{slide}
 
-\begin{slide}
+%\begin{slide}
+%
+    % \slidetitle{File system: How to manage a persistent device?}
 
-    \slidetitle{File system: How to manage a persistent device?}
+    % You have a 1 MB file named \textbf{foo} stored in the directory \textbf{/bar}
+    % \begin{itemize}
+        % \item What is the \textbf{full path name} of foo?
+		% \item Your working directory is /bar, what is the \textbf{relative path name} of foo?
+		% \item Your working directory is /bar/sbar, what is the \textbf{relative path name} of foo?
+    % \end{itemize}
+% \end{slide}
 
-    You have a 1 MB file named \textbf{foo} stored in the directory \textbf{/bar}
-    \begin{itemize}
-        \item What is the \textbf{full path name} of foo?
-		\item Your working directory is /bar, what is the \textbf{relative path name} of foo?
-		\item Your working directory is /bar/sbar, what is the \textbf{relative path name} of foo?
-    \end{itemize}
-\end{slide}
+% \begin{slide}
 
-\begin{slide}
+	% \slidetitle{File system: How to manage a persistent device?}
 
-	\slidetitle{File system: How to manage a persistent device?}
-
-    You have a 1 MB file named \textbf{foo} stored in the directory \textbf{/bar}
-    \begin{itemize}
-        \item What is the \textbf{full path name} of foo?
-		\item You are in the directory /bar, what is the \textbf{relative path name} of foo?
-		\item You are in a subdirectory /bar/sbar, what is the \textbf{relative path name} of foo?
-    \end{itemize}
-	\bigskip
+    % You have a 1 MB file named \textbf{foo} stored in the directory \textbf{/bar}
+    % \begin{itemize}
+        % \item What is the \textbf{full path name} of foo?
+		% \item You are in the directory /bar, what is the \textbf{relative path name} of foo?
+		% \item You are in a subdirectory /bar/sbar, what is the \textbf{relative path name} of foo?
+    % \end{itemize}
+	% \bigskip
 	
-	What happens in the file system when you enter a path name to retrieve a file?
-	\bigskip
+	% What happens in the file system when you enter a path name to retrieve a file?
+	% \bigskip
 	
-	Can you create a flowchart to illustrate this process?
-\end{slide}
+	% Can you create a flowchart to illustrate this process?
+% \end{slide}
 
 \begin{slide}
 

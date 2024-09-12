@@ -1,6 +1,6 @@
 \input{../preamble.tex}
 
-\lecturenumber{1}
+\lecturenumber{20}
 \title{File\\Systems}
 \version{1.0.0}
 
@@ -365,10 +365,6 @@ unlinkat(AT_FDCWD, "empty_5mb.txt", 0) = 0
 
 \begin{slide}
 
-\end{slide}
-
-\begin{slide}
-
     \slidetitle{                                  
         An inode Describes a File System Object   
                                                         
@@ -379,10 +375,6 @@ unlinkat(AT_FDCWD, "empty_5mb.txt", 0) = 0
     \bigskip
 
     What is the maximum supported file size?
-
-\end{slide}
-
-\begin{slide}
 
 \end{slide}
 
@@ -507,7 +499,7 @@ unlinkat(AT_FDCWD, "empty_5mb.txt", 0) = 0
     Files can grow/shrink
 	\begin{itemize}
 		\item No external fragmentation
-		\item
+		\item Internal fragmentation
 	\end{itemize}
 	\bigskip
 
@@ -682,9 +674,9 @@ unlinkat(AT_FDCWD, "empty_5mb.txt", 0) = 0
     \bigskip
 
     Fast random access
-    \bigskip
-
-    File size limited by the maximum size of the index block (fit it in one block)
+    \begin{itemize}
+		\item File size limited by the maximum size of the index block (fit it in one block)
+	\end{itemize}
 
 \end{slide}
 
