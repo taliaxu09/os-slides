@@ -1,6 +1,6 @@
 \input{../preamble.tex}
 
-\lecturenumber{1}
+\lecturenumber{25}
 \title{File\\Systems}
 \version{1.0.0}
 
@@ -36,7 +36,7 @@
 
 \begin{slide}
 
-	\slidetitle{Remote File Service Components}
+	\slidetitle{Remote File Service Components} 
 	
 	Remote file access network protocol
 	\begin{itemize}
@@ -74,29 +74,10 @@
 
 \begin{slide}
 
-	\slidetitle{Stateful or Stateless design?}
-	
-	Stateful: Server maintains client-specific state
-	\begin{itemize}
-		\item File locking is possible
-		\item Better performance in processing requests
-	\end{itemize}
-	\bigskip
-	
-	Stateless: Server maintains no information on client accesses
-	\begin{itemize}
-		\item Each request must identify file and offsets
-		\item Server and Client can crash and recover		
-		\item Problem if file is deleted on server
-	\end{itemize}
-	
-\end{slide}
-
-\begin{slide}
-
 	\slidetitle{File service model}
 	
-	Upload/Download model
+	\begin{minipage}[t]{0.45\textwidth}
+	\textbf{Upload/Download model}
 	\begin{itemize}
 		\item Read file: copy file from server to client
 		\item Write file: copy file from client to server
@@ -111,14 +92,10 @@
 			\item Consistency: what if others need to modify the same file?
 		\end{itemize}
 	\end{itemize}
-
-\end{slide}
-
-\begin{slide}
-
-	\slidetitle{File service model}
-	
-	Remote access model
+	\end{minipage}
+	\hfill
+	\begin{minipage}[t]{0.45\textwidth}
+	\textbf{Remote access model}
 	\begin{itemize}
 		\item File service provides functional interface
 		\begin{itemize}
@@ -136,47 +113,59 @@
 			\item Same data may be requested repeatedly
 		\end{itemize}
 	\end{itemize}
+	\end{minipage}
 
 \end{slide}
 
 \begin{slide}
 	
-	\slidetitle{Semantics of file sharing - Sequential Semantics} 
+	\slidetitle{Semantics of file sharing} 
+	
+	\begin{minipage}[t]{0.45\textwidth}
+	\textbf{Sequential Semantics}
+	\medskip
 	
 	Read returns result of last write
+	\medskip
 	
 	Easily achieved if
 	\begin{itemize}
 		\item Only one server
 		\item Clients do not cache data
 	\end{itemize}
-	\bigskip
+	\end{minipage}
+	\hfill
+	\begin{minipage}[t]{0.45\textwidth}
+	\textbf{Session Semantics}
+	\medskip
 	
-	But
-	\begin{itemize}
-		\item Performance problems if no cache
-		\begin{itemize}
-			\item Obsolete data
-		\end{itemize}
-		\item We can write-through
-		\begin{itemize}
-			\item Must notify clients holding copies
-			\item Requires extra state, generates extra traffic
-		\end{itemize}
-	\end{itemize}
-	
-\end{slide}
-
-\begin{slide}
-
-	\slidetitle{Semantics of file sharing - Session Semantics} 
-
 	Relax the rules
 	\begin{itemize}
 		\item Changes to an open file are initially visible only to the process (or machine) that modified it.
 		\item Need to hide or lock file under modification from other clients
 		\item Last process to modify the file wins.
 	\end{itemize}
+	\end{minipage}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Stateful or Stateless design?}
+	
+	\textbf{Stateful}: Server maintains client-specific state
+	\begin{itemize}
+		\item File locking is possible
+		\item Better performance in processing requests
+	\end{itemize}
+	\bigskip
+	
+	\textbf{Stateless}: Server maintains no information on client accesses
+	\begin{itemize}
+		\item Each request must identify file and offsets
+		\item Server and Client can crash and recover		
+		\item Problem if file is deleted on server
+	\end{itemize}
 	
 \end{slide}
 
@@ -184,46 +173,50 @@
 
 	\slidetitle{Approaches to caching}
 	
-	Write-through
+	\textbf{Write-through}
 	\begin{itemize}
 		\item What if another client reads its own (out-of-date) cached copy?
-		\item All accesses will require checking with server
-		\item Or … server maintains state and sends invalidations
 	\end{itemize}
-	\bigskip
+	\medskip
 	
-	Delayed writes (write-behind)
+	\textbf{Delayed writes}
 	\begin{itemize}
 		\item Data can be buffered locally (watch out for consistency – others won’t see updates!)
 		\item Remote files updated periodically
-		\item One bulk wire is more efficient than lots of little writes
-		\item Problem: semantics become ambiguous
 	\end{itemize}
+	\medskip
 	
-\end{slide}
-
-\begin{slide}
-
-	\slidetitle{Approaches to caching}
-	
-	Read-ahead (prefetch)
-	\begin{itemize}
-		\item Request chunks of data before it is needed.
-		\item Minimize wait when it actually is needed.
-	\end{itemize}
-	\bigskip
-	
-	Write on close
+	\textbf{Write on close}
 	\begin{itemize}
 		\item Admit that we have session semantics.
 	\end{itemize}
-	\bigskip
+	\medskip
 	
-	Centralized control
+	\textbf{Centralized control}
 	\begin{itemize}
 		\item Keep track of who has what open and cached on each node.
 		\item Stateful file system with signaling traffic.
 	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Design choices}
+	
+	UDP vs. TCP
+	\medskip
+	
+	Stateful vs. Stateless
+	\medskip
+	
+	Sequential Semantics vs. Session Semantics
+	\medskip
+	
+	Upload/Download model vs. Remote Access model
+	\medskip
+	
+	Cache approach (Write-through, Delayed Writes, Write on close, Centralized control)?
 	
 \end{slide}
 
@@ -389,24 +382,6 @@
 
 \begin{slide}
 
-	\slidetitle{Improving read performance}
-	
-	Transfer data in large chunks
-	\begin{itemize}
-		\item 8K bytes default
-	\end{itemize} 
-	\bigskip
-	
-	Read-ahead
-	\begin{itemize}
-		\item Optimize for sequential file access
-		\item Send requests to read disk blocks before they are requested by the application
-	\end{itemize}
-	
-\end{slide}
-
-\begin{slide}
-
 	\slidetitle{Problems with NFS}
 	
 	File consistency
@@ -429,6 +404,220 @@
 		\item You can delete a file you (or others) have open!
 	\end{itemize}
 
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Improving NFS: version 2}
+	
+	User-level lock manager
+	\begin{itemize}
+		\item Monitored locks: introduces state at server 
+		\item (but runs as a separate user-level process) 
+		\begin{itemize}
+			\item If server crashes: status monitor reinstates locks on recovery
+			\item If client crashes: all locks from client are freed 
+		\end{itemize}
+	\end{itemize}
+	\medskip
+	
+	NV RAM support 
+	\begin{itemize}
+		\item Improves write performance 
+		\item Normally NFS must write to disk on server before responding to client write requests 
+		\item Relax this rule through the use of non-volatile RAM 
+	\end{itemize}
+	
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Improving NFS: version 2}
+	
+	Adjust RPC retries dynamically
+	\begin{itemize}
+		\item Reduce network congestion from excess RPC retransmissions under load 
+		\item Based on performance
+	\end{itemize}
+	\medskip
+	
+	Client-side disk caching
+	\begin{itemize}
+		\item cacheFS
+		\item Extend buffer cache to disk for NFS
+	\end{itemize}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Improving NFS: version 3}
+	
+	Support 64-bit file sizes
+	\medskip
+	
+	TCP support and large-block transfers
+	\medskip
+	
+	Negotiate for optimal transfer size
+	\medskip
+	
+	Server checks access for entire path from client
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Improving NFS: version 3}
+	
+	New commit operation
+	\begin{itemize}
+		\item Check with server after a write operation to see if data is committed 
+		\item If commit fails, client must resend data 
+		\item Reduces number of write requests to server 
+		\item Speeds up write requests by NOT requiring server to write to disk immediately
+	\end{itemize}
+	\medskip
+	
+	Return file attributes with each request
+	
+\end{slide}
+
+\begin{slide}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{AFS}
+	
+	Design Goal
+	\begin{itemize}
+		\item Support information sharing on a large scale 
+		\item e.g., 10,000+ clients 
+	\end{itemize}
+	\medskip
+	
+	History
+	\begin{itemize}
+		\item Developed at CMU 
+		\item Became a commercial spin-off: Transarc 
+		\item IBM acquired Transarc 
+		\item Open source under IBM Public License 
+		\item OpenAFS (openafs.org) 
+	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{AFS Assumptions}
+	
+	Most files are small 
+	\medskip
+	
+	Reads are more common than writes 
+	\medskip
+	
+	Most files are accessed by one user at a time
+	\medskip
+	
+	Files are referenced in bursts (locality)
+	\begin{itemize}
+		\item Once referenced, a file is likely to be referenced again 
+	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{AFS Design Decisions}
+	
+	Whole file serving
+	\begin{itemize}
+		\item Send the entire file on open 
+	\end{itemize}
+	\medskip
+	
+	Whole file caching
+	\begin{itemize}
+		\item Client caches entire file on local disk 
+		\item Client writes the file back to server on close 
+		\begin{itemize} 
+			\item if modified 
+			\item Keeps cached copy for future accesses
+		\end{itemize}
+	
+	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{AFS Design}
+	
+	Each client has an AFS disk cache
+	\begin{itemize}
+		\item Part of disk devoted to AFS (e.g. 100 MB)
+		\item Client manages cache in LRU manner
+	\end{itemize}
+	\medskip
+	
+	Clients communicate with set of trusted servers 
+	\medskip
+	
+	Each server presents one identical name space to clients
+	\begin{itemize}
+		\item All clients access it in the same way 
+		\item Location transparent
+	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{AFS cache coherence}
+	
+	On open: 
+	\begin{itemize}
+		\item Server sends entire file to client and provides a callback promise: 
+		\item It will notify the client when any other process modifies the file 
+	\end{itemize}
+	\medskip
+	
+	If a client modified a file: 
+	\begin{itemize}
+		\item Contents are written to server on close 
+	\end{itemize}
+	\medskip
+	
+	When a server gets an update: 
+	\begin{itemize}
+		\item it notifies all clients that have been issued the callback promise 
+		\item Clients invalidate cached files 
+	\end{itemize}
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{AFS cache coherence}
+	
+	If a client was down  
+	\begin{itemize}
+		\item On startup, contact server with timestamps of all cached files to decide whether to invalidate If a process has a file open
+		\item It continues accessing it even if it has been invalidate
+		\item Upon close, contents will be propagated to server 
+	\end{itemize}
+	\medskip
+	
+	If a process has a file open
+	\begin{itemize}
+		\item It continues accessing it even if it has been invalidate 
+		\item Upon close, contents will be propagated to server 
+	\end{itemize}
+	
 \end{slide}
 
 \end{document}

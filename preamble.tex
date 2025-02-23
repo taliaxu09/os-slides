@@ -5,6 +5,9 @@
 \usepackage{minted}
 \usepackage{pgf-pie}
 \usepackage{tikz}
+\usepackage[export]{adjustbox}
+\usepackage{array}
+
 \usepackage{graphicx}
 \newcommand\sbullet[1][.5]{\mathbin{\vcenter{\hbox{\scalebox{#1}{$\bullet$}}}}}
 
@@ -27,7 +30,16 @@
 \def\insertlecturenumber{\@lecturenumber}
 \makeatother
 
-\newcommand{\slidetitle}[1]{{\xbseries \large \structure{#1}} \bigskip}
+%\newcommand{\slidetitle}[1]{{\xbseries \large \structure{#1}} \bigskip}
+\usetikzlibrary{calc}  % for coordinate calculations
+\newcommand{\slidetitle}[1]{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=north west] at ($(current page.north west) + (1cm,-1.2cm)$) 
+      {{\xbseries \large \structure{#1}}};
+  \end{tikzpicture}
+  \vspace{1.5cm}  % Adjust spacing below the title if needed
+}
+
 \newcommand{\term}[1]{{\color{blue} #1}}
 \newcommand{\leftspace}{\hspace{1em}}
 \newcommand{\inlinearrow}{
@@ -37,9 +49,14 @@
   \end{tikzpicture}
 }
 
+%\newenvironment{slide}
+%{\begin{frame}[fragile,environment=slide]\vskip0pt plus 1filll}
+%{\vskip0pt plus 1filll\end{frame}}
+
 \newenvironment{slide}
-{\begin{frame}[fragile,environment=slide]\vskip0pt plus 1filll}
-{\vskip0pt plus 1filll\end{frame}}
+{\begin{frame}[fragile,environment=slide, t]}
+{\end{frame}}
+
 
 % LaTeX
 

@@ -1,6 +1,7 @@
 \input{../preamble.tex}
+\usepackage{svg}
 
-\lecturenumber{1}
+\lecturenumber{23}
 \title{File\\Systems}
 \version{1.0.0}
 
@@ -9,6 +10,19 @@
 \begin{frame}[plain, noframenumbering]
     \titlepage
 \end{frame}
+
+\begin{slide}
+
+	\begin{minipage}{0.45\textwidth}
+		\includesvg[width=55mm]{RAID_10.svg}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.45\textwidth}
+		\includesvg[width=55mm]{RAID_01.svg}
+	\end{minipage}
+	
+	
+\end{slide}
 
 \begin{slide}
 
@@ -179,89 +193,89 @@
 	
 \end{slide}
 
-\begin{slide}
+% \begin{slide}
 
-    \slidetitle{Why distributed system? An example}
+    % \slidetitle{Why distributed system? An example}
 
-    2004: Facebook started on a single server
-    \begin{itemize}
-        \item Web server front end to assemble each user’s page. 
-        \item Database to store posts, friend lists, etc.
-    \end{itemize}
-    \medskip
+    % 2004: Facebook started on a single server
+    % \begin{itemize}
+        % \item Web server front end to assemble each user’s page. 
+        % \item Database to store posts, friend lists, etc.
+    % \end{itemize}
+    % \medskip
 
-    2008: 100M users
-    \medskip
+    % 2008: 100M users
+    % \medskip
 
-    2010: 500M users
-    \medskip
+    % 2010: 500M users
+    % \medskip
 
-    2012: 1B users
-    \medskip
+    % 2012: 1B users
+    % \medskip
 
-    2019: 2.5B users
-    \medskip
+    % 2019: 2.5B users
+    % \medskip
 
-\end{slide}
+% \end{slide}
 
-\begin{slide}
+% \begin{slide}
 
-    \slidetitle{An example scenario}
+    % \slidetitle{An example scenario}
 
-    For a web-based service to be available, both the server and the web server need to be operational.
-    \bigskip
+    % For a web-based service to be available, both the server and the web server need to be operational.
+    % \bigskip
 
-    In this scenario, both the server and the web server are hosted on a single machine.
-    \bigskip
+    % In this scenario, both the server and the web server are hosted on a single machine.
+    % \bigskip
 
-    This machine has a 10\% chance of failure.
-    \bigskip
+    % This machine has a 10\% chance of failure.
+    % \bigskip
 
-    What is the overall availability of the service, assuming no other components fail?
+    % What is the overall availability of the service, assuming no other components fail?
 
-\end{slide}
+% \end{slide}
 
-\begin{slide}
+% \begin{slide}
 
-    \slidetitle{An example scenario}
+    % \slidetitle{An example scenario}
 
-    Now the server and the web server are each hosted on a different machine.
-    \bigskip
+    % Now the server and the web server are each hosted on a different machine.
+    % \bigskip
 
-    Each machine has a 10\% chance of failure.
-    \bigskip
+    % Each machine has a 10\% chance of failure.
+    % \bigskip
 
-    What is the overall availability of the service, assuming no other components fail?
+    % What is the overall availability of the service, assuming no other components fail?
 
-\end{slide}
+% \end{slide}
 
-\begin{slide}
+% \begin{slide}
 
-    \slidetitle{An example scenario}
+    % \slidetitle{An example scenario}
 
-    As the service grows, the user base expands, and more content is required.
-    \bigskip
+    % As the service grows, the user base expands, and more content is required.
+    % \bigskip
 
-    To support this, 10 machines are dedicated to the servers, and another 10 are allocated for the web servers.
-    \bigskip
+    % To support this, 10 machines are dedicated to the servers, and another 10 are allocated for the web servers.
+    % \bigskip
 
-    Each machine has a 10\% chance of failure.
-    \bigskip
+    % Each machine has a 10\% chance of failure.
+    % \bigskip
 
-    What is the overall availability of the service, assuming no other components fail?
+    % What is the overall availability of the service, assuming no other components fail?
 
-\end{slide}
+% \end{slide}
 
-\begin{slide}
+% \begin{slide}
     
-    \slidetitle{An example scenario}
+    % \slidetitle{An example scenario}
 
-    The service provider aims to reduce their failure rate to below 1\% by creating replicas of their servers and web servers.
-    \bigskip
+    % The service provider aims to reduce their failure rate to below 1\% by creating replicas of their servers and web servers.
+    % \bigskip
 
-    How many replicas are needed?
+    % How many replicas are needed?
 
-\end{slide}
+% \end{slide}
 
 \begin{slide}
 

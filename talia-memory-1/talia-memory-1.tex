@@ -1,6 +1,6 @@
 \input{../preamble.tex}
 
-\lecturenumber{1}
+\lecturenumber{26}
 \title{Memory}
 \version{1.0.0}
 
@@ -9,6 +9,14 @@
 \begin{frame}[plain, noframenumbering]
     \titlepage
 \end{frame}
+
+\begin{slide}
+
+	\slidetitle{Wrapping up distributed systems}
+	
+	\includegraphics[width=100mm]{AFS_NFS_Comparison.png}
+	
+\end{slide}
 
 \begin{slide}
 
@@ -272,10 +280,11 @@
 \begin{slide}
 
     \slidetitle{The Page Table Translates Virtual to Physical Addresses}
-	\vspace{-5mm}
+	\vspace{5cm}
+	%\vspace{-5mm}
 	
-    \includegraphics[width=120mm]{single-level-page-table.eps}
-	\vspace{-3mm}
+    %\includegraphics[width=120mm]{single-level-page-table.eps}
+	%\vspace{-3mm}
 	
 \end{slide}
 
@@ -345,6 +354,10 @@
 
 \begin{slide}
 
+\end{slide}
+
+\begin{slide}
+
     \slidetitle{Each Process Gets Its Own Page Table}
 
     When you \texttt{fork} a process, it will copy the page table from the parent
@@ -356,7 +369,7 @@
     The problem is there are $\mathsf{2^{27}}$ entries in the page table, each
     one is 8 bytes
 
-    \leftspace{}This means the page table would be 1 GiB
+    \leftspace{}This means the page table would be 
     \medskip
 
     Note that RISC-V translates a 39-bit virtual to a 56-bit physical address
