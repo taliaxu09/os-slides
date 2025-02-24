@@ -9,6 +9,7 @@ int main(void) {
     ++local;
     ++global;
     printf("local = %d, global = %d\n", local, global);
+    printf("0x%lx, 0x%lx\n", (long int)&local, (long int)&global);
     sleep(1);
   }
   return 0;
