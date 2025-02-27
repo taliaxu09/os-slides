@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{g+go}{rm \PYGZhy{}rf build}
+\PYG{g+go}{meson setup build \PYGZhy{}Db\PYGZus{}sanitize=address}
+\PYG{g+go}{meson compile \PYGZhy{}C build}
+\end{Verbatim}

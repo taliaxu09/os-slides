@@ -1,0 +1,19 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+go}{mmap(NULL, 1848896, PROT\PYGZus{}READ, MAP\PYGZus{}PRIVATE|MAP\PYGZus{}DENYWRITE, 3, 0) = 0x7f4d43680000}
+\PYG{g+go}{mprotect(0x7f4d436a2000, 1671168, PROT\PYGZus{}NONE) = 0}
+\PYG{g+go}{mmap(0x7f4d436a2000, 1355776, PROT\PYGZus{}READ|PROT\PYGZus{}EXEC,}
+\PYG{g+go}{     MAP\PYGZus{}PRIVATE|MAP\PYGZus{}FIXED|MAP\PYGZus{}DENYWRITE, 3, 0x22000) = 0x7f4d436a2000}
+\PYG{g+go}{mmap(0x7f4d437ed000, 311296, PROT\PYGZus{}READ,}
+\PYG{g+go}{     MAP\PYGZus{}PRIVATE|MAP\PYGZus{}FIXED|MAP\PYGZus{}DENYWRITE, 3, 0x16d000) = 0x7f4d437ed000}
+\PYG{g+go}{mmap(0x7f4d4383a000, 24576, PROT\PYGZus{}READ|PROT\PYGZus{}WRITE,}
+\PYG{g+go}{     MAP\PYGZus{}PRIVATE|MAP\PYGZus{}FIXED|MAP\PYGZus{}DENYWRITE, 3, 0x1b9000) = 0x7f4d4383a000}
+\PYG{g+go}{mmap(0x7f4d43840000, 13888, PROT\PYGZus{}READ|PROT\PYGZus{}WRITE,}
+\PYG{g+go}{     MAP\PYGZus{}PRIVATE|MAP\PYGZus{}FIXED|MAP\PYGZus{}ANONYMOUS, \PYGZhy{}1, 0) = 0x7f4d43840000}
+\PYG{g+go}{close(3)                                = 0}
+\PYG{g+go}{arch\PYGZus{}prctl(ARCH\PYGZus{}SET\PYGZus{}FS, 0x7f4d43845500) = 0}
+\PYG{g+go}{mprotect(0x7f4d4383a000, 16384, PROT\PYGZus{}READ) = 0}
+\PYG{g+go}{mprotect(0x5636a9abd000, 4096, PROT\PYGZus{}READ) = 0}
+\PYG{g+go}{mprotect(0x7f4d43894000, 4096, PROT\PYGZus{}READ) = 0}
+\PYG{g+go}{munmap(0x7f4d43846000, 149337)          = 0}
+\PYG{g+go}{fstat(1, \PYGZob{}st\PYGZus{}mode=S\PYGZus{}IFCHR|0620, st\PYGZus{}rdev=makedev(0x88, 0x1), ...\PYGZcb{}) = 0}
+\end{Verbatim}

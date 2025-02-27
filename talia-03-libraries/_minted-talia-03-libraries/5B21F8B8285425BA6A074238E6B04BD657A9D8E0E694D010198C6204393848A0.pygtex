@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{n}{build}\PYG{o}{/}\PYG{n}{point}\PYG{o}{\PYGZhy{}}\PYG{n}{example}\PYG{o}{\PYGZhy{}}\PYG{n}{compile}\PYG{o}{\PYGZhy{}}\PYG{n}{v1}\PYG{o}{\PYGZhy{}}\PYG{n}{link}\PYG{o}{\PYGZhy{}}\PYG{n}{v1}
+\PYG{n}{LD\PYGZus{}LIBRARY\PYGZus{}PATH}\PYG{o}{=}\PYG{n}{build}\PYG{o}{/}\PYG{n}{v2}\PYG{+w}{ }\PYG{n}{build}\PYG{o}{/}\PYG{n}{point}\PYG{o}{\PYGZhy{}}\PYG{n}{example}\PYG{o}{\PYGZhy{}}\PYG{n}{compile}\PYG{o}{\PYGZhy{}}\PYG{n}{v1}\PYG{o}{\PYGZhy{}}\PYG{n}{link}\PYG{o}{\PYGZhy{}}\PYG{n}{v1}
+\end{Verbatim}

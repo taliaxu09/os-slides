@@ -1,0 +1,6 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{g+go}{Call to malloc(4) = 0x55c12aa40260}
+\PYG{g+go}{Call to malloc(1024) = 0x55c12aa40280}
+\PYG{g+go}{x = 0x55c12aa40260}
+\PYG{g+go}{Call to free(0x55c12aa40260)}
+\end{Verbatim}
