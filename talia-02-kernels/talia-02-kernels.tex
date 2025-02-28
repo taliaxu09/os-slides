@@ -14,10 +14,10 @@
   \slidetitle{Let's Execute This Program and Verify It's ``Hello world''}
 
   \small \ttfamily
-  0x7F 0x45 0x4C 0x46 0x02 0x01 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+  0x7F 0x45 0x4C 0x46 0x02 0x01 0x01 0x03 0x00 0x00 0x00 0x00 0x00 0x00 0x00
   0x00
 
-  0x02 0x00 0xB7 0x00 0x01 0x00 0x00 0x00 0x78 0x00 0x01 0x00 0x00 0x00 0x00
+  0x02 0x00 0x3E 0x00 0x01 0x00 0x00 0x00 0x78 0x00 0x01 0x00 0x00 0x00 0x00
   0x00
 
   0x40 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
@@ -165,53 +165,6 @@ void _start(void) {
   \leftspace{}e.g. The same function using the C calling convention
   
   \leftspace{}(arguments on the stack)
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{System Call ABI for Linux AArch64}
-
-  The operating system ``functions'' do not have an address,
-  
-  \leftspace{}instead we can generate an interrupt for the OS
-  \bigskip
-
-  Generate an interrupt with a \mintinline{nasm}{svc} instruction, using registers for
-  arguments:
-
-  \begin{itemize}
-    \item \texttt{x8} --- System call number
-    \item \texttt{x0} --- 1\textsuperscript{st} argument
-    \item \texttt{x1} --- 2\textsuperscript{nd} argument
-    \item \texttt{x2} --- 3\textsuperscript{rd} argument
-    \item \texttt{x3} --- 4\textsuperscript{th} argument
-    \item \texttt{x4} --- 5\textsuperscript{th} argument
-    \item \texttt{x5} --- 6\textsuperscript{th} argument
-  \end{itemize}
-  \bigskip
-
-  What are the limitations of this?
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{Last Aside: C ABI, or Calling Convention for x86-64}
-
-  System calls use registers, while C is stack based:
-
-  \begin{itemize}
-    \item Arguments pushed on the stack from right-to-left order
-    \item \texttt{rax}, \texttt{rcx}, \texttt{rdx} are caller saved
-    \item Remaining registers are callee saved
-    \item Some arguments may be passed in registers instead of the stack
-  \end{itemize}
-  \medskip
-
-  See \href{https://en.wikipedia.org/wiki/X86_calling_conventions}{Wikipedia}
-  for more details (there's lots of conventions, think ECE 243)
-  \bigskip
-
-  What advantages does this give us vs system call ABI? Disadvantages?
 \end{slide}
 
 \begin{slide}
@@ -580,7 +533,7 @@ exit_group(0)                           = ?
 
 \begin{slide}
 
-	\slidetitle{Review Qestions: What is the output?}
+	\slidetitle{Review Qestion: What is the output?}
 	
 	\inputminted{c}{write_print.c}
 
@@ -588,7 +541,7 @@ exit_group(0)                           = ?
 
 \begin{slide}
 
-	\slidetitle{Review Qestions: True or False}
+	\slidetitle{Review Qestion: True or False}
 		
 	\bigskip
 	
