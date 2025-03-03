@@ -7,46 +7,60 @@
 \begin{document}
 
 \begin{frame}[plain, noframenumbering]
-	\titlepage
+    \titlepage
 \end{frame}
 
 \begin{slide}
   
-	\slidetitle{Why Operating Systems?}
+    \slidetitle{Why Operating Systems?}
 
-	Understanding the operating system will make you a better programmer
-	\bigskip
+    Understanding the operating system will make you a better programmer
+    \bigskip
 
-	You will either write software that:
-	\begin{itemize}
-		\item Interacts with the operating system
-		\item Is the operating system
-	\end{itemize}
+    You will either write software that:
+    \begin{itemize}
+        \item Interacts with the operating system
+        \item Is the operating system
+    \end{itemize}
   
-	\bigskip
-	
-	Not always important if you only care about functionality.
-	\medskip
-	
-	Important when performance matters in your program.
-	
+    \bigskip
+    
+    Not always important if you only care about functionality.
+    \medskip
+    
+    Important when performance matters in your program.
+    
 \end{slide}
 
 \begin{slide}
 
-	\slidetitle{Why Operating Systems?}
-	
-	\inputminted{c}{2d-array-row.c}
+    \slidetitle{Why Operating Systems?}
+    
+    \begin{minted}{c}
+int array[ROWS][COLS];
+for (int i = 0; i < ROWS; i++) {
+    for (int j = 0; j < COLS; j++) {
+        array[i][j] = i * COLS + j;
+    }
+}
+    \end{minted}   
 	
 	\bigskip
 	
-	\inputminted{c}{2d-array-col.c}
-	
+	\begin{minted}{c}
+int array[ROWS][COLS];
+for (int j = 0; j < COLS; j++) {
+    for (int i = 0; i < ROWS; i++) {
+        array[i][j] = i * COLS + j;
+    }
+}
+	\end{minted}    
+    
 \end{slide}
 
 \begin{slide}
 
-	\slidetitle{Why Operating Systems?}
+    \slidetitle{Why Operating Systems?}
 
 \begin{minted}{c}
 // 1 + 2 + 3 + 4 + 5 + ... + n = 100
@@ -64,163 +78,178 @@ int  recursive_addition(int  n) {
     return (n - 1) + recursive_addition(n - 1);
 }
 \end{minted}
-	
+    
 \end{slide}
 
 
 \begin{slide}
 
-	\slidetitle{Why Operating Systems?}
-	
-	We do cover a lot of concepts
-	
-	\bigskip
-	
-	But this course is not about memorization.
-	
+    \slidetitle{Why Operating Systems?}
+    
+    We do cover a lot of concepts
+    
+    \bigskip
+    
+    But this course is not about memorization.
+    
 \end{slide}
 
 \begin{slide}
 
-	\slidetitle{Your Instructors}
+    \slidetitle{Your Instructors}
   
-	\begin{minipage}[t]{0.2\textwidth}
-		\vspace{0pt}\par
-		\includegraphics[width=20mm]{talia-xu.jpeg}
-	\end{minipage}
-	\hfill
-	\begin{minipage}[t]{0.75\textwidth}
-		\vspace{0pt}\par
-		Talia Xu
-		
-		\medskip
-		
-		Instructor: Week 1 - 7
-		
-		Office: 303S-592
-		
-		Email: talia.xu@auckland.ac.nz
-		
-	\end{minipage}
-	
-	\bigskip
-	\bigskip
-	
-  	\begin{minipage}[t]{0.2\textwidth}
-		\vspace{0pt}\par
-		\includegraphics[width=20mm]{sean-ma.jpeg}
-	\end{minipage}
-	\hfill
-	\begin{minipage}[t]{0.75\textwidth}
-		\vspace{0pt}\par
-		Sean Ma 
-		
-		(Course Director/Coordinator)
-		
-		\medskip
-		
-		Instructor: Week 8 - 12
-		
-		Office: 303S-587
-		
-		Email: sean.ma@auckland.ac.nz
-		
-	\end{minipage}
+    \begin{minipage}[t]{0.2\textwidth}
+        \vspace{0pt}\par
+        \includegraphics[width=20mm]{talia-xu.jpeg}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.75\textwidth}
+        \vspace{0pt}\par
+        Talia Xu
+        
+        \medskip
+        
+        Instructor: Week 1 - 7
+        
+        Office: 303S-592
+        
+        Email: talia.xu@auckland.ac.nz
+        
+    \end{minipage}
+    
+    \bigskip
+    \bigskip
+    
+      \begin{minipage}[t]{0.2\textwidth}
+        \vspace{0pt}\par
+        \includegraphics[width=20mm]{sean-ma.jpeg}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.75\textwidth}
+        \vspace{0pt}\par
+        Sean Ma 
+        
+        (Course Director/Coordinator)
+        
+        \medskip
+        
+        Instructor: Week 8 - 12
+        
+        Office: 303S-587
+        
+        Email: sean.ma@auckland.ac.nz
+        
+    \end{minipage}
 
 \end{slide}
 
 \begin{slide}
 
-	\slidetitle{Instructor Office Hours Week 1 - 7}
+    \slidetitle{Instructor Office Hours Week 1 - 7}
+    
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Your Tutor}
+        
+    \begin{minipage}[t]{0.2\textwidth}
+        \vspace{0pt}\par
+        \includegraphics[width=20mm]{zhihang-liu.jpeg}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.75\textwidth}
+        \vspace{0pt}\par
+        Zhihang Liu
+                    
+        \medskip
+        
+        Tutorial: Thurs 4pm - 5pm (Room 405-460)
+        
+        Office: 303S-G87
+        
+        Email: zliu604@aucklanduni.ac.nz
+        
+    \end{minipage}
+    
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Tutor Office Hours}
+    
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Class Rep}
 	
 \end{slide}
 
 \begin{slide}
 
-	\slidetitle{Your Tutor}
-		
-	\begin{minipage}[t]{0.2\textwidth}
-		\vspace{0pt}\par
-		\includegraphics[width=20mm]{zhihang-liu.jpeg}
-	\end{minipage}
-	\hfill
-	\begin{minipage}[t]{0.75\textwidth}
-		\vspace{0pt}\par
-		Zhihang Liu
-					
-		\medskip
-		
-		Tutorial: Thurs 4pm - 5pm (Room 405-460)
-		
-		Office: 303S-G87
-		
-		Email: zliu604@aucklanduni.ac.nz
-		
-	\end{minipage}
+	\slidetitle{Ed Discussion}
 	
 \end{slide}
 
 \begin{slide}
 
-	\slidetitle{Tutor Office Hours}
-	
-\end{slide}
-
-\begin{slide}
-
-	\slidetitle{Evaluation for this course}
-	
-	\begin{center}
-		\begin{tabular}{  l l l l  } 
-		  \textbf{Assessment} & \textbf{Weight} & \textbf{Due Date} \\ 
-		  Lab 1 & 7.5\% & March 23 \\ 
-		  Midterm & 20\% & April 11 @ 6:30 pm (tentative) \\ 
-		  Lab 2 & 7.5\% & April 20 \\ 
-		  Lab 3 & 7.5\% & May 9 (tentative)  \\ 
-		  Lab 4 & 7.5\% & May 30 (tentative) \\ 
-		  Final & 50\% & TBD \\ 
-		\end{tabular}
-	\end{center}
-	
-\end{slide}
-
-\begin{slide}
-  
-	\slidetitle{Lecture Attendance is Still Important}
-
-	It's much faster to get feedback from you and clarify if anything is unclear
-	\medskip
-
-	We'll have live coding, I'll be able to explain any happy accidents
-	\medskip
-
-	If there's anything else I can do to make attending a better experience
-
-	let me know!
-	
+    \slidetitle{Evaluation for this course}
+    
+    \begin{center}
+        \begin{tabular}{  l l l l  } 
+          \textbf{Assessment} & \textbf{Weight} & \textbf{Due Date} \\ 
+          Lab 1 & 7.5\% & March 23 \\ 
+          Midterm & 20\% & April 11 @ 6:30 pm (tentative) \\ 
+          Lab 2 & 7.5\% & April 20 \\ 
+          Lab 3 & 7.5\% & May 9 (tentative)  \\ 
+          Lab 4 & 7.5\% & May 30 (tentative) \\ 
+          Final & 50\% & TBD \\ 
+        \end{tabular}
+    \end{center}
+    
 \end{slide}
 
 \begin{slide}
   
-	\slidetitle{Academic Honesty Policy}
+    \slidetitle{Lecture Attendance is Still Important}
 
-	You can study together, discuss concepts on Discord
+    It's much faster to get feedback from you and clarify if anything is unclear
+    \medskip
+
+    We'll have live coding, I'll be able to explain any happy accidents
+    \medskip
+
+    If there's anything else I can do to make attending a better experience
+
+    let me know!
+    
+\end{slide}
+
+\begin{slide}
+  
+    \slidetitle{Academic Honesty Policy}
+
+    You can study together, discuss concepts 
+    \medskip
+
+    Don't post lab code, any other code is okay
+    \medskip
+
+    Any cheating is not tolerated, and will only hurt you
+    \bigskip
+    \bigskip
+
+    AI is allowed in this course, but AI shoudln't be doing your work for you.
+    \medskip
+
+	Submitting AI-generated code directly as part of an assignment is not permitted.
 	\medskip
+	
+    GenAI is not particularly good at hardware / OS questions.
+    \medskip
 
-	Don't post lab code on Discord, any other code is okay
-	\medskip
-
-	Any cheating is not tolerated, and will only hurt you
-	\bigskip
-	\bigskip
-
-	AI is allowed in this course, but AI shoudln't be doing your work for you.
-	\medskip
-
-	GenAI is not particularly good at hardware / OS questions.
-	\medskip
-
-	The term test and exam will include questions related to the assignments.
+    The term test and exam will include questions related to the assignments.
   
 \end{slide}
 
@@ -234,14 +263,14 @@ int  recursive_addition(int  n) {
     and \href{http://www.cs.wisc.edu/~dusseau/}{Andrea Arpaci-Dusseau}
     \bigskip
 
-	``\href{https://www.wiley.com/en-ie/Silberschatz's+Operating+System+Concepts%2C+Global+Edition%2C+10th+Edition-p-9781119454083}
-			{Silberschatz's Operating System Concepts, 10th Edition, Global Edition}'' \\
-	by \href{https://seas.yale.edu/faculty-research/faculty-directory/abraham-silberschatz}{Abraham Silberschatz} 
-	and \href{https://dl.acm.org/profile/81100611528}{Peter B. Galvin}
-	and \href{https://greggagne.github.io/}{Greg Gagne}
-	\bigskip
+    ``\href{https://www.wiley.com/en-ie/Silberschatz's+Operating+System+Concepts%2C+Global+Edition%2C+10th+Edition-p-9781119454083}
+            {Silberschatz's Operating System Concepts, 10th Edition, Global Edition}'' \\
+    by \href{https://seas.yale.edu/faculty-research/faculty-directory/abraham-silberschatz}{Abraham Silberschatz} 
+    and \href{https://dl.acm.org/profile/81100611528}{Peter B. Galvin}
+    and \href{https://greggagne.github.io/}{Greg Gagne}
+    \bigskip
     
-	``\href{https://en.wikipedia.org/wiki/The_C_Programming_Language}
+    ``\href{https://en.wikipedia.org/wiki/The_C_Programming_Language}
            {The C Programming Language}'' \\
     by \href{https://en.wikipedia.org/wiki/Brian_Kernighan}{Brian Kernighan}
     and \href{https://en.wikipedia.org/wiki/Dennis_Ritchie}{Dennis Ritchie}
@@ -250,207 +279,216 @@ int  recursive_addition(int  n) {
 
 \begin{slide}
   
-	\slidetitle{Skills You Should Practice Again If Needed}
+    \slidetitle{Skills You Should Practice Again If Needed}
 
-	Programming
-	\begin{itemize}
-		\item C Programming and Debugging
-		\item Python Programming and Debugging
-	\end{itemize}
-	
-	\bigskip
+    Programming
+    \begin{itemize}
+        \item C Programming and Debugging
+        \item Python Programming and Debugging
+    \end{itemize}
+    
+    \bigskip
 
-	Basic Concepts
-	\begin{itemize}
-		\item Being able to convert between binary, hex, and decimal
-		\item Little-endian and big-endian
-		\item Memory being byte-addressable, memory addresses (pointers)
-	\end{itemize}
-		
+    Basic Concepts
+    \begin{itemize}
+        \item Being able to convert between binary, hex, and decimal
+        \item Little-endian and big-endian
+        \item Memory being byte-addressable, memory addresses (pointers)
+    \end{itemize}
+        
 \end{slide}
 
 \begin{slide}
   
-	\slidetitle{Please Provide Feedback!}
+    \slidetitle{Please Provide Feedback!}
 
-	This course is challenging, please let me know if anything is unclear
-	\bigskip
+    This course is challenging, please let me know if anything is unclear
+    \bigskip
   
 \end{slide}
 
 \begin{slide}
 
-	\slidetitle{Term Test Format}
+    \slidetitle{Term Test Format}
 
-	30 MCQ; 60 minutes
-	\bigskip
-	
-	Aid allowed:
-	
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{An Operating System Manages Resources}
-
-  \includegraphics[width=75mm]{operating-system-overview.png}
-
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{Three Core Operating System Concepts}
-
-  \textbf{Virtualization} lets each program think it has the whole computer to itself
-  
-  \bigskip
-
-  \textbf{Concurrency} allows multiple tasks to appear to happen at once
-  \bigskip
-
-  \textbf{Persistence} guarantees that data will stick around and can be retrieved later
-  
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{Our First Abstraction is a Process}
-
-  \textbf{Program:} a file containing all the instructions and data required
-  to run
-  \bigskip
-
-  \textbf{Process:} an instance of running a program
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{The Basic Requirements for a Process}
-
-  \centering
-  \includegraphics{process-basic.eps}
-
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{The Basic Requirements for a Process}
-
-  How are you able to run two different programs at the same time?
-  \medskip
-
-  For example, a ``hello world'' program and another that
-  
-  \leftspace{}counts up one every second
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{Does the OS Allocate Different Stacks For Each Process?}
-
-  The stacks for each process need to be in physical memory
-  \medskip
-
-  One option is the operating system just allocates
-  
-  \leftspace{}any unused memory for the stack
-  \medskip
-
-  Would there be any issues with this?
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{What About Global Variables?}
-
-  The compiler needs to pick an address for each variable when you compile
-  \medskip
-
-  What if we had a global registry of addresses?
-  \medskip
-
-  Would there be any issues with this?
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{Potential Memory Layout for Multiple Processes}
-
-  \centering
-
-  \includegraphics<1>{memory-layout-first.eps}%
-  \includegraphics<2>{memory-layout-second.eps}
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{What Happens If Two Processes Run the Same Program?}
-
-  \inputminted{c}{count.c}
-
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{What Did We Find?}
-
-  Was the address of \mintinline{c}{local} the same between the two processes?
-  \medskip
-
-  Was the address of \mintinline{c}{global} the same between the two processes?
-  \medskip
-
-  What else may be needed for a process?
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{A Process Has Its Own Virtual Memory}
-
-  \centering
-
-  \includegraphics{process-virtual-memory.eps}
-
-\end{slide}
-
-\begin{slide}
-
-	\slidetitle{Review Qestions: True or False}
-	
-	True or False:
-	
+    20\% of your grade; 
 	\bigskip
 	
-	(1) A global variable is automatically shared across processes.
-	
+	Paper based; 30 MCQ; 60 minutes
+    \bigskip
+    
+    Aid allowed:
+    
+\end{slide}
+
+\begin{slide}
+  
+	\slidetitle{An Operating System Manages Resources}
+
+	\includegraphics[width=75mm]{operating-system-overview.png}
+
+\end{slide}
+
+\begin{slide}
+  
+	\slidetitle{Three Core Operating System Concepts}
+
+	\textbf{Virtualization} lets each program think it has the whole computer to itself
+
 	\bigskip
+
+	\textbf{Concurrency} allows multiple tasks to appear to happen at once
+	\bigskip
+
+	\textbf{Persistence} guarantees that data will stick around and can be retrieved later
+  
+\end{slide}
+
+\begin{slide}
+  
+	\slidetitle{Our First Abstraction is a Process}
+
+	\textbf{Program:} a file containing all the instructions and data required
+	to run
+	\bigskip
+
+	\textbf{Process:} an instance of running a program
+  
+\end{slide}
+
+\begin{slide}
+  
+	\slidetitle{The Basic Requirements for a Process}
+
+	\centering
+	\includegraphics{process-basic.eps}
+
+\end{slide}
+
+\begin{slide}
+  
+	\slidetitle{What Happens If Two Processes Run the Same Program?}
+
+	\inputminted{c}{count.c}
+
+\end{slide}
+
+\begin{slide}
+  
+	\slidetitle{The Basic Requirements for a Process}
+
+	How are you able to run two different programs at the same time?
+	\medskip
+
+	For example, a ``hello world'' program and another that
+
+	\leftspace{}counts up one every second
 	
-	(2) The following code prints the physical address of \textit{global}:
-	\begin{minted}{c}
+\end{slide}
+
+\begin{slide}
+  
+	\slidetitle{Does the OS Allocate Different Stacks For Each Process?}
+
+	The stacks for each process need to be in physical memory
+	\medskip
+
+	One option is the operating system just allocates
+
+	\leftspace{}any unused memory for the stack
+	\medskip
+
+	Would there be any issues with this?
+	
+\end{slide}
+
+\begin{slide}
+  
+	\slidetitle{What About Global Variables?}
+
+	The compiler needs to pick an address for each variable when you compile
+	\medskip
+
+	What if we had a global registry of addresses?
+	\medskip
+
+	Would there be any issues with this?
+  
+\end{slide}
+
+\begin{slide}
+  
+	\slidetitle{Potential Memory Layout for Multiple Processes}
+
+	\centering
+
+	\includegraphics<1>{memory-layout-first.eps}%
+	\includegraphics<2>{memory-layout-second.eps}
+  
+\end{slide}
+
+\begin{slide}
+  
+	\slidetitle{What Did We Find?}
+
+	Was the address of \mintinline{c}{local} the same between the two processes?
+	\medskip
+
+	Was the address of \mintinline{c}{global} the same between the two processes?
+	\medskip
+
+	What else may be needed for a process?
+  
+\end{slide}
+
+\begin{slide}
+  
+	\slidetitle{A Process Has Its Own Virtual Memory}
+
+	\centering
+
+	\includegraphics{process-virtual-memory.eps}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Review Qestions: True or False}
+    
+    True or False:
+    
+    \bigskip
+    
+    (1) A global variable is automatically shared across processes.
+    
+    \bigskip
+    
+    (2) The following code prints the physical address of \textit{global}:
+    \begin{minted}{c}
 printf("0x%lx\n", (long int)&global);
-	\end{minted} 
-	
-	\bigskip
-	
-	(3) Two processes running the following code can have the same output:
-	\begin{minted}{c}
+    \end{minted} 
+    
+    \bigskip
+    
+    (3) Two processes running the following code can have the same output:
+    \begin{minted}{c}
 printf("0x%lx, 0x%lx\n", (long int)&local, (long int)&global);
-	\end{minted}
-	
-	\bigskip
-	
-	(4) A process can directly access its physical memory address.
-	
+    \end{minted}
+    
+    \bigskip
+    
+    (4) A process can directly access its physical memory address.
+    
 \end{slide}
 
 \begin{slide}
 
-	\slidetitle{Acknowledgement}
-	
-	\vspace{2cm}
-	The slides for this course are based on materials from Professor Jon Eyolfson.
-	
-	
+    \slidetitle{Acknowledgement}
+    
+    \vspace{2cm}
+    The slides for this course are based on materials from Professor Jon Eyolfson.
+    
+    
 \end{slide}
 
 \end{document}
