@@ -7,60 +7,183 @@
 \begin{document}
 
 \begin{frame}[plain, noframenumbering]
-  \titlepage
+    \titlepage
 \end{frame}
 
 \begin{slide}
-  \slidetitle{Let's Execute This Program and Verify It's ``Hello world''}
 
-  \small \ttfamily
-  0x7F 0x45 0x4C 0x46 0x02 0x01 0x01 0x03 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-  0x00
+    \slidetitle{Aside: Stack In Memory Vs. Stack In Data Structure}
 
-  0x02 0x00 0x3E 0x00 0x01 0x00 0x00 0x00 0x78 0x00 0x01 0x00 0x00 0x00 0x00
-  0x00
+\vspace{-5mm}
+\begin{minipage}[t]{0.3\textwidth}
+    \vspace{0pt}\par
+    \begin{minted}{c}
+void functionC(int c) {
+    int localC = c + 10;  
+    return localC;
+}
+void functionB(int b) {
+    int localB = b + 5;
+}
+void functionA(int a) {
+    int localA = a * 2;  
+    functionB(localA);    
+}
+int main() {
+    int x = 5;        
+    functionA(x);       
+    functionC(x);
+    return 0;
+}
+\end{minted}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.5\textwidth}
+    \vspace{0pt}\par
+        \begin{tabular}{ | p{3cm} | } 
+            \hline
+            \\ \hline
+            \\ \hline
+            \\ \hline
+            \\ \hline
+            \\ \hline
+            \\ \hline
+            \\ \hline
+            \\ \hline
+            \\ \hline
+            \\ \hline
+            \\ \hline
+            \\ \hline
+            \\ \hline
+            \\ \hline
+            \\ \hline
+        \end{tabular}
+\end{minipage}
 
-  0x40 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-  0x00
-
-  0x00 0x00 0x00 0x00 0x40 0x00 0x38 0x00 0x01 0x00 0x40 0x00 0x00 0x00 0x00
-  0x00
-
-  0x01 0x00 0x00 0x00 0x05 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-  0x00
-
-  0x00 0x00 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x01 0x00 0x00 0x00 0x00
-  0x00
-
-  0xA8 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xA8 0x00 0x00 0x00 0x00 0x00 0x00
-  0x00
-
-  0x00 0x10 0x00 0x00 0x00 0x00 0x00 0x00 0x08 0x08 0x80 0xD2 0x20 0x00 0x80
-  0xD2
-
-  0x81 0x13 0x80 0xD2 0x21 0x00 0xA0 0xF2 0x82 0x01 0x80 0xD2 0x01 0x00 0x00
-  0xD4
-
-  0xC8 0x0B 0x80 0xD2 0x00 0x00 0x80 0xD2 0x01 0x00 0x00 0xD4 0x48 0x65 0x6C
-  0x6C
-
-  0x6F 0x20 0x77 0x6F 0x72 0x6C 0x64 0x0A
-  \bigskip
-
-  \normalsize \normalfont Execute using:
-  \mintinline{bash}{./hello-world-linux-aarch64}
 \end{slide}
 
 \begin{slide}
-  
-  \slidetitle{Aside: There's 3 Major ISAs in Use Today}
 
-  ISA stands for the \textit{instruction set architecture}
+    \slidetitle{Aside: Java Vs. C}
 
-  \leftspace{} It's the machine code, or numbers the CPU understands
-  \bigskip
+    \includegraphics[width=60mm]{java.png}
+    
+\end{slide}
 
-  \texttt{x86-64} (aka \texttt{amd64}): for desktops, non-Apple laptops,
+\begin{slide}
+
+    \slidetitle{Aside: Dynamic (malloc) Vs. Local Variables}
+
+\vspace{-3mm}
+\begin{minted}{c}
+int* functionA() {
+    // stack: Implementation 1
+    int num = 42; 
+    return &num;  
+    
+    // heap: Implementation 2
+    // int* num = (int*) malloc(sizeof(int));
+    // *num = 42;
+    // return num;
+}
+
+int main() {
+    int* ptr = functionA();
+    printf("Stack Variable: %d\n", *ptr); 
+    // free(ptr);
+    return 0;
+}
+\end{minted}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Recap: Physical and Virtual Memory}
+    
+    \vspace{-5mm}
+    (demo: \texttt{local} + \texttt{global} addresses)
+    \medskip
+    
+    (We will talk more on this in greater details later)
+    
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Assignment 1 is Released}
+
+    We will be working with xv6 (A teaching OS developed at MIT).
+    \bigskip
+    
+    The main themes of this assignment are working with processes and becoming comfortable with both kernel and user-level code.
+    \bigskip
+    
+    You will be writing programs at both the user and kernel levels.
+    \bigskip
+    
+    Your TA will be handling all grading for this assignment.
+    \bigskip
+    
+    Please review the assignment, complete at least the setup this week, and visit your TA during tutorial if you encounter any issues.
+    \bigskip
+    
+\end{slide}
+
+\begin{slide}
+    
+    \slidetitle{Let's Execute This Program and Verify It's ``Hello world''}
+
+    \small \ttfamily
+    0x7F 0x45 0x4C 0x46 0x02 0x01 0x01 0x03 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+    0x00
+
+    0x02 0x00 0x3E 0x00 0x01 0x00 0x00 0x00 0x78 0x00 0x01 0x00 0x00 0x00 0x00
+    0x00
+
+    0x40 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+    0x00
+
+    0x00 0x00 0x00 0x00 0x40 0x00 0x38 0x00 0x01 0x00 0x40 0x00 0x00 0x00 0x00
+    0x00
+
+    0x01 0x00 0x00 0x00 0x05 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+    0x00
+
+    0x00 0x00 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x01 0x00 0x00 0x00 0x00
+    0x00
+
+    0xA8 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xA8 0x00 0x00 0x00 0x00 0x00 0x00
+    0x00
+
+    0x00 0x10 0x00 0x00 0x00 0x00 0x00 0x00 0x08 0x08 0x80 0xD2 0x20 0x00 0x80
+    0xD2
+
+    0x81 0x13 0x80 0xD2 0x21 0x00 0xA0 0xF2 0x82 0x01 0x80 0xD2 0x01 0x00 0x00
+    0xD4
+
+    0xC8 0x0B 0x80 0xD2 0x00 0x00 0x80 0xD2 0x01 0x00 0x00 0xD4 0x48 0x65 0x6C
+    0x6C
+
+    0x6F 0x20 0x77 0x6F 0x72 0x6C 0x64 0x0A
+    \bigskip
+
+    \normalsize \normalfont Execute using:
+    \mintinline{bash}{./hello-world-linux-aarch64}
+    
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Instruction Set Architecture (ISA)}
+    
+	It's the machine code, or numbers the CPU understands
+	\bigskip
+
+    \includegraphics[width=60mm]{instruction-set-architecture.png}
+	\medskip
+	
+	  \texttt{x86-64} (aka \texttt{amd64}): for desktops, non-Apple laptops,
                                           servers
   \medskip
 
@@ -69,9 +192,7 @@
 
   \texttt{riscv} (aka \texttt{rv64gc}): open-source implementation, similar to
                                         ARM
-  \bigskip
-
-  We'll touch on all of them in this course
+										
 \end{slide}
 
 \begin{slide}
@@ -149,68 +270,25 @@ void _start(void) {
 
 \begin{slide}
   
-  \slidetitle{Another Aside: API Tells You What and ABI Tells You How} 
+    \slidetitle{Another Aside: API Tells You What and ABI Tells You How} 
 
-  Application Programming Interface (API) abstracts the details and describes
-  the arguments and return value of a function
-  \medskip
+    Application Programming Interface (API) abstracts the details and describes
+    the arguments and return value of a function
+    \medskip
 
-  \leftspace{}e.g. A function takes 2 integer arguments
-  \bigskip
+    \leftspace{}e.g. A function takes 2 integer arguments
+    \bigskip
 
-  Application Binary Interface (ABI) specifies the details, specifically how to
-  pass arguments and where the return value is
-  \medskip
+    Application Binary Interface (ABI) specifies the details, specifically how to
+    pass arguments and where the return value is
+    \medskip
 
-  \leftspace{}e.g. The same function using the C calling convention
+    \leftspace{}e.g. The same function using the C calling convention
+
+    \leftspace{}(arguments on the stack)
   
-  \leftspace{}(arguments on the stack)
 \end{slide}
 
-\begin{slide}
-  
-  \slidetitle{Programs on Linux Use the ELF File Format}
-
-  Executable and Linkable Format (ELF) specifies both executables and libraries
-  \medskip
-
-  Always starts with the 4 bytes: \mintinline{text}{0x7F 0x45 0x4C 0x46}
-
-  \leftspace{}or with ASCII encoding: \mintinline{text}{DEL 'E' 'L' 'F'}
-  \medskip
-
-  These 4 bytes are called ``magic'', and that's how you know what kind of file
-  this is (other file formats may have a different number of bytes)
-  \bigskip
-
-  See: \url{https://en.wikipedia.org/wiki/List_of_file_signatures}
-
-  \leftspace{}e.g., PDF files start with \mintinline{text}{%PDF-}
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{Our Bytes Represent an ELF File}
-
-  Tells the OS to load the entire executable file into memory at
-  address \texttt{0x10000}
-  \medskip
-
-  The file header is 64 bytes, and the ``program header'' is 56 bytes
-
-  (120 bytes total)
-  \medskip
-
-  The next 36 bytes are instructions, then 12 bytes for the string
-  \mintinline{c}{"Hello world\n"}
-
-  \leftspace{}Instructions start at \texttt{0x10078} (\texttt{0x78} is 120)
-
-  \leftspace{}The string (data) starts at \texttt{0x1009C} (\texttt{0x9C} is 156)
-  \medskip
-
-  You can use: \mintinline{bash}{readelf -a <FILE>} to see the gory details
-\end{slide}
 
 \begin{slide}
   
@@ -240,29 +318,6 @@ mov  x8, 0x5E          # 94
 mov  x0, 0x0           # 0
 svc  0x0
   \end{minted}
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{Data for Our ``Hello world'' Example}
-
-  The 12 bytes of data is the \mintinline{c}{"Hello world"} string itself, ASCII
-  encoded:
-
-  \leftspace{}\texttt{\small 0x48 0x65 0x6C 0x6C 0x6F 0x20 0x77 0x6F 0x72 0x6C 0x64
-                        0x0A}
-  \medskip
-
-  Low level ASCII tip: bit 5 is \texttt{0}/\texttt{1} for upper
-  case/lower case (values differ by 32)
-  \bigskip
-
-  This accounts for every single byte of our 168 byte program, let's see what
-  C does...
-  \bigskip
-
-  Can you already spot a difference between strings in our example compared to
-  C?
 \end{slide}
 
 \begin{slide}
@@ -319,6 +374,11 @@ svc  0x0
         \footnotesize\ttfamily init\_module delete\_module clock\_nanosleep
                               exit\_group };
   \end{tikzpicture}
+  
+  \bigskip
+  
+  Do you always need root access (sudo) while making a system call?
+  
 \end{slide}
 
 \begin{slide}
@@ -415,9 +475,7 @@ exit_group(0)                           = ?
   \end{minted}
   \bigskip
 
-  The C version of ``Hello world'' ends with
-  
-  the exact same system calls we made
+  The C version of ``Hello world'' ends with the exact same system calls we made
 \end{slide}
 
 \begin{slide}
@@ -519,12 +577,6 @@ exit_group(0)                           = ?
       \begin{itemize}
         \item Every program must use this interface!
       \end{itemize}
-    \item File format and instructions to define a simple ``Hello world''
-          (in 168 bytes)
-      \begin{itemize}
-        \item Difference between API and ABI
-        \item How to explore system calls
-      \end{itemize}
     \item Different kernel architectures shift how much code runs in kernel
           mode
   \end{itemize}
@@ -533,32 +585,32 @@ exit_group(0)                           = ?
 
 \begin{slide}
 
-	\slidetitle{Review Qestion: What is the output?}
-	
-	\inputminted{c}{write_print.c}
+    \slidetitle{Review Qestion: What is the output?}
+    
+    \inputminted{c}{write_print.c}
 
 \end{slide}
 
 \begin{slide}
 
-	\slidetitle{Review Qestion: True or False}
-		
-	\bigskip
-	
-	(1) The write function can be used to print formatted output like printf without additional helper functions.
-	
-	\bigskip
-	
-	(2) Calling write(1, "Hello", 5); is functionally equivalent to calling printf("Hello");
-	
-	\bigskip
-	
-	(3) printf is a direct system call, whereas write is implemented as a library function.
-	
-	\bigskip
-	
-	(4) Calling printf always results in a single system call to write.
-	
+    \slidetitle{Review Qestion: True or False}
+        
+    \bigskip
+    
+    (1) The write function can be used to print formatted output like printf without additional helper functions.
+    
+    \bigskip
+    
+    (2) Calling write(1, "Hello", 5); is functionally equivalent to calling printf("Hello");
+    
+    \bigskip
+    
+    (3) printf is a direct system call, whereas write is implemented as a library function.
+    
+    \bigskip
+    
+    (4) Calling printf always results in a single system call to write.
+    
 \end{slide}
 
 \end{document}
