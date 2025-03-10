@@ -12,7 +12,7 @@
 \begin{slide}
     \slidetitle{We Could Create Processes from Scratch}
 
-    We load the program into memory and create the process control block
+    We create the process control block and load the program into memory 
 
     \leftspace{}(this is what Windows does)
     \bigskip
@@ -32,11 +32,6 @@
 
 
     Distinguish between the two processes with a parent and child relationship
-
-    \leftspace{}They could both execute different parts of the program together
-    \bigskip
-
-    We could then allow either process to load a new program and setup a new PCB
 
 \end{slide}
 
@@ -143,23 +138,11 @@ int main(int argc, char *argv[]) {
     \end{minted}
   \end{slide}
 
-  \begin{slide}
-    \slidetitle{The Operating System Creates Processes}
-
-    The operating system has to:
-    \begin{itemize}
-      \item Maintain process control blocks, including state
-      \item Create new processes
-      \item Load a program, and re-initialize a process with context
-    \end{itemize}
-
-  \end{slide}
-
     \begin{slide}
     
         \slidetitle{Putting together: \texttt{fork}, \texttt{wait} and \texttt{exec}}
         
-        On Linux, what happens when you run a command? 
+        On Linux, what happens when you run a command in the shell? 
         \bigskip
         
         Let's try to run \texttt{sleep 2}
@@ -210,6 +193,18 @@ int main() {
     
 \end{slide}
 
+  \begin{slide}
+    \slidetitle{The Operating System Creates Processes}
+
+    The operating system has to:
+    \begin{itemize}
+      \item Maintain process control blocks, including state
+      \item Create new processes
+      \item Load a program, and re-initialize a process with context
+    \end{itemize}
+
+  \end{slide}
+  
         \begin{slide}
     
         \slidetitle{On Unix, the Kernel Launches A Single User Process}
