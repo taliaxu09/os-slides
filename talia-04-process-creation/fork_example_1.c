@@ -4,6 +4,6 @@
 int main() {
     int value = 2;
     fork();
-    printf("Hello, world!\n");
+    printf("Hello world\n");
     return 0;
 }

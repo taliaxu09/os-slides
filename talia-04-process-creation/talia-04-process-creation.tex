@@ -77,51 +77,24 @@
 
     \slidetitle{\texttt{\bfseries fork} Examples}
     
-    \inputminted{c}{fork_example_2.c}
-    
-\end{slide}
-
-\begin{slide}
-
-    \slidetitle{\texttt{\bfseries wait} delays execution}
-    
-    \texttt{wait} s uthe following API:
-    \begin{itemize}
-      \item \texttt{status}: Address to store the wait status of the process
-      \item Returns the process ID of child process
-
-            \leftspace{}-1: on failure
-
-            \leftspace{}>0: the child with a change
-    \end{itemize}
-    \bigskip
-
-    The wait status contains a bunch of information, including the exit code
-
-    \leftspace{}Use \texttt{man wait} to find all the macros to query wait status
-
-    \leftspace{}\leftspace{}You can use \texttt{waitpid} to wait on a specific child process
-
-\end{slide}
-
-\begin{slide}
-
-    \slidetitle{\texttt{\bfseries wait} Example}
-    
 \begin{minted}{c}
 int main() {
-    int pid = getpid();
-    fork();
-    if (getpid() == pid){
-        wait(NULL);
-        printf("Hello A\n");
-    }
-    else{
-        printf("Hello B\n");
-    }
+    int value = 2;
+    if (fork() == 0)
+        printf("Hello world\n");
+    else
+        printf("Hello world again\n");
     return 0;
 }
 \end{minted}
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{\texttt{\bfseries fork} Examples}
+    
+    \inputminted{c}{fork_example_2.c}
     
 \end{slide}
 
@@ -193,6 +166,50 @@ int main(int argc, char *argv[]) {
         
     \end{slide}
     
+\begin{slide}
+
+    \slidetitle{\texttt{\bfseries wait} delays execution}
+    
+    \texttt{wait} uses the following API:
+    \begin{itemize}
+      \item \texttt{status}: Address to store the wait status of the process
+      \item Returns the process ID of child process
+
+            \leftspace{}-1: on failure
+
+            \leftspace{}>0: the child with a change
+    \end{itemize}
+    \bigskip
+
+    The wait status contains a bunch of information, including the exit code
+
+    \leftspace{}Use \texttt{man wait} to find all the macros to query wait status
+
+    \leftspace{}\leftspace{}You can use \texttt{waitpid} to wait on a specific child process
+
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{\texttt{\bfseries wait} Example}
+    
+\begin{minted}{c}
+int main() {
+    int pid = getpid();
+    fork();
+    if (getpid() == pid){
+        wait(NULL);
+        printf("Hello A\n");
+    }
+    else{
+        printf("Hello B\n");
+    }
+    return 0;
+}
+\end{minted}
+    
+\end{slide}
+
         \begin{slide}
     
         \slidetitle{On Unix, the Kernel Launches A Single User Process}
@@ -214,7 +231,7 @@ int main(int argc, char *argv[]) {
 
         
     \end{slide}
-
+    
     \begin{slide}
 
         \slidetitle{A Typical Process Tree on the Virtual Machine}
@@ -459,8 +476,8 @@ else {
 
     \slidetitle{Pipe}
     
-	\vspace{-3mm}
-	
+    \vspace{-3mm}
+    
     A pipe is a {half-duplex} communication mechanism:
     \begin{itemize}
         \item Data written into \texttt($fd[1]$) can be read from \texttt($fd[0]$).
@@ -486,27 +503,51 @@ else {
 
 \begin{slide}
 
-	\slidetitle{Pipe Example}
-	
-	\begin{minted}{c}
-    int fd[2]; // File descriptors for the pipe
-    pid_t pid;
-    char write_msg[] = "Hello from parent!";
-    char read_msg[100];
-    pid = fork(); // Create a child process
+    \slidetitle{Pipe Example}
+    
+    \begin{minted}{c}
+int fd[2]; // File descriptors for the pipe
+pipe(fd);
 
-    if (pid > 0) {  
-        close(fd[0]); 
-        write(fd[1], write_msg, strlen(write_msg) + 1);
-        close(fd[1]); 
-    } else {  
-        close(fd[1]);
-        read(fd[0], read_msg, sizeof(read_msg));
-        printf("Child received: %s\n", read_msg);
-        close(fd[0]); 
-    }
-	\end{minted}
-	
+pid_t pid;
+char write_msg[] = "Hello from parent!";
+char read_msg[100];
+pid = fork(); 
+
+if (pid > 0) {  
+    write(fd[1], write_msg, strlen(write_msg) + 1);
+} else {  
+    read(fd[0], read_msg, sizeof(read_msg));
+    printf("Child received: %s\n", read_msg);
+}
+\end{minted}
+    
+\end{slide}
+
+\begin{slide}
+
+    \slidetitle{Pipe Example}
+    
+    \begin{minted}{c}
+int fd[2]; // File descriptors for the pipe
+pipe(fd);
+
+pid_t pid;
+char write_msg[] = "Hello from parent!";
+char read_msg[100];
+pid = fork(); 
+if (pid > 0) {  
+    close(fd[0]);
+    write(fd[1], write_msg, strlen(write_msg) + 1);
+    close(fd[1]);
+} else {  
+    close(fd[1]);
+    read(fd[0], read_msg, sizeof(read_msg));
+    close(fd[0]);
+    printf("Child received: %s\n", read_msg);
+}
+\end{minted}
+    
 \end{slide}
 
 \end{document}
