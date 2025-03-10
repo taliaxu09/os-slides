@@ -1,6 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
-\PYG{g+go}{build/point\PYGZhy{}example\PYGZhy{}compile\PYGZhy{}v1\PYGZhy{}link\PYGZhy{}v1}
-\PYG{g+go}{build/point\PYGZhy{}example\PYGZhy{}compile\PYGZhy{}v1\PYGZhy{}link\PYGZhy{}v2}
-\PYG{g+go}{build/point\PYGZhy{}example\PYGZhy{}compile\PYGZhy{}v2\PYGZhy{}link\PYGZhy{}v1}
-\PYG{g+go}{build/point\PYGZhy{}example\PYGZhy{}compile\PYGZhy{}v2\PYGZhy{}link\PYGZhy{}v2}
-\end{Verbatim}

@@ -1,6 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
-\PYG{g+go}{execve(\PYGZdq{}./hello\PYGZus{}world\PYGZdq{}, [\PYGZdq{}./hello\PYGZus{}world\PYGZdq{}], 0x7ffd0489de40 /* 46 vars */) = 0}
-\PYG{g+go}{write(1, \PYGZdq{}Hello world\PYGZbs{}n\PYGZdq{}, 12)           = 12}
-\PYG{g+go}{exit\PYGZus{}group(0)                           = ?}
-\PYG{g+go}{+++ exited with 0 +++}
-\end{Verbatim}

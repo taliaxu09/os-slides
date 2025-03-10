@@ -1,3 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
-build/read\PYGZhy{}four\PYGZhy{}bytes\PYG{+w}{ }\PYGZlt{}FILE\PYGZgt{}
-\end{Verbatim}

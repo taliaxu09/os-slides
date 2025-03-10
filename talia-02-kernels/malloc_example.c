@@ -3,15 +3,15 @@
 
 int* functionA() {
     // stack
-	/*
-	int num = 42; 
-    return &num;  
-	*/
+	
+ //   int num = 42; 
+  //  return &num;  
+	
 	
 	// heap
-	int* num = (int*) malloc(sizeof(int));
-    *num = 42;
-	return num;
+      int* num = (int*) malloc(sizeof(int));
+      *num = 42;
+      return num;
 }
 
 int main() {

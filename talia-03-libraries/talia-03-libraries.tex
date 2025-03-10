@@ -1,13 +1,118 @@
 \input{../preamble.tex}
 
-\lecturenumber{3}
-\title{Libraries}
+\lecturenumber{4}
+\title{Kernel (con'd) \\Libraries\\Process}
 \version{2.0.0}
 
 \begin{document}
   \begin{frame}[plain, noframenumbering]
     \titlepage
   \end{frame}
+
+\begin{slide}
+  
+	\slidetitle{You Can Think of the Kernel as a Long Running Process}
+
+	Writing kernel code is more like writing library code
+	(there's no \texttt{main})
+	\bigskip
+
+	The kernel lets you load code (called modules) which extends core kernel functionality
+	\medskip
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Aside: Function Pointer in C Struct}
+
+	\vspace{-5mm}
+	
+\begin{minted}{c}
+// Called when USB device is plugged in
+static int usb_probe(struct usb_interface *interface, const struct usb_device_id *id) {
+    printk(KERN_INFO "USB Device Plugged In: Vendor ID=%04X, Product ID=%04X\n",
+           id->idVendor, id->idProduct);
+    return 0;
+}
+// Register USB driver with the kernel
+static struct usb_driver usb_driver = {
+    .name = "example_usb_driver",
+    .id_table = usb_table,
+    .probe = usb_probe,
+    .disconnect = usb_disconnect,
+};
+// Module Init
+static int __init usb_driver_init(void) {
+    return usb_register(&usb_driver);
+}
+\end{minted}
+
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{A Monolithic Kernel Runs Operating System Services in Kernel
+              Mode}
+
+  \begin{tikzpicture}[box/.style={draw, minimum width=3.5cm,
+                                  minimum height=2em,
+                                  inner sep=0.5em, node distance=0.5cm}]
+    \draw [blue, dashed, thick] (0,0) -- ($(\textwidth - 3pt, 0)$);
+    \node [blue, anchor=south east] at ($(\textwidth - 3pt, 0)$)
+          (user) {User space};
+    \node [blue, anchor=north east] at ($(\textwidth - 3pt, 0)$)
+          (kernel) {Kernel space};
+    \node [box] (sched) at ($(\textwidth/2 - 1.5pt, -1.25)$)
+          {Process Scheduling};
+    \node [box, left=of sched] {Virtual Memory};
+    \node [box, right=of sched] {IPC};
+    \node [box, below=of sched] (dd) {Device Drivers};
+    \node [box, left=of dd] {File Systems};
+  \end{tikzpicture}
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{A Microkernel Runs the Minimum Amount of Services in Kernel
+              Mode}
+
+  \begin{tikzpicture}[box/.style={draw, minimum width=3.5cm,
+                                  minimum height=2em,
+                                  inner sep=0.5em, node distance=0.5cm}]
+    \draw [blue, dashed, thick] (0,0) -- ($(\textwidth - 3pt, 0)$);
+    \node [blue, anchor=south east] at ($(\textwidth - 3pt, 0)$)
+          (user) {User space};
+    \node [blue, anchor=north east] at ($(\textwidth - 3pt, 0)$)
+          (kernel) {Kernel space};
+    \node [box] (sched) at ($(\textwidth/2 - 1.5pt, -1.25)$)
+          {Process Scheduling};
+    \node [box, left=of sched] {Virtual Memory};
+    \node [box, right=of sched] {Basic IPC};
+    \node [box] (dd) at ($(\textwidth/2 - 1.5pt, 1.25)$) {Device Drivers};
+    \node [box, left=of dd] {File Systems};
+    \node [box, right=of dd] {Advanced IPC};
+  \end{tikzpicture}
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{Other Types of Kernels}
+
+  ``Hybrid'' kernels are between monolithic and microkernels
+
+  \leftspace{}Emulation services to user mode (Windows)
+
+  \leftspace{}Device drivers to user mode (macOS)
+  \bigskip
+
+  Nanokernels and picokernels
+
+  \leftspace{}Move even more into user mode than traditional microkernels
+  \bigskip
+
+  There's different architectural lines you can draw with different trade-offs
+\end{slide}
 
   \begin{slide}
     
@@ -72,47 +177,49 @@
     application
   \end{slide}
 
-  \begin{slide}
-    
-    \slidetitle{Normal Compilation in C}
 
-    \begin{center}
-    \begin{tikzpicture}[>=stealth', shorten >=2pt]
-      \node[draw, align=left] (main) {\texttt{main.c}};
-      \node[draw, align=left, below=of main, yshift=1em] (util)
-           {\texttt{util.c}};
-      \node[draw, align=left, below=of util, yshift=1em] (foo)
-           {\texttt{foo.c}};
-      \node[draw, align=left, below=of foo, yshift=1em] (bar)
-           {\texttt{bar.c}};
+\begin{slide}
 
-      \node[draw, align=left, right=of main, xshift=6em] (main-obj)
-           {\texttt{main.o}};
-      \node[draw, align=left, below=of main-obj, yshift=1em] (util-obj)
-           {\texttt{util.o}};
-      \node[draw, align=left, below=of util-obj, yshift=1em] (foo-obj)
-           {\texttt{foo.o}};
-      \node[draw, align=left, below=of foo-obj, yshift=1em] (bar-obj)
-           {\texttt{bar.o}};
+\slidetitle{Normal Compilation in C}
 
-      \node[draw, align=left, right=of main-obj, xshift=6em] (exec)
-           {\texttt{executable}};
+	\begin{center}
+	\begin{tikzpicture}[>=stealth', shorten >=2pt]
+	  \node[draw, align=left] (main) {\texttt{main.c}};
+	  \node[draw, align=left, below=of main, yshift=1em] (util)
+		   {\texttt{util.c}};
+	  \node[draw, align=left, below=of util, yshift=1em] (foo)
+		   {\texttt{foo.c}};
+	  \node[draw, align=left, below=of foo, yshift=1em] (bar)
+		   {\texttt{bar.c}};
 
-      \draw[->] (main) -- node [above] {\small Compilation} (main-obj);
-      \draw[->] (util) -- (util-obj);
-      \draw[->] (foo) -- (foo-obj);
-      \draw[->] (bar) -- (bar-obj);
-      \draw[->] (main-obj) -- node [above] {\small Linkage} (exec);
-      \draw[->] (util-obj) -- (exec);
-      \draw[->] (foo-obj) -- (exec);
-      \draw[->] (bar-obj) -- (exec);
-    \end{tikzpicture}
-    \end{center}
+	  \node[draw, align=left, right=of main, xshift=6em] (main-obj)
+		   {\texttt{main.o}};
+	  \node[draw, align=left, below=of main-obj, yshift=1em] (util-obj)
+		   {\texttt{util.o}};
+	  \node[draw, align=left, below=of util-obj, yshift=1em] (foo-obj)
+		   {\texttt{foo.o}};
+	  \node[draw, align=left, below=of foo-obj, yshift=1em] (bar-obj)
+		   {\texttt{bar.o}};
 
-    \vspace{1em}
+	  \node[draw, align=left, right=of main-obj, xshift=6em] (exec)
+		   {\texttt{executable}};
 
-    Note: object files (\texttt{.o}) are just ELF files with code for functions
-  \end{slide}
+	  \draw[->] (main) -- node [above] {\small Compilation} (main-obj);
+	  \draw[->] (util) -- (util-obj);
+	  \draw[->] (foo) -- (foo-obj);
+	  \draw[->] (bar) -- (bar-obj);
+	  \draw[->] (main-obj) -- node [above] {\small Linkage} (exec);
+	  \draw[->] (util-obj) -- (exec);
+	  \draw[->] (foo-obj) -- (exec);
+	  \draw[->] (bar-obj) -- (exec);
+	\end{tikzpicture}
+	\end{center}
+
+	\vspace{1em}
+
+	Note: object files (\texttt{.o}) are just ELF files with code for functions
+	
+\end{slide}
 
   \begin{slide}
     
@@ -228,7 +335,7 @@
   \begin{slide}
     \slidetitle{Static vs Dynamic Libraries}
 
-    Another option is to statically link your code
+    To statically link your code
 
     \leftspace{}Basically copies the \texttt{.o} files directly into the
     executable
@@ -247,295 +354,337 @@
     What are issues with dynamic libraries?
   \end{slide}
 
-  \begin{slide}
-    \slidetitle{Dynamic Libraries Updates Can Break Executables}
+\begin{slide}
 
-    A dynamic library update may subtly change the ABI causing a crash
-    \medskip
-
-    Consider the following in a dynamic library:
-
-    \leftspace{}A \texttt{struct} with multiple fields corresponding to
-    a specific data layout (C ABI)
-    \medskip
-
-    \structure{An executable accesses the fields of the \texttt{struct} used by
-               a dynamic library}
-    \bigskip
-
-    Now if a dynamic library reorders the fields
-
-    \leftspace{} The executable uses the old offsets and is now wrong
-    \medskip
-
-    Note: this is OK if the dynamic library never exposes the fields of a
-    \texttt{struct}
-  \end{slide}
-
-  \begin{slide}
-
-    \slidetitle{
-      C Uses a Consistent ABI for \texttt{\bfseries\color{magenta}struct}s
-    }
-
-    \texttt{struct}s are laid out in memory with the fields matching the
-    declaration order
-
-    \leftspace{}C compilers ensure the ABI of \texttt{struct}s are the
-    consistent for an architecture
-    \medskip
-
-    Consider the following structures:
-    \medskip
-    \begin{columns}
-      \begin{column}{0.4\textwidth}
-        Library v1:
-        \begin{minted}{c}
-struct point {
-  int y;
-  int x;
-};
-        \end{minted}
-      \end{column}
-      \begin{column}{0.4\textwidth}
-        Library v2:
-        \begin{minted}{c}
-struct point {
-  int x;
-  int y;
-};
-        \end{minted}
-      \end{column}
-    \end{columns}
-    \medskip
-
-    For v1 the \texttt{x} field is offset by 4 bytes from the start of
-    \texttt{struct point}'s base
-
-    \leftspace{}For v2 it is offset by 0 bytes, and this difference
-    will cause problems
-  \end{slide}
-
-  \begin{slide}
-    
-    \slidetitle{After Compilation the Translation Differs for Each Version}
+	\slidetitle{Program and Process}
+	
+	A \textbf{program} consists of static code and data, e.g., on the disk.
+	\bigskip
+	
+	A \textbf{process} is an instance of a program (at any time there may be 0 or
+	more instances of a program running, e.g., a user may run multiple concurrent
+	shells).
   
-	\vspace{-5mm}
-    \includegraphics{point-representation.eps}
+\end{slide}
 
-  \end{slide}
+\begin{slide}
 
-  \begin{slide}
-    
-    \slidetitle{The Point API Has Four Functions}
-
-	\vspace{-7mm}
-    \includegraphics{point-api.eps}
-
-  \end{slide}
-
-  \begin{slide}
-
-    \slidetitle{ABI Stable Code Should Always Print ``1, 2'' for Both Lines}
-    
-    \inputminted{c}{point-example.c}
-
-  \end{slide}
-
-  \begin{slide}
-
-    \slidetitle{Try the Previous Example}
-
-    We could set \texttt{LD\_LIBRARY\_PATH} to \mintinline{console}{build/v1} or \mintinline{console}{build/v2}
-    to simulate a library update
-    \bigskip
-
-    Run the following commands to see for yourself:
-    \begin{minted}{c}
-build/point-example-compile-v1-link-v1
-LD_LIBRARY_PATH=build/v2 build/point-example-compile-v1-link-v1
-    \end{minted}
-    \medskip
-
-    Note: you'd also have a problem if you compiled with v2 and used v1
-  \end{slide}
-
-  \begin{slide}
-    
-    \slidetitle{Mismatched Versions Don't Agree on the Location of X and Y}
+	\slidetitle{Process Creation}
 	
 	\vspace{-5mm}
-    \includegraphics{point-libraries.eps}
+	\resizebox{0.5\textwidth}{0.5\textwidth}{%
+	
+		\begin{tikzpicture}
 
-  \end{slide}
+		\node at (0,5) {CPU};
+		\node (A) at (0,3) [draw,ultra thick,minimum width=3cm, minimum height=3cm] {};
+		\node at (5,5) {Memory};
+		\node (B) at (5,3) [draw,ultra thick,minimum width=3cm, minimum height=3cm] {};
 
-  \begin{slide}
+		\node at (4.5,-2) {Disk};
+		\draw (2.5,-1) [ultra thick] circle (1.5cm);
 
-    \slidetitle{Mismatched Versions of This Library Causes Problems}
+		\node at (2.5,-1.9) {Program};
+		\node at (2.5,-1) [red,draw,ultra thick, text width=1.5cm, minimum width=1.8cm,
+		minimum height=1.2cm] {code data};
 
-    The definition of \texttt{struct point} in both libraries is different
+		\draw [ultra thick] (0.2, 1) -- (4.8, 1);
+		\draw [ultra thick] (0.2, 1) -- (0.2, 1.5);
+		\draw [ultra thick] (4.8, 1) -- (4.8, 1.5);
+		\draw [ultra thick] (2.5, 1) -- (2.5, 0.5);
 
-    \leftspace{}Order of \texttt{x} and \texttt{y} change (and therefore their
-    offsets)
-    \medskip
 
-    Our code works correctly if the compiled and linked versions match
+		\end{tikzpicture}
+	}
+	
+\end{slide}
 
-    \leftspace{}If you expose a \mintinline{c}{struct} it becomes part of your ABI!
+\begin{slide}
+
+	\slidetitle{A Process Control Block (PCB) Contains All Information}
+
+	Specifically, in Linux, this is the \texttt{\color{blue}
+	task\_struct} you can browse on
+
+	\href{https://github.com/torvalds/linux/blob/master/include/linux/sched.h\#L743}
+		 {GitHub}
+	\medskip
+
+	It contains:
+	\begin{itemize}
+	  \item Process ID (PID)
+	  \item Process state
+	  \item CPU registers
+	  \item Scheduling information
+	  \item Memory management information
+	  \item I/O status information
+	  \item Any other type of accounting information
+	\end{itemize}
+	\medskip
+
+	Each process gets a unique process ID (pid) to keep track of it
+
+\end{slide}
+	
+\begin{slide}
+
+	\slidetitle{Process Creation}
+	
+	\vspace{-5mm}
+	\resizebox{0.5\textwidth}{0.5\textwidth}{%
+
+		\begin{tikzpicture}
+
+		\node at (0,5) {CPU};
+		\node (A) at (0,3) [draw,ultra thick,minimum width=3cm, minimum height=3cm] {};
+		\node at (5,5) {Memory};
+		\node (B) at (5,3) [draw,ultra thick,minimum width=3cm, minimum height=3cm] {};
+
+		\node at (4.5,-2) {Disk};
+		\draw (2.5,-1) [ultra thick] circle (1.5cm);
+
+		\node at (2.5,-1.9) {Program};
+		\node (PRG) at (2.5,-1) [red,draw,ultra thick, text width=1.5cm, minimum width=1.8cm,
+		minimum height=1.2cm] {code data};
+
+		\node at (5,2) {Process};
+		\node (PRC) at (5,3.2) [blue,draw,ultra thick, text width=1.5cm, minimum width=1.5cm,
+		minimum height=1.2cm] {code data heap stack};
+
+		\draw [ultra thick] (0.2, 1) -- (4.8, 1);
+		\draw [ultra thick] (0.2, 1) -- (0.2, 1.5);
+		\draw [ultra thick] (4.8, 1) -- (4.8, 1.5);
+		\draw [ultra thick] (2.5, 1) -- (2.5, 0.5);
+
+
+		\draw [ultra thick, red] (2.5, -0.4) -- (2.5, 3.2);
+		\draw [ultra thick, red, ->] (2.5, 3.2) -- (4, 3.2);
+
+		\end{tikzpicture}
+	}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Process Creation}
+	
+	OS allocates internal data structures (PCB)
+	\bigskip
+	
+	OS allocates an address space
     \bigskip
+	
+	OS opens basic files (STDIN, STDOUT, STDERR)
+	\bigskip
+	
+	OS initializes CPU registers
+	\bigskip
 
-    Let's try executing different combinations:
-    \begin{minted}{console}
-build/point-example-compile-v1-link-v1
-build/point-example-compile-v1-link-v2
-build/point-example-compile-v2-link-v1
-build/point-example-compile-v2-link-v2
-    \end{minted}
-    \medskip
-
-    A proper stable ABI would hide the \mintinline{c}{struct} from
-    \mintinline{c}{point.h}
-  \end{slide}
-
-  \begin{slide}
-
-    \slidetitle{Semantic Versioning Meets Developer's Expectations}
-
-    From \url{https://semver.org/}
-    \medskip
-
-    Given a version number MAJOR.MINOR.PATCH, increment the:
-    \begin{itemize}
-      \item MAJOR version when you make incompatible API\structure{/ABI} changes
-      \item MINOR version when you add functionality in a backwards-compatible
-            manner
-      \item PATCH version when you make backwards-compatible bug fixes
-    \end{itemize}
-  \end{slide}
-
-\begin{slide}
-  
-  \slidetitle{Dynamic Libraries Allow Easier Debugging}
-
-  Control dynamic linking with environment variables
-
-  \leftspace{}\texttt{LD\_LIBRARY\_PATH} and \texttt{LD\_PRELOAD}
-  \medskip
-
-  Consider the following example:
-
-  \inputminted{c}{alloc-example.c}
-\end{slide}
-
-  \begin{slide}
-    
-    \slidetitle{We Can Monitor All Allocations with Our Own Library}
-
-    Normal runs of \texttt{alloc-example} outputs:
-    \begin{minted}{console}
-x = 0x561116384260
-    \end{minted}
-    \medskip
-
-    Create \texttt{liballoc-wrapper.so} that outputs all \texttt{malloc} and
-    \texttt{free} calls \newline
-    \leftspace{} Run: \mintinline{console}{LD_PRELOAD=build/liballoc-wrapper.so build/alloc-example}
-
-    \begin{minted}{console}
-Call to malloc(4) = 0x55c12aa40260                  
-Call to malloc(1024) = 0x55c12aa40280
-x = 0x55c12aa40260
-Call to free(0x55c12aa40260)
-    \end{minted}
-    \bigskip
-
-    Interesting, we did not make 2 \texttt{malloc} calls
-  \end{slide}
-
-\begin{slide}
-  
-  \slidetitle{Detecting Memory Leaks with Valgrind}
-
-  \texttt{valgrind} is another useful tool to detect memory leaks from
-  \texttt{malloc} and \texttt{free}
-
-  \leftspace{}Usage: \texttt{valgrind <executable>}
-  \bigskip
-
-
-  Here's a note from the \texttt{man} pages regarding what we saw:
-  \medskip
-
-  ``The GNU C library (\texttt{libc.so}), which is used by all programs,
-    may allocate memory for its own uses. Usually it doesn't bother to free
-    that memory when the program ends—there would be no point, since the Linux
-    kernel reclaims all process resources when a process exits anyway, so it
-    would just slow things down.''
-  \bigskip
-
-  \structure{Note: this does not excuse you from not calling \texttt{free}!}
 \end{slide}
 
 \begin{slide}
-  
-  \slidetitle{Detecting Memory Leaks with AddressSanitizer}
 
-  There's also sanitizer tools built into Clang (and now gcc), but you have to
-  recompile
-
-  \leftspace{}Add the \mintinline{console}{-Db_sanitize=address} flag to Meson
-  \bigskip
-
-  \begin{minted}{console}
-rm -rf build
-meson setup build -Db_sanitize=address
-meson compile -C build
-  \end{minted}
+	\slidetitle{Program, Process, Thread}
+	
+	A \textbf{program} is on-disk application, consisting of code and data; programs become a process when they are executed
+	\bigskip
+	
+    A \textbf{process} is a running instance of a program. A process starts with a single thread of execution and an address space.
+	\bigskip
+	
+    A process can launch multiple \textbf{threads} of execution in the same address space. Each thread receives its own stack but they share global data, code, and heap.
+	
 \end{slide}
 
 \begin{slide}
-  
-  \slidetitle{System Calls are Rare in C}
-
-  Mostly you'll be using functions from the C standard library instead
-  \bigskip
-
-  Most system calls have corresponding function calls in C, but may:
-  \begin{itemize}
-    \item Set \texttt{errno}
-    \item Buffer reads and writes (reduce the number of system calls)
-    \item Simplify interfaces (function combines two system calls)
-    \item Add new features
-  \end{itemize}
+	
+	\slidetitle{Running Processes On My Laptop}
+	
+	\centering
+	\includegraphics[width=60mm]{windows_num_process.png}
+		
 \end{slide}
 
 \begin{slide}
-  
-  \slidetitle{C \texttt{exit} Has Additional Features}
 
-  System call \texttt{exit} (or \texttt{exit\_group}): the program
-  stops at that point
-  \medskip
+	\slidetitle{Sharing Resources}
+	
+	\vspace{-5mm}
+	
+	\begin{minipage}[t]{0.45\textwidth}
+	\vspace{0pt}\par
+	\centering
+		\begin{tikzpicture}
+		\fill [blue] (1.4,1) rectangle (1.6,0.2);
+		\fill [blue] (0,0) rectangle (3,0.2);
 
-  C \texttt{exit}: there's a feature to register functions to call
-  on program exit (\texttt{atexit})
-  \medskip
+		\draw [ultra thick, purple] (0.2,0) -- (3,0);
 
-  \inputminted{c}{atexit-example.c}
+		\fill [blue] (0,0) rectangle (0.2,-1);
+
+
+		\draw [ultra thick, black] (0,0.2) -- (1.4,0.2) -- (1.4,1);
+		\draw [ultra thick, black] (1.6,1) -- (1.6,0.2) -- (3,0.2);
+		\draw [ultra thick, black] (0,0.2) -- (0,-1);
+		\draw [ultra thick, black] (3,0.2) -- (3,-1);
+		\draw [ultra thick, black] (0.2,-1) -- (0.2,0) -- (0.7,0) -- (0.7,-1);
+		\draw [ultra thick, black] (0.9,-1) -- (0.9,0) -- (1.4,0) -- (1.4,-1);
+		\draw [ultra thick, black] (1.6,-1) -- (1.6,0) -- (2.1,0) -- (2.1,-1);
+		\draw [ultra thick, black] (2.3,-1) -- (2.3,0) -- (2.8,0) -- (2.8,-1);
+
+		\end{tikzpicture}
+
+		Time sharing (one at a time)
+		
+	\end{minipage}
+	\hfill
+	\begin{minipage}[t]{0.45\textwidth}
+	\vspace{0pt}\par
+	\centering
+		\begin{tikzpicture}
+		\fill [blue] (1.4,1) rectangle (1.6,0.2);
+		\fill [blue] (0,0) rectangle (3,0.2);
+
+		\draw [ultra thick, purple] (0,0) -- (3,0);
+
+		\fill [blue!50] (0,0.03) rectangle (0.1,-1);
+		\fill [blue!50] (0.7,0.03) rectangle (0.8,-1);
+		\fill [blue!50] (1.4,0.03) rectangle (1.5,-1);
+		\fill [blue!50] (2.1,0.03) rectangle (2.2,-1);
+		\fill [blue!50] (2.8,0.03) rectangle (2.9,-1);
+
+		\draw [ultra thick, black] (0,0.2) -- (1.4,0.2) -- (1.4,1);
+		\draw [ultra thick, black] (1.6,1) -- (1.6,0.2) -- (3,0.2);
+		\draw [ultra thick, black] (0,0.2) -- (0,-1);
+		\draw [ultra thick, black] (3,0.2) -- (3,-1);
+		\draw [ultra thick, black] (0.2,-1) -- (0.2,0) -- (0.7,0) -- (0.7,-1);
+		\draw [ultra thick, black] (0.9,-1) -- (0.9,0) -- (1.4,0) -- (1.4,-1);
+		\draw [ultra thick, black] (1.6,-1) -- (1.6,0) -- (2.1,0) -- (2.1,-1);
+		\draw [ultra thick, black] (2.3,-1) -- (2.3,0) -- (2.8,0) -- (2.8,-1);
+
+		\end{tikzpicture}
+
+		Space sharing (all a little)
+		
+	\end{minipage}
+
+\end{slide}
+	
+\begin{slide}
+
+	\slidetitle{Virtualizing the CPU}
+	
+	Goal: give each process the illusion of exclusive CPU access
+	\medskip
+	
+	Reality: the CPU is a shared resource among all processes
+	\bigskip
+	
 \end{slide}
 
 \begin{slide}
-  
-  \slidetitle{Operating Systems Provide the Foundation for Libraries}
 
-  We learned:
-  \begin{itemize}
-    \item Dynamic libraries and a comparison to static libraries
-    \begin{itemize}
-      \item How to manipulate the dynamic loader
-    \end{itemize}
-    \item Example of issues from ABI changes without API changes
-  \end{itemize}
+	\slidetitle{OS provides process abstraction}
+	
+	When the user executes a program, the OS creates a process
+	\bigskip
+	
+	OS time-shares CPU across multiple processes
+	\bigskip
+	
+	OS scheduler picks one of the executable processes to run
+	
+\end{slide}
+
+\begin{slide}
+	\slidetitle{Process State Diagram (You Could Rename Waiting to Ready)}
+
+	\begin{tikzpicture}[
+	  every initial by arrow/.style={rawarrow},
+	  every state/.style={ellipse, minimum width=2.5cm, minimum height=1cm, font=\small},
+	]
+	  \node [state, initial] (created) {Created};
+	  \node [state, right=of created] (waiting) {Waiting};
+	  \node [state, above right=of waiting] (running) {Running};
+	  \node [state, below right=of waiting] (blocked) {Blocked};
+	  \node [state, accepting, below right=of running] (terminated) {Terminated};
+	  \path [rawarrow] (created) edge (waiting)
+				 (waiting) edge [bend left] (running)
+				 (running) edge [bend left] (waiting)
+				 (running) edge (blocked)
+				 (blocked) edge (waiting)
+				 (running) edge (terminated);
+	\end{tikzpicture}
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Process State Transitions}
+
+	\vspace{-3mm}
+	
+	Process 0 takes 5 timesteps to complete
+	
+	Process 0 initiates I/O after 3 time steps (takes 4 time steps)
+	
+	Process 1 takes 5 timesteps to complete
+	
+	Process State Transitions: Running Until Blocked or Completion 
+	
+	\bigskip
+	
+	\centering
+	\begin{tabular}{rllp{5cm}}
+		\textbf{Time} & \textbf{Process 0} & \textbf{Process 1} & \textbf{Notes} \\
+		1  & Running   & Ready     &  \\
+		2  &    &      &  \\
+		3  &    &      &  \\
+		4  &    &    &  \\
+		5  &    &    &  \\
+		6  &    &    &  \\
+		7  &    &    &  \\
+		8  &      &    &  \\
+		9  &    &          &  \\
+	\end{tabular}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Process State Transitions}
+
+	\vspace{-3mm}
+	
+	Process 0 takes 5 timesteps to complete
+	
+	Process 0 initiates I/O after 3 time steps (takes 4 time steps)
+	
+	Process 1 takes 5 timesteps to complete
+	
+	Process State Transitions: Switch after running 2 timesteps 
+	
+	\bigskip
+	
+	\centering
+	\begin{tabular}{rllp{5cm}}
+		\textbf{Time} & \textbf{Process 0} & \textbf{Process 1} & \textbf{Notes} \\
+		1  & Running   & Ready     &  \\
+		2  &    &      &  \\
+		3  &    &      &  \\
+		4  &    &    &  \\
+		5  &    &    &  \\
+		6  &    &    &  \\
+		7  &    &    &  \\
+		8  &      &    &  \\
+		9  &    &          &  \\
+	\end{tabular}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Draw the Process Structure}
 
 \end{slide}
 

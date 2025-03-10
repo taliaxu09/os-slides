@@ -1,3 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
-\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n+nf}{exit\PYGZus{}group}\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{status}\PYG{p}{)}\PYG{p}{;}
-\end{Verbatim}
