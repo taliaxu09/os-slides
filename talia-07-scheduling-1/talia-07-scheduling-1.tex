@@ -311,33 +311,33 @@ int main() {
 	If a process comes back after I/O wait, it counts as a fresh CPU burst
 	\bigskip
 	
-	We are looking at both preemptive and non-preemptive scheduler approaches.
-	
+	We assume no I/O for now.
+		
 \end{slide}
 
   \begin{slide}
 
     \slidetitle{Metrics}
 
-    Minimize waiting time and response time
+    Turnaround time
+	
+	\leftspace{} $T_{turnaround} = T_{completion} - T_{arrival}$
 
-    \leftspace{}Don't have a process waiting too long (or too long to start)
-    \medskip
-
-    Maximize CPU utilization
-
-    \leftspace{}Don't have the CPU idle
-    \medskip
-
-    Maximize throughput
-
-    \leftspace{}Complete as many processes as possible
-    \medskip
-
+	\bigskip
+	
     Fairness
 
     \leftspace{}Try to give each process the same percentage of the CPU
-
+	
+	\leftspace{} (Different ways to measure)
+	
+	\bigskip
+	
+	CPU Utilization
+	\bigskip
+	
+	Scheduling performance is application dependent.
+	
   \end{slide}
 
   \begin{slide}
@@ -418,29 +418,54 @@ int main() {
       \end{tikzpicture}
     \end{center}
 
-    What is the average waiting time?
+    What is the average turnaround time?
   \end{slide}
+ 
+
+\begin{slide}
+
+	\slidetitle{First Come First Served (FCFS)}
+
+	Simple to implement.
+	\bigskip
+	
+	Does not work very well.
+	
+\end{slide}
   
   \begin{slide}
-    \slidetitle{What Happens to Our Waiting Time with a Different Arrival Order}
 
-    Consider the same processes:
+    \slidetitle{Shortest Job First (SJF)}
+
+    A slight tweak to FCFS, we always schedule the job with the shortest burst time
+    first
+    \bigskip
+
+    We're still assuming no preemption
+	\bigskip
+	
+	SJF is optimal if we assume all jobs arrive at the same time.
+	
+  \end{slide}
+
+  \begin{slide}
+
+    \slidetitle{SJF Minimizes the Average Wait Time over FCFS}
+
+    Consider the same processes with different arrival times:
 
     \begin{center}
       \footnotesize
       \begin{tabular}{lrr}
         Process & Arrival Time & Burst Time \\
         $\mathsf{P_1}$ & 0 & 7 \\
-        $\mathsf{P_2}$ & 0 & 4 \\
-        $\mathsf{P_3}$ & 0 & 1 \\
-        $\mathsf{P_4}$ & 0 & 4 \\
+        $\mathsf{P_2}$ & 2 & 4 \\
+        $\mathsf{P_3}$ & 4 & 1 \\
+        $\mathsf{P_4}$ & 5 & 4 \\
       \end{tabular}
     \end{center}
-    \medskip
 
-    Assume, $\mathsf{P_3} \rightarrow \mathsf{P_2} \rightarrow \mathsf{P_4}
-             \rightarrow \mathsf{P_1}$.
-    For FCFS, our schedule is:
+    For SJF, our schedule is (arrival on top):
 
     \begin{center}
       \begin{tikzpicture}
@@ -484,108 +509,15 @@ int main() {
       \end{tikzpicture}
     \end{center}
 
-    What is the average waiting time now?
-  \end{slide}
-
-  \begin{slide}
-
-    \slidetitle{Shortest Job First (SJF)}
-
-    A slight tweak to FCFS, we always schedule the job with the shortest burst time
-    first
-    \medskip
-
-    We're still assuming no preemption
-
-  \end{slide}
-
-  \begin{slide}
-
-    \slidetitle{SJF Minimizes the Average Wait Time over FCFS}
-
-    Consider the same processes with different arrival times:
-
-    \begin{center}
-      \footnotesize
-      \begin{tabular}{lrr}
-        Process & Arrival Time & Burst Time \\
-        $\mathsf{P_1}$ & 0 & 7 \\
-        $\mathsf{P_2}$ & 2 & 4 \\
-        $\mathsf{P_3}$ & 4 & 1 \\
-        $\mathsf{P_4}$ & 5 & 4 \\
-      \end{tabular}
-    \end{center}
-
-    For SJF, our schedule is (arrival on top):
-
-    \begin{center}
-      \begin{tikzpicture}
-
-        \fill [black!80] (0,0) rectangle (14em, 2em);
-
-        \fill [black!60] (16em,0) rectangle (24em, 2em);
-
-        \fill [black!40] (14em,0) rectangle (16em, 2em);
-
-        \fill [black!20] (24em,0) rectangle (32em, 2em);
-
-        \draw (0,0) rectangle (32em,2em);
-
-        \foreach \i in {1,...,15} {
-          \draw [shorten >=0] (\i * 2em, 0) -- (\i * 2em, 2em);
-        }
-
-        \node [anchor=south] at (0em, 2em) {\scriptsize 0};
-        \node [anchor=south] at (4em, 2em) {\scriptsize 2};
-        \node [anchor=south] at (8em, 2em) {\scriptsize 4};
-        \node [anchor=south] at (10em, 2em) {\scriptsize 5};
-        \node [anchor=south] at (14em, 2em) {\scriptsize 7};
-        \node [anchor=south] at (16em, 2em) {\scriptsize 8};
-        \node [anchor=south] at (24em, 2em) {\scriptsize 12};
-        \node [anchor=south] at (32em, 2em) {\scriptsize 16};
-
-        \draw [decorate, decoration={brace,amplitude=10pt,mirror,raise=2pt}]
-              (0.2em,0) -- (13.8em,0)
-              node [midway, below, anchor=north, yshift=-1.25em]
-              {\footnotesize $\mathsf{P_1}$};
-
-        \draw [decorate, decoration={brace,amplitude=10pt,mirror,raise=2pt}]
-              (16.2em,0) -- (23.8em,0)
-              node [midway, below, anchor=north, yshift=-1.25em]
-              {\footnotesize $\mathsf{P_2}$};
-
-        \node [anchor=north] at (15em, 0) {\footnotesize $\mathsf{P_3}$};
-
-        \draw [decorate, decoration={brace,amplitude=10pt,mirror,raise=2pt}]
-              (24.2em,0) -- (31.8em,0)
-              node [midway, below, anchor=north, yshift=-1.25em]
-              {\footnotesize $\mathsf{P_4}$};
-
-        \node [anchor=south, yshift=1em] at (0em, 2em) {\footnotesize $\mathsf{P_1}$};
-
-        \node [anchor=south, yshift=1em] at (4em, 2em) {\footnotesize $\mathsf{P_2}$};
-
-        \node [anchor=south, yshift=1em] at (8em, 2em) {\footnotesize $\mathsf{P_3}$};
-
-        \node [anchor=south, yshift=1em] at (10em, 2em) {\footnotesize $\mathsf{P_4}$};
-      \end{tikzpicture}
-    \end{center}
-
-    Average waiting time: $\mathsf{\frac{0 + 6 + 3 + 7}{4} = 4}$
-
   \end{slide}
 
   \begin{slide}
 
     \slidetitle{SJF is Not Practical}
 
-    It is provably optimal at minimizing average wait time (if no preemption)
-    \medskip
 
     You will not know the burst times of each process
-
-    \leftspace{}You could use the past to predict future executions
-    \medskip
+    \bigskip
 
     You may starve long jobs (they may never execute)
 
@@ -593,7 +525,7 @@ int main() {
 
   \begin{slide}
 
-    \slidetitle{Shortest Remaining Time First (SRTF)}
+    \slidetitle{Shortest Time-to-Completion (STCF)}
 
     Changing SJF to run with preemptions requires another tweak
     \medskip
@@ -601,13 +533,13 @@ int main() {
     We'll assume that our minimum execution time is one unit
     \medskip
 
-    Similar to SJF, this optimizes the average waiting time
+    Similar to SJF, this optimizes the average turnaround time
 
   \end{slide}
 
   \begin{slide}
 
-    \slidetitle{SRTF Reduces the Average Wait Time Compared to SJF}
+    \slidetitle{SRTF Reduces the Average turnaround Time Compared to SJF}
 
     Consider the same processes and arrival times as SJF:
 
@@ -688,8 +620,6 @@ int main() {
         \node [anchor=south, yshift=1em] at (10em, 2em) {\footnotesize $\mathsf{P_4}$};
       \end{tikzpicture}
     \end{center}
-
-    Average waiting time: $\mathsf{\frac{9 + 1 + 0 + 2}{4} = 3}$
 
   \end{slide}
 
@@ -852,7 +782,7 @@ int main() {
     Number of context switches: 7
     \medskip
 
-    Average waiting time: $\mathsf{\frac{8 + 8 + 5 + 7}{4} = 7}$
+    Average turnaround time: $\mathsf{\frac{8 + 8 + 5 + 7}{4} = 7}$
     \medskip
 
     Average response time: $\mathsf{\frac{0 + 1 + 5 + 5}{4} = 2.75}$
@@ -1001,7 +931,7 @@ int main() {
     Number of context switches: 14
     \medskip
 
-    Average waiting time: $\mathsf{\frac{8 + 6 + 1 + 7}{4} = 5.5}$
+    Average turnaround time: $\mathsf{\frac{8 + 6 + 1 + 7}{4} = 5.5}$
     \medskip
 
     Average response time: $\mathsf{\frac{0 + 0 + 1 + 2}{4} = 0.75}$
@@ -1103,7 +1033,7 @@ int main() {
     Number of context switches: 3
     \medskip
 
-    Average waiting time: $\mathsf{\frac{0 + 5 + 7 + 7}{4} = 4.75}$
+    Average turnaround time: $\mathsf{\frac{0 + 5 + 7 + 7}{4} = 4.75}$
     \medskip
 
     Average response time: $\mathsf{\frac{0 + 5 + 7 + 7}{4} = 4.75}$
@@ -1121,7 +1051,7 @@ int main() {
 
     \leftspace{}Fair allocation of CPU
 
-    \leftspace{}Low average waiting time (when job lengths vary)
+    \leftspace{}Low average turnaround time (when job lengths vary)
     \bigskip
 
     The performance depends on the quantum length
@@ -1131,7 +1061,7 @@ int main() {
     \leftspace{}Too low and there's too many context switches (overhead)
     \medskip
 
-    RR has poor average waiting time when jobs have similar lengths
+    RR has poor average turnaround time when jobs have similar lengths
 
   \end{slide}
 
@@ -1143,9 +1073,9 @@ int main() {
 
     \begin{itemize}
       \item First Come First Served (FCFS) is the most basic scheduling algorithm
-      \item Shortest Job First (SJF) is a tweak that reduces waiting time
-      \item Shortest Remaining Time First (SRTF) uses SJF ideas with preemptions
-      \item SRTF optimizes lowest waiting time (or turnaround time)
+      \item Shortest Job First (SJF) is a tweak that reduces turnaround time
+      \item SShortest Time-to-Completion (STCF) uses SJF ideas with preemptions
+      \item STCF optimizes lowest turnaround time 
       \item Round-robin (RR) optimizes fairness and response time
     \end{itemize}
 
