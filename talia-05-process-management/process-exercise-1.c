@@ -12,7 +12,8 @@ int main() {
 
         if (pid == 0) {  
             i--;  
-        } else {  
+        } else { 
+	    waitpid(pid, NULL, 0);	
             printf("%d\n", i);  
             exit(0);  
         }

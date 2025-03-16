@@ -3,7 +3,10 @@
 
 int main() {
     int value = 2;
-    fork();
-    printf("Hello world, %d\n", value);
+    if (fork() == 0)
+	printf("Child\n");
+    else
+	printf("Parent\n");
+    //printf("Hello world, %d\n", value);
     return 0;
 }
