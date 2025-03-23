@@ -133,7 +133,7 @@
     Trap instruction is executed:
     \begin{itemize}
         \item System call
-        \item Program fault (i.e., segmentation fault)
+        \item Program fault (i.e., segmentation fault, page fault)
         \item Interrupt 
     \end{itemize}
     \bigskip
@@ -452,16 +452,16 @@ int main() {
 
     \slidetitle{SJF Minimizes the Average Wait Time over FCFS}
 
-    Consider the same processes with different arrival times:
+    Consider the same processes:
 
     \begin{center}
       \footnotesize
       \begin{tabular}{lrr}
         Process & Arrival Time & Burst Time \\
         $\mathsf{P_1}$ & 0 & 7 \\
-        $\mathsf{P_2}$ & 2 & 4 \\
-        $\mathsf{P_3}$ & 4 & 1 \\
-        $\mathsf{P_4}$ & 5 & 4 \\
+        $\mathsf{P_2}$ & 0 & 4 \\
+        $\mathsf{P_3}$ & 0 & 1 \\
+        $\mathsf{P_4}$ & 0 & 4 \\
       \end{tabular}
     \end{center}
 
@@ -648,6 +648,8 @@ int main() {
 
     \slidetitle{RR with a Quantum Length of 3 Units}
 
+	\vspace{-5mm}
+	
     \begin{center}
       \footnotesize
       \begin{tabular}{lrr}
@@ -661,115 +663,33 @@ int main() {
 
     For RR, our schedule is (arrival on top, queue on bottom):
 
+	\vspace{2mm}
+	
     \begin{center}
       \begin{tikzpicture}
 
-        \fill [black!80] (0,0) rectangle (6em, 2em);
+        \fill [black!0] (0,0) rectangle (6em, 2em);
         
-        \fill [black!60] (6em,0) rectangle (12em, 2em);
+        \fill [black!0] (6em,0) rectangle (12em, 2em);
 
-        \fill [black!80] (12em,0) rectangle (18em, 2em);
+        \fill [black!0] (12em,0) rectangle (18em, 2em);
 
-        \fill [black!40] (18em,0) rectangle (20em, 2em);
+        \fill [black!0] (18em,0) rectangle (20em, 2em);
 
-        \fill [black!20] (20em,0) rectangle (26em, 2em);
+        \fill [black!0] (20em,0) rectangle (26em, 2em);
 
-        \fill [black!60] (26em,0) rectangle (28em, 2em);
+        \fill [black!0] (26em,0) rectangle (28em, 2em);
 
-        \fill [black!80] (28em,0) rectangle (30em, 2em);
+        \fill [black!0] (28em,0) rectangle (30em, 2em);
 
-        \fill [black!20] (30em,0) rectangle (32em, 2em);
+        \fill [black!0] (30em,0) rectangle (32em, 2em);
 
         \draw (0,0) rectangle (32em,2em);
 
         \foreach \i in {1,...,15} {
           \draw [shorten >=0] (\i * 2em, 0) -- (\i * 2em, 2em);
-        }
+        } 
 
-        \node [anchor=south] at (0em, 2em) {\scriptsize 0};
-        \node [anchor=south] at (4em, 2em) {\scriptsize 2};
-        \node [anchor=south] at (6em, 2em) {\scriptsize 3};
-        \node [anchor=south] at (8em, 2em) {\scriptsize 4};
-        \node [anchor=south] at (10em, 2em) {\scriptsize 5};
-        \node [anchor=south] at (12em, 2em) {\scriptsize 6};
-        \node [anchor=south] at (18em, 2em) {\scriptsize 9};
-        \node [anchor=south] at (20em, 2em) {\scriptsize 10};
-        \node [anchor=south] at (26em, 2em) {\scriptsize 13};
-        \node [anchor=south] at (28em, 2em) {\scriptsize 14};
-        \node [anchor=south] at (30em, 2em) {\scriptsize 15};
-
-        \draw [decorate, decoration={brace,amplitude=10pt,mirror,raise=2pt}]
-              (0.2em,0) -- (5.8em,0)
-              node [midway, below, anchor=north, yshift=-1.25em]
-              {\footnotesize $\mathsf{P_1}$};
-
-        \draw [decorate, decoration={brace,amplitude=10pt,mirror,raise=2pt}]
-              (6.2em,0) -- (11.8em,0)
-              node [midway, below, anchor=north, yshift=-1.25em]
-              {\footnotesize $\mathsf{P_2}$};
-
-        \draw [decorate, decoration={brace,amplitude=10pt,mirror,raise=2pt}]
-              (12.2em,0) -- (17.8em,0)
-              node [midway, below, anchor=north, yshift=-1.25em]
-              {\footnotesize $\mathsf{P_1}$};
-
-        \node [anchor=north] at (19em, 0) {\footnotesize $\mathsf{P_3}$};
-
-        \draw [decorate, decoration={brace,amplitude=10pt,mirror,raise=2pt}]
-              (20.2em,0) -- (25.8em,0)
-              node [midway, below, anchor=north, yshift=-1.25em]
-              {\footnotesize $\mathsf{P_4}$};
-
-        \node [anchor=north] at (27em, 0) {\footnotesize $\mathsf{P_2}$};
-
-        \node [anchor=north] at (29em, 0) {\footnotesize $\mathsf{P_1}$};
-
-        \node [anchor=north] at (31em, 0) {\footnotesize $\mathsf{P_4}$};
-
-        \node [anchor=south, yshift=1em] at (0em, 2em) {\footnotesize $\mathsf{P_1}$};
-
-        \node [anchor=south, yshift=1em] at (4em, 2em) {\footnotesize $\mathsf{P_2}$};
-
-        \node [anchor=south, yshift=1em] at (8em, 2em) {\footnotesize $\mathsf{P_3}$};
-
-        \node [anchor=south, yshift=1em] at (10em, 2em) {\footnotesize $\mathsf{P_4}$};
-
-        \node [anchor=north, yshift=-3em] at (0em, 0em) {\footnotesize $\mathsf{P_1}$};
-
-        \node [anchor=north, yshift=-3em] at (4em, 0em) {\footnotesize $\mathsf{P_2}$};
-
-        \node [anchor=north, yshift=-3em] at (6em, 0em) {\footnotesize $\mathsf{P_2}$};
-        \node [anchor=north, yshift=-4em] at (6em, 0em) {\footnotesize $\mathsf{P_1}$};
-
-        \node [anchor=north, yshift=-3em] at (8em, 0em) {\footnotesize $\mathsf{P_1}$};
-        \node [anchor=north, yshift=-4em] at (8em, 0em) {\footnotesize $\mathsf{P_3}$};
-
-        \node [anchor=north, yshift=-3em] at (10em, 0em) {\footnotesize $\mathsf{P_1}$};
-        \node [anchor=north, yshift=-4em] at (10em, 0em) {\footnotesize $\mathsf{P_3}$};
-        \node [anchor=north, yshift=-5em] at (10em, 0em) {\footnotesize $\mathsf{P_4}$};
-
-        \node [anchor=north, yshift=-3em] at (12em, 0em) {\footnotesize $\mathsf{P_1}$};
-        \node [anchor=north, yshift=-4em] at (12em, 0em) {\footnotesize $\mathsf{P_3}$};
-        \node [anchor=north, yshift=-5em] at (12em, 0em) {\footnotesize $\mathsf{P_4}$};
-        \node [anchor=north, yshift=-6em] at (12em, 0em) {\footnotesize $\mathsf{P_2}$};
-
-        \node [anchor=north, yshift=-3em] at (18em, 0em) {\footnotesize $\mathsf{P_3}$};
-        \node [anchor=north, yshift=-4em] at (18em, 0em) {\footnotesize $\mathsf{P_4}$};
-        \node [anchor=north, yshift=-5em] at (18em, 0em) {\footnotesize $\mathsf{P_2}$};
-        \node [anchor=north, yshift=-6em] at (18em, 0em) {\footnotesize $\mathsf{P_1}$};
-
-        \node [anchor=north, yshift=-3em] at (20em, 0em) {\footnotesize $\mathsf{P_4}$};
-        \node [anchor=north, yshift=-4em] at (20em, 0em) {\footnotesize $\mathsf{P_2}$};
-        \node [anchor=north, yshift=-5em] at (20em, 0em) {\footnotesize $\mathsf{P_1}$};
-
-        \node [anchor=north, yshift=-3em] at (26em, 0em) {\footnotesize $\mathsf{P_2}$};
-        \node [anchor=north, yshift=-4em] at (26em, 0em) {\footnotesize $\mathsf{P_1}$};
-        \node [anchor=north, yshift=-5em] at (26em, 0em) {\footnotesize $\mathsf{P_4}$};
-
-        \node [anchor=north, yshift=-3em] at (28em, 0em) {\footnotesize $\mathsf{P_1}$};
-        \node [anchor=north, yshift=-4em] at (28em, 0em) {\footnotesize $\mathsf{P_4}$};
-
-        \node [anchor=north, yshift=-3em] at (30em, 0em) {\footnotesize $\mathsf{P_4}$};
       \end{tikzpicture}
     \end{center}
 
@@ -782,7 +702,7 @@ int main() {
     Number of context switches: 7
     \medskip
 
-    Average turnaround time: $\mathsf{\frac{8 + 8 + 5 + 7}{4} = 7}$
+    Average turnaround time: $\mathsf{\frac{10 + 14 + 15 + 16}{4} = 13.75}$
     \medskip
 
     Average response time: $\mathsf{\frac{0 + 1 + 5 + 5}{4} = 2.75}$
@@ -931,7 +851,7 @@ int main() {
     Number of context switches: 14
     \medskip
 
-    Average turnaround time: $\mathsf{\frac{8 + 6 + 1 + 7}{4} = 5.5}$
+    Average turnaround time: $\mathsf{\frac{15 + 12 + 6 + 16}{4} = 12.25}$
     \medskip
 
     Average response time: $\mathsf{\frac{0 + 0 + 1 + 2}{4} = 0.75}$
@@ -1033,7 +953,7 @@ int main() {
     Number of context switches: 3
     \medskip
 
-    Average turnaround time: $\mathsf{\frac{0 + 5 + 7 + 7}{4} = 4.75}$
+    Average turnaround time: $\mathsf{\frac{7 + 11 + 12 + 16}{4} = 11.5}$
     \medskip
 
     Average response time: $\mathsf{\frac{0 + 5 + 7 + 7}{4} = 4.75}$
@@ -1074,7 +994,7 @@ int main() {
     \begin{itemize}
       \item First Come First Served (FCFS) is the most basic scheduling algorithm
       \item Shortest Job First (SJF) is a tweak that reduces turnaround time
-      \item SShortest Time-to-Completion (STCF) uses SJF ideas with preemptions
+      \item Shortest Time-to-Completion (STCF) uses SJF ideas with preemptions
       \item STCF optimizes lowest turnaround time 
       \item Round-robin (RR) optimizes fairness and response time
     \end{itemize}
