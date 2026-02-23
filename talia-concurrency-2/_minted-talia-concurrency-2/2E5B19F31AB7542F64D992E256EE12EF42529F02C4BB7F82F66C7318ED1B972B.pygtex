@@ -1,0 +1,15 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{typedef}\PYG{+w}{ }\PYG{k}{struct}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{nreader}\PYG{p}{;}
+\PYG{+w}{  }\PYG{n}{lock\PYGZus{}t}\PYG{+w}{ }\PYG{n}{guard}\PYG{p}{;}
+\PYG{+w}{  }\PYG{n}{lock\PYGZus{}t}\PYG{+w}{ }\PYG{n}{lock}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{n}{rwlock\PYGZus{}t}\PYG{p}{;}
+
+\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n+nf}{write\PYGZus{}lock}\PYG{p}{(}\PYG{n}{rwlock\PYGZus{}t}\PYG{+w}{ }\PYG{o}{*}\PYG{n}{l}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{(}
+\PYG{+w}{  }\PYG{n}{lock}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{l}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZgt{}}\PYG{n}{lock}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n}{write\PYGZus{}unlock}\PYG{p}{(}\PYG{n}{rwlock\PYGZus{}t}\PYG{+w}{ }\PYG{o}{*}\PYG{n}{l}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{(}
+\PYG{+w}{  }\PYG{n}{unlock}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{l}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZgt{}}\PYG{n}{lock}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

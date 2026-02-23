@@ -1,0 +1,19 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}}\PYG{c+cp}{define N\PYGZus{}ITER 1000000}
+\PYG{k}{static}\PYG{+w}{ }\PYG{k+kt}{long}\PYG{+w}{ }\PYG{n}{counterA}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{counterB}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}
+\PYG{k}{static}\PYG{+w}{ }\PYG{n}{pthread\PYGZus{}mutex\PYGZus{}t}\PYG{+w}{ }\PYG{n}{lockA}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{PTHREAD\PYGZus{}MUTEX\PYGZus{}INITIALIZER}\PYG{p}{;}
+\PYG{k}{static}\PYG{+w}{ }\PYG{n}{pthread\PYGZus{}mutex\PYGZus{}t}\PYG{+w}{ }\PYG{n}{lockB}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{PTHREAD\PYGZus{}MUTEX\PYGZus{}INITIALIZER}\PYG{p}{;}
+
+\PYG{k+kt}{void}\PYG{+w}{ }\PYG{o}{*}\PYG{n+nf}{incA}\PYG{p}{(}\PYG{k+kt}{void}\PYG{+w}{ }\PYG{o}{*}\PYG{n}{arg}\PYG{p}{)}
+\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{for}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{i}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{i}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{n}{N\PYGZus{}ITER}\PYG{p}{;}\PYG{+w}{ }\PYG{o}{+}\PYG{o}{+}\PYG{n}{i}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{pthread\PYGZus{}mutex\PYGZus{}lock}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{lockA}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{o}{+}\PYG{o}{+}\PYG{n}{counterA}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{pthread\PYGZus{}mutex\PYGZus{}unlock}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{lockA}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{pthread\PYGZus{}mutex\PYGZus{}lock}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{lockB}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{o}{+}\PYG{o}{+}\PYG{n}{counterB}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{pthread\PYGZus{}mutex\PYGZus{}unlock}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{lockB}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{NULL}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

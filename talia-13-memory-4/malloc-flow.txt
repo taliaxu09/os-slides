@@ -1,0 +1,37 @@
+User Program
+    │
+    ▼
+Calls malloc(n)
+    │
+    ▼
+glibc malloc checks free list
+    ├──► Chunk found? ──► YES ──► Return pointer
+    │                          ▲
+    ▼                          │
+NO suitable chunk              │
+    │                          │
+    ▼                          │
+Need more memory  ─────────────┘
+    │
+    ├──► Use sbrk() (small/med allocs)
+    │       └── Kernel reserves new virtual memory
+    │
+    └──► Or use mmap() (large allocs)
+            └── Kernel maps virtual region
+    │
+    ▼
+New memory added to allocator
+    │
+    ▼
+Chunk returned to user
+    │
+    ▼
+User accesses memory (read / write)
+    │
+    ▼
+Page fault! (first access)
+    └──► Kernel allocates physical page
+         └── Adds page table entry (PTE)
+    │
+    ▼
+Access completes — memory is now fully mapped

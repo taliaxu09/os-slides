@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k+kt}{size\PYGZus{}t}\PYG{+w}{ }\PYG{n}{stacksize}\PYG{p}{;}
+\PYG{n}{pthread\PYGZus{}attr\PYGZus{}t}\PYG{+w}{ }\PYG{n}{attributes}\PYG{p}{;}
+\PYG{n}{pthread\PYGZus{}attr\PYGZus{}init}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{attributes}\PYG{p}{)}\PYG{p}{;}
+\PYG{n}{pthread\PYGZus{}attr\PYGZus{}getstacksize}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{attributes}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{n}{stacksize}\PYG{p}{)}\PYG{p}{;}
+\PYG{n}{printf}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Stack size = \PYGZpc{}i}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{stacksize}\PYG{p}{)}\PYG{p}{;}
+\PYG{n}{pthread\PYGZus{}attr\PYGZus{}destroy}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{attributes}\PYG{p}{)}\PYG{p}{;}
+\end{Verbatim}

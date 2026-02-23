@@ -1,0 +1,63 @@
+void * run (void * arg)
+{
+  void * D.2975;
+  int i;
+
+  i = 0;
+  goto <D.2960>;
+  <D.2959>:
+  counter.0_1 = counter;
+  _2 = counter.0_1 + 1;
+  counter = _2;
+  i = i + 1;
+  <D.2960>:
+  if (i <= 9999) goto <D.2959>; else goto <D.2957>;
+  <D.2957>:
+  D.2975 = 0B;
+  return D.2975;
+}
+
+
+int main ()
+{
+  int D.2977;
+
+  {
+    pthread_t thread[8];
+    int i;
+
+    try
+      {
+        i = 0;
+        goto <D.2969>;
+        <D.2968>:
+        _1 = &thread[i];
+        pthread_create (_1, 0B, run, 0B);
+        i = i + 1;
+        <D.2969>:
+        if (i <= 7) goto <D.2968>; else goto <D.2966>;
+        <D.2966>:
+        i = 0;
+        goto <D.2973>;
+        <D.2972>:
+        _2 = thread[i];
+        pthread_join (_2, 0B);
+        i = i + 1;
+        <D.2973>:
+        if (i <= 7) goto <D.2972>; else goto <D.2970>;
+        <D.2970>:
+        counter.1_3 = counter;
+        printf ("counter = %i\n", counter.1_3);
+        D.2977 = 0;
+        return D.2977;
+      }
+    finally
+      {
+        thread = {CLOBBER};
+      }
+  }
+  D.2977 = 0;
+  return D.2977;
+}
+
+

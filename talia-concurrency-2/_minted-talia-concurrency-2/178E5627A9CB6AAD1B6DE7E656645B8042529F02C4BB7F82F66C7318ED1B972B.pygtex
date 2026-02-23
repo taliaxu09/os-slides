@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{n}{lock\PYGZus{}t}\PYG{+w}{ }\PYG{n}{mutex}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// A lock is just a variable}
+\PYG{p}{.}\PYG{p}{.}\PYG{p}{.}
+\PYG{p}{.}\PYG{p}{.}\PYG{p}{.}
+\PYG{n}{lock}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{mutex}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// Acquire the lock}
+\PYG{n}{count}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{count}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mi}{1}
+\PYG{n}{unlock}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{mutex}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// Release the lock}
+\end{Verbatim}

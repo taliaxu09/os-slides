@@ -1,0 +1,6 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n+nf}{pthread\PYGZus{}create}\PYG{p}{(}\PYG{n}{pthread\PYGZus{}t}\PYG{o}{*}\PYG{+w}{ }\PYG{k+kr}{thread}\PYG{p}{,}
+\PYG{+w}{                   }\PYG{k}{const}\PYG{+w}{ }\PYG{n}{pthread\PYGZus{}attr\PYGZus{}t}\PYG{o}{*}\PYG{+w}{ }\PYG{n}{attr}\PYG{p}{,}
+\PYG{+w}{                   }\PYG{k+kt}{void}\PYG{o}{*}\PYG{+w}{ }\PYG{p}{(}\PYG{o}{*}\PYG{n}{start\PYGZus{}routine}\PYG{p}{)}\PYG{p}{(}\PYG{k+kt}{void}\PYG{o}{*}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                   }\PYG{k+kt}{void}\PYG{o}{*}\PYG{+w}{ }\PYG{n}{arg}\PYG{p}{)}\PYG{p}{;}
+\end{Verbatim}

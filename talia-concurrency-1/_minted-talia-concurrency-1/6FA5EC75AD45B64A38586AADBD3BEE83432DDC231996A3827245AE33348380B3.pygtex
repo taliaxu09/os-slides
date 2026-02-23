@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{pthread\PYGZus{}join}\PYG{p}{(}\PYG{n}{pthread\PYGZus{}t}\PYG{+w}{ }\PYG{k+kr}{thread}\PYG{p}{,}
+\PYG{+w}{                 }\PYG{k+kt}{void}\PYG{o}{*}\PYG{o}{*}\PYG{+w}{ }\PYG{n}{retval}\PYG{p}{)}
+\end{Verbatim}

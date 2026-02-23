@@ -1,0 +1,7 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{n}{pthread\PYGZus{}mutex\PYGZus{}t}\PYG{+w}{ }\PYG{n}{lock}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{PTHREAD\PYGZus{}MUTEX\PYGZus{}INITIALIZER}\PYG{p}{;}
+
+\PYG{n}{pthread\PYGZus{}mutex\PYGZus{}lock}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{lock}\PYG{p}{)}\PYG{p}{;}
+\PYG{c+c1}{// protected code}
+\PYG{n}{pthread\PYGZus{}mutex\PYGZus{}unlock}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{lock}\PYG{p}{)}\PYG{p}{;}
+\end{Verbatim}
