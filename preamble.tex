@@ -193,6 +193,12 @@
            yshift=-2.5mm]
           at (144mm, \paperheight / 3)
           {\ttfamily \insertversion{}};
+    
+    % --- Added Courtesy Node Here ---
+    \node [align=center, anchor=south, inner sep=0, text=white, yshift=7.5mm]
+          (courtesy) at (\paperwidth / 2, 0)
+          {\fontsize{7pt}{7pt}\selectfont Based on original slides by Professor Jon Eyolfson.};
+          
     \node [align=center, anchor=south, inner sep=0, text=white, yshift=3.5mm]
           (license) at (\paperwidth / 2, 0)
           {\fontsize{7pt}{7pt}\selectfont This  work is licensed under a
@@ -201,7 +207,6 @@
                  International License}};
   \end{tikzpicture}
 }
-
 % xcolor
 
 %% Primary Colour
