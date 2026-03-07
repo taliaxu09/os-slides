@@ -1,6 +1,6 @@
 \input{../preamble.tex}
 
-\lecturenumber{2}
+\lecturenumber{4}
 \title{Kernels}
 \version{2.0.0}
 
@@ -12,206 +12,106 @@
 
 \begin{slide}
 
-    \slidetitle{Aside: Stack In Memory Vs. Stack In Data Structure}
-
-\vspace{-5mm}
-\begin{minipage}[t]{0.3\textwidth}
-    \vspace{0pt}\par
-    \begin{minted}{c}
-void functionC(int c) {
-    int localC = c + 10;  
-    return localC;
-}
-void functionB(int b) {
-    int localB = b + 5;
-}
-void functionA(int a) {
-    int localA = a * 2;  
-    functionB(localA);    
-}
-int main() {
-    int x = 5;        
-    functionA(x);       
-    functionC(x);
-    return 0;
-}
-\end{minted}
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.5\textwidth}
-    \vspace{0pt}\par
-        \begin{tabular}{ | p{3cm} | } 
-            \hline
-            \\ \hline
-            \\ \hline
-            \\ \hline
-            \\ \hline
-            \\ \hline
-            \\ \hline
-            \\ \hline
-            \\ \hline
-            \\ \hline
-            \\ \hline
-            \\ \hline
-            \\ \hline
-            \\ \hline
-            \\ \hline
-            \\ \hline
-        \end{tabular}
-\end{minipage}
-
-\end{slide}
-
-\begin{slide}
-
-    \slidetitle{Aside: Java Vs. C}
-
-    \includegraphics[width=60mm]{java.png}
-    
-\end{slide}
-
-\begin{slide}
-
-    \slidetitle{Aside: Dynamic (malloc) Vs. Local Variables}
-
-\vspace{-3mm}
-\begin{minted}{c}
-int* functionA() {
-    // stack: Implementation 1
-    int num = 42; 
-    return &num;  
-    
-    // heap: Implementation 2
-    // int* num = (int*) malloc(sizeof(int));
-    // *num = 42;
-    // return num;
-}
-
-int main() {
-    int* ptr = functionA();
-    printf("Stack Variable: %d\n", *ptr); 
-    // free(ptr);
-    return 0;
-}
-\end{minted}
-
-\end{slide}
-
-\begin{slide}
-
-    \slidetitle{Recap: Physical and Virtual Memory}
-    
-    \vspace{-5mm}
-    (demo: \texttt{local} + \texttt{global} addresses)
-    \medskip
-    
-    (We will talk more on this in greater details later)
-    
-\end{slide}
-
-\begin{slide}
-
-    \slidetitle{Assignment 1 is Released}
-
-    We will be working with xv6 (A teaching OS developed at MIT).
-    \bigskip
-    
-    The main themes of this assignment are working with processes and becoming comfortable with both kernel and user-level code.
-    \bigskip
-    
-    You will be writing programs at both the user and kernel levels.
-    \bigskip
-    
-    Your TA will be handling all grading for this assignment.
-    \bigskip
-    
-    Please review the assignment, complete at least the setup this week, and visit your TA during tutorial if you encounter any issues.
-    \bigskip
-    
-\end{slide}
-
-\begin{slide}
-    
-    \slidetitle{Let's Execute This Program and Verify It's ``Hello world''}
-
-    \small \ttfamily
-    0x7F 0x45 0x4C 0x46 0x02 0x01 0x01 0x03 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-    0x00
-
-    0x02 0x00 0x3E 0x00 0x01 0x00 0x00 0x00 0x78 0x00 0x01 0x00 0x00 0x00 0x00
-    0x00
-
-    0x40 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-    0x00
-
-    0x00 0x00 0x00 0x00 0x40 0x00 0x38 0x00 0x01 0x00 0x40 0x00 0x00 0x00 0x00
-    0x00
-
-    0x01 0x00 0x00 0x00 0x05 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-    0x00
-
-    0x00 0x00 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x01 0x00 0x00 0x00 0x00
-    0x00
-
-    0xA8 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xA8 0x00 0x00 0x00 0x00 0x00 0x00
-    0x00
-
-    0x00 0x10 0x00 0x00 0x00 0x00 0x00 0x00 0x08 0x08 0x80 0xD2 0x20 0x00 0x80
-    0xD2
-
-    0x81 0x13 0x80 0xD2 0x21 0x00 0xA0 0xF2 0x82 0x01 0x80 0xD2 0x01 0x00 0x00
-    0xD4
-
-    0xC8 0x0B 0x80 0xD2 0x00 0x00 0x80 0xD2 0x01 0x00 0x00 0xD4 0x48 0x65 0x6C
-    0x6C
-
-    0x6F 0x20 0x77 0x6F 0x72 0x6C 0x64 0x0A
-    \bigskip
-
-    \normalsize \normalfont Execute using:
-    \mintinline{bash}{./hello-world-linux-aarch64}
-    
-\end{slide}
-
-\begin{slide}
-
-    \slidetitle{Instruction Set Architecture (ISA)}
-    
-	It's the machine code, or numbers the CPU understands
-	\bigskip
-
-    \includegraphics[width=60mm]{instruction-set-architecture.png}
-	\medskip
+	\slidetitle{Abstract View of Components of Computer}
 	
-	  \texttt{x86-64} (aka \texttt{amd64}): for desktops, non-Apple laptops,
-                                          servers
-  \medskip
-
-  \texttt{aarch64} (aka \texttt{arm64}): for phones, tablets, Apple laptops
-  \medskip
-
-  \texttt{riscv} (aka \texttt{rv64gc}): open-source implementation, similar to
-                                        ARM
-										
+	\begin{minipage}[t]{0.47\textwidth}
+		\centering
+		\includegraphics[width=55mm]{components-of-a-computer.jpeg}
+	\end{minipage}
+	\hfill
+	\begin{minipage}[t]{0.48\textwidth}
+	
+		\vspace{-1.5 cm}
+		
+		``The one program running at all times
+		on the computer'' is the \textbf{kernel}, the
+		core component of the operating system.
+		
+	\end{minipage}	
+	
 \end{slide}
 
 \begin{slide}
-  
-  \slidetitle{Our Next Abstraction is a File Descriptor}
 
-  Since our processes are independent, we need an explicit way to transfer data
-  \medskip
+	\slidetitle{Kernel Operates in a Privileged Kernel Mode}
 
-  \textbf{IPC:} inter-process communication is transferring data between two
-  processes
-  \bigskip
+	The \textbf{kernel} is a piece of software that controls hardware. It is a compiled program (mostly C and Assembly code) written by developers.
+	
+	\bigskip
+	
+	The kernel operates in the \textbf{kernel mode}. When the CPU is in this state, it is allowed to execute \textit{any} instruction and access \textit{any} memory address.
+	
+	\bigskip
+	
+	User programs operate in \textbf{user mode}, a restricted state where the CPU blocks direct access to hardware and system memory.
 
-  \textbf{File descriptor:} a resource that users may either read bytes from
-  or write bytes to \newline
-  (identified by an index stored in a process)
-  \medskip
+\end{slide}
 
-  A file descriptor could represent a file, or your terminal
+\begin{slide}
+
+	\slidetitle{You Can Think of the Kernel as a Long Running Process}
+
+	Writing kernel code is more like writing library code (there’s no \texttt{main})
+	
+	\bigskip
+	
+	The kernel lets you load code (called modules)
+	
+	\bigskip
+	
+	Your code executes on-demand 
+	
+	\leftspace e.g.\ when it’s loaded manually, new hardware, or accessing a certain file
+	
+	\bigskip
+	
+	If you write a kernel module, you can execute privileged instructions 
+	
+	\leftspace and access any kernel data, so you could do anything
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Dual-mode Operation}
+
+	Dual-mode operation allows OS to protect itself and other system
+	components.
+	
+	\bigskip
+	
+	To perform privileged tasks, a user program must cross this boundary by
+	making a \textbf{system call} to the kernel.
+	
+	\bigskip
+	
+	\begin{center}
+		\includegraphics[width=0.72\textwidth]{user-to-kernel-mode.jpeg}
+	\end{center}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Dual-Mode Operation: The Mode Bit}
+
+	A \textbf{mode bit} is provided by the hardware to distinguish when the system is
+	running user code versus kernel code.
+	
+	\leftspace When a user program is running $\rightarrow$ mode bit is set to ``user''.
+	
+	\leftspace When kernel code is executing $\rightarrow$ mode bit is set to ``kernel''.
+	
+	\bigskip
+	
+	Changing the mode bit is a \textbf{privileged instruction}, which can \textit{only} be
+	executed by the hardware if it is already in kernel mode.
+	
+	\bigskip
+	
+	A \textbf{system call} safely triggers the hardware to switch the mode to kernel, and
+	returning from that call automatically resets it back to user mode.
+
 \end{slide}
 
 \begin{slide}
@@ -246,6 +146,25 @@ int main() {
 
 \begin{slide}
   
+  \slidetitle{Our Next Abstraction is a File Descriptor}
+
+  Since our processes are independent, we need an explicit way to transfer data
+  \medskip
+
+  \textbf{IPC:} inter-process communication is transferring data between two
+  processes
+  \bigskip
+
+  \textbf{File descriptor:} a resource that users may either read bytes from
+  or write bytes to \newline
+  (identified by an index stored in a process)
+  \medskip
+
+  A file descriptor could represent a file, or your terminal
+\end{slide}
+
+\begin{slide}
+  
   \slidetitle{A Hypothetical ``Hello world'' Program}
 
   By convention there's some expected file descriptors:
@@ -266,119 +185,6 @@ void _start(void) {
 }
   \end{minted}
 
-\end{slide}
-
-\begin{slide}
-  
-    \slidetitle{Another Aside: API Tells You What and ABI Tells You How} 
-
-    Application Programming Interface (API) abstracts the details and describes
-    the arguments and return value of a function
-    \medskip
-
-    \leftspace{}e.g. A function takes 2 integer arguments
-    \bigskip
-
-    Application Binary Interface (ABI) specifies the details, specifically how to
-    pass arguments and where the return value is
-    \medskip
-
-    \leftspace{}e.g. The same function using the C calling convention
-
-    \leftspace{}(arguments on the stack)
-  
-\end{slide}
-
-
-\begin{slide}
-  
-  \slidetitle{Visually How Our ELF File Gets Divided}
-
-  \includegraphics[width=100mm]{hello-world-elf.eps}
-
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{Instructions for ``Hello world'', Using the Linux AArch64 ABI}
-
-  Plug in the 36 bytes for instructions into a disassembler, such as:
-  \url{https://onlinedisassembler.com/}
-  \bigskip
-
-  Our disassembled instructions:
-  \begin{minted}{nasm}
-mov  x8, 0x40          #64
-mov  x0, 0x01          #1
-mov  x1, 0x9C          #156
-movk x1, 0x01, lsl 16  #0x10000
-mov  x2, 0x0C          #12
-svc  0x0
-mov  x8, 0x5E          # 94
-mov  x0, 0x0           # 0
-svc  0x0
-  \end{minted}
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{The Kernel is a Core Part of Your Operating System}
-
-  \textbf{Kernel mode} is a privilege level on your CPU that gives access
-  to more instructions
-  \bigskip
-
-  Different architectures have a different name for this mode
-
-  \leftspace{}e.g., this is S-mode on RISC-V
-
-  \bigskip
-  \pause
-
-  The kernel is the part of your operating system that runs in kernel mode
-  \medskip
-
-  These instructions allow only trusted software to interact with hardware
-
-  \leftspace{}e.g., only the kernel can manage virtual memory for processes
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{More Privileged CPU Modes Can Access More Instructions}
-
-  \includegraphics[width=100mm]{cpu-modes.eps}
-
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{System Calls Transition Between User and Kernel Mode}
-
-  \begin{tikzpicture}
-    \draw [blue, dashed, thick] (0,0.75)
-                                        -- ($(\textwidth - 3pt, 0.75)$);
-    \node [blue, anchor=south east] at ($(\textwidth - 3pt, 0.75)$)
-          (user) {User space};
-    \draw [blue, dashed, thick] (0,-0.75)
-                                        -- ($(\textwidth - 3pt, -0.75)$);
-    \node [blue, anchor=north east] at ($(\textwidth - 3pt, -0.75)$)
-          (kernel) {Kernel space};
-    \node [anchor=east] at ($(\textwidth - 3pt, -0)$)
-          {\footnotesize (453 total)};
-    \node [align=center] at ($(\textwidth/2 - 1.5pt, 0)$)
-      {\footnotesize\ttfamily read write open close stat mmap brk pipe clone
-                              fork \\
-        \footnotesize\ttfamily execve exit wait4 chdir  mkdir rmdir creat mount
-                              \\
-        \footnotesize\ttfamily init\_module delete\_module clock\_nanosleep
-                              exit\_group };
-  \end{tikzpicture}
-  
-  \bigskip
-  
-  Do you always need root access (sudo) while making a system call?
-  
 \end{slide}
 
 \begin{slide}
@@ -480,28 +286,6 @@ exit_group(0)                           = ?
 
 \begin{slide}
   
-  \slidetitle{You Can Think of the Kernel as a Long Running Process}
-
-  Writing kernel code is more like writing library code
-  (there's no \texttt{main})
-  \bigskip
-
-  The kernel lets you load code (called modules)
-  \medskip
-
-  Your code executes on-demand
-
-  \leftspace{}e.g. when it's loaded manually, new hardware, or accessing a
-                certain file
-  \bigskip
-
-  If you write a kernel module, you can execute privileged instructions
-
-  \leftspace{}and access any kernel data, so you could do anything
-\end{slide}
-
-\begin{slide}
-  
   \slidetitle{A Monolithic Kernel Runs Operating System Services in Kernel
               Mode}
 
@@ -566,20 +350,20 @@ exit_group(0)                           = ?
 
 \begin{slide}
 
-  \slidetitle{Kernel Interfaces Operate Between CPU Mode Boundaries}
+	\slidetitle{Kernel Interfaces Operate Between CPU Mode Boundaries}
 
-  The lessons from the lecture:
+	Main takeaways from the lecture:
 
-  \begin{itemize}
-    \item The kernel is the part of the OS that interacts with hardware \newline
-          (it runs in kernel mode)
-    \item System calls are the interface between user and kernel mode
-      \begin{itemize}
-        \item Every program must use this interface!
-      \end{itemize}
-    \item Different kernel architectures shift how much code runs in kernel
-          mode
-  \end{itemize}
+	\begin{itemize}
+		\item The kernel is the part of the OS that interacts with hardware \newline
+			  (it runs in kernel mode)
+		\item System calls are the interface between user and kernel mode
+		\begin{itemize}
+			\item Every program must use this interface!
+		\end{itemize}
+		\item Different kernel architectures shift how much code runs in kernel
+			  mode
+	\end{itemize}
 
 \end{slide}
 
@@ -589,28 +373,6 @@ exit_group(0)                           = ?
     
     \inputminted{c}{write_print.c}
 
-\end{slide}
-
-\begin{slide}
-
-    \slidetitle{Review Qestion: True or False}
-        
-    \bigskip
-    
-    (1) The write function can be used to print formatted output like printf without additional helper functions.
-    
-    \bigskip
-    
-    (2) Calling write(1, "Hello", 5); is functionally equivalent to calling printf("Hello");
-    
-    \bigskip
-    
-    (3) printf is a direct system call, whereas write is implemented as a library function.
-    
-    \bigskip
-    
-    (4) Calling printf always results in a single system call to write.
-    
 \end{slide}
 
 \end{document}
