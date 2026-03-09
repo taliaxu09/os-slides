@@ -1,118 +1,13 @@
 \input{../preamble.tex}
 
-\lecturenumber{4}
-\title{Kernel (con'd) \\Libraries\\Process}
+\lecturenumber{5}
+\title{Libraries}
 \version{2.0.0}
 
 \begin{document}
   \begin{frame}[plain, noframenumbering]
     \titlepage
   \end{frame}
-
-\begin{slide}
-  
-	\slidetitle{You Can Think of the Kernel as a Long Running Process}
-
-	Writing kernel code is more like writing library code
-	(there's no \texttt{main})
-	\bigskip
-
-	The kernel lets you load code (called modules) which extends core kernel functionality
-	\medskip
-
-\end{slide}
-
-\begin{slide}
-
-	\slidetitle{Aside: Function Pointer in C Struct}
-
-	\vspace{-5mm}
-	
-\begin{minted}{c}
-// Called when USB device is plugged in
-static int usb_probe(struct usb_interface *interface, const struct usb_device_id *id) {
-    printk(KERN_INFO "USB Device Plugged In: Vendor ID=%04X, Product ID=%04X\n",
-           id->idVendor, id->idProduct);
-    return 0;
-}
-// Register USB driver with the kernel
-static struct usb_driver usb_driver = {
-    .name = "example_usb_driver",
-    .id_table = usb_table,
-    .probe = usb_probe,
-    .disconnect = usb_disconnect,
-};
-// Module Init
-static int __init usb_driver_init(void) {
-    return usb_register(&usb_driver);
-}
-\end{minted}
-
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{A Monolithic Kernel Runs Operating System Services in Kernel
-              Mode}
-
-  \begin{tikzpicture}[box/.style={draw, minimum width=3.5cm,
-                                  minimum height=2em,
-                                  inner sep=0.5em, node distance=0.5cm}]
-    \draw [blue, dashed, thick] (0,0) -- ($(\textwidth - 3pt, 0)$);
-    \node [blue, anchor=south east] at ($(\textwidth - 3pt, 0)$)
-          (user) {User space};
-    \node [blue, anchor=north east] at ($(\textwidth - 3pt, 0)$)
-          (kernel) {Kernel space};
-    \node [box] (sched) at ($(\textwidth/2 - 1.5pt, -1.25)$)
-          {Process Scheduling};
-    \node [box, left=of sched] {Virtual Memory};
-    \node [box, right=of sched] {IPC};
-    \node [box, below=of sched] (dd) {Device Drivers};
-    \node [box, left=of dd] {File Systems};
-  \end{tikzpicture}
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{A Microkernel Runs the Minimum Amount of Services in Kernel
-              Mode}
-
-  \begin{tikzpicture}[box/.style={draw, minimum width=3.5cm,
-                                  minimum height=2em,
-                                  inner sep=0.5em, node distance=0.5cm}]
-    \draw [blue, dashed, thick] (0,0) -- ($(\textwidth - 3pt, 0)$);
-    \node [blue, anchor=south east] at ($(\textwidth - 3pt, 0)$)
-          (user) {User space};
-    \node [blue, anchor=north east] at ($(\textwidth - 3pt, 0)$)
-          (kernel) {Kernel space};
-    \node [box] (sched) at ($(\textwidth/2 - 1.5pt, -1.25)$)
-          {Process Scheduling};
-    \node [box, left=of sched] {Virtual Memory};
-    \node [box, right=of sched] {Basic IPC};
-    \node [box] (dd) at ($(\textwidth/2 - 1.5pt, 1.25)$) {Device Drivers};
-    \node [box, left=of dd] {File Systems};
-    \node [box, right=of dd] {Advanced IPC};
-  \end{tikzpicture}
-\end{slide}
-
-\begin{slide}
-  
-  \slidetitle{Other Types of Kernels}
-
-  ``Hybrid'' kernels are between monolithic and microkernels
-
-  \leftspace{}Emulation services to user mode (Windows)
-
-  \leftspace{}Device drivers to user mode (macOS)
-  \bigskip
-
-  Nanokernels and picokernels
-
-  \leftspace{}Move even more into user mode than traditional microkernels
-  \bigskip
-
-  There's different architectural lines you can draw with different trade-offs
-\end{slide}
 
   \begin{slide}
     
@@ -355,337 +250,108 @@ static int __init usb_driver_init(void) {
   \end{slide}
 
 \begin{slide}
+    \slidetitle{Dynamic Libraries Updates Can Break Executables}
 
-	\slidetitle{Program and Process}
-	
-	A \textbf{program} consists of static code and data, e.g., on the disk.
-	\bigskip
-	
-	A \textbf{process} is an instance of a program (at any time there may be 0 or
-	more instances of a program running, e.g., a user may run multiple concurrent
-	shells).
-  
-\end{slide}
+    A dynamic library update may subtly change the ABI causing a crash
+    \medskip
 
-\begin{slide}
+    Consider the following in a dynamic library:
 
-	\slidetitle{Process Creation}
-	
-	\vspace{-5mm}
-	\resizebox{0.5\textwidth}{0.5\textwidth}{%
-	
-		\begin{tikzpicture}
+    \leftspace{}A \texttt{struct} with multiple fields corresponding to
+    a specific data layout (C ABI)
+    \medskip
 
-		\node at (0,5) {CPU};
-		\node (A) at (0,3) [draw,ultra thick,minimum width=3cm, minimum height=3cm] {};
-		\node at (5,5) {Memory};
-		\node (B) at (5,3) [draw,ultra thick,minimum width=3cm, minimum height=3cm] {};
-
-		\node at (4.5,-2) {Disk};
-		\draw (2.5,-1) [ultra thick] circle (1.5cm);
-
-		\node at (2.5,-1.9) {Program};
-		\node at (2.5,-1) [red,draw,ultra thick, text width=1.5cm, minimum width=1.8cm,
-		minimum height=1.2cm] {code data};
-
-		\draw [ultra thick] (0.2, 1) -- (4.8, 1);
-		\draw [ultra thick] (0.2, 1) -- (0.2, 1.5);
-		\draw [ultra thick] (4.8, 1) -- (4.8, 1.5);
-		\draw [ultra thick] (2.5, 1) -- (2.5, 0.5);
-
-
-		\end{tikzpicture}
-	}
-	
-\end{slide}
-
-\begin{slide}
-
-	\slidetitle{A Process Control Block (PCB) Contains All Information}
-
-	Specifically, in Linux, this is the \texttt{\color{blue}
-	task\_struct} you can browse on
-
-	\href{https://github.com/torvalds/linux/blob/master/include/linux/sched.h\#L743}
-		 {GitHub}
-	\medskip
-
-	It contains:
-	\begin{itemize}
-	  \item Process ID (PID)
-	  \item Process state
-	  \item CPU registers
-	  \item Scheduling information
-	  \item Memory management information
-	  \item I/O status information
-	  \item Any other type of accounting information
-	\end{itemize}
-	\medskip
-
-	Each process gets a unique process ID (pid) to keep track of it
-
-\end{slide}
-	
-\begin{slide}
-
-	\slidetitle{Process Creation}
-	
-	\vspace{-5mm}
-	\resizebox{0.5\textwidth}{0.5\textwidth}{%
-
-		\begin{tikzpicture}
-
-		\node at (0,5) {CPU};
-		\node (A) at (0,3) [draw,ultra thick,minimum width=3cm, minimum height=3cm] {};
-		\node at (5,5) {Memory};
-		\node (B) at (5,3) [draw,ultra thick,minimum width=3cm, minimum height=3cm] {};
-
-		\node at (4.5,-2) {Disk};
-		\draw (2.5,-1) [ultra thick] circle (1.5cm);
-
-		\node at (2.5,-1.9) {Program};
-		\node (PRG) at (2.5,-1) [red,draw,ultra thick, text width=1.5cm, minimum width=1.8cm,
-		minimum height=1.2cm] {code data};
-
-		\node at (5,2) {Process};
-		\node (PRC) at (5,3.2) [blue,draw,ultra thick, text width=1.5cm, minimum width=1.5cm,
-		minimum height=1.2cm] {code data heap stack};
-
-		\draw [ultra thick] (0.2, 1) -- (4.8, 1);
-		\draw [ultra thick] (0.2, 1) -- (0.2, 1.5);
-		\draw [ultra thick] (4.8, 1) -- (4.8, 1.5);
-		\draw [ultra thick] (2.5, 1) -- (2.5, 0.5);
-
-
-		\draw [ultra thick, red] (2.5, -0.4) -- (2.5, 3.2);
-		\draw [ultra thick, red, ->] (2.5, 3.2) -- (4, 3.2);
-
-		\end{tikzpicture}
-	}
-
-\end{slide}
-
-\begin{slide}
-
-	\slidetitle{Process Creation}
-	
-	OS allocates internal data structures (PCB)
-	\bigskip
-	
-	OS allocates an address space
+    \structure{An executable accesses the fields of the \texttt{struct} used by
+               a dynamic library}
     \bigskip
-	
-	OS opens basic files (STDIN, STDOUT, STDERR)
-	\bigskip
-	
-	OS initializes CPU registers
-	\bigskip
 
-\end{slide}
+    Now if a dynamic library reorders the fields
 
-\begin{slide}
+    \leftspace{} The executable uses the old offsets and is now wrong
+    \medskip
 
-	\slidetitle{Program, Process, Thread}
-	
-	A \textbf{program} is on-disk application, consisting of code and data; programs become a process when they are executed
-	\bigskip
-	
-    A \textbf{process} is a running instance of a program. A process starts with a single thread of execution and an address space.
-	\bigskip
-	
-    A process can launch multiple \textbf{threads} of execution in the same address space. Each thread receives its own stack but they share global data, code, and heap.
-	
-\end{slide}
+    Note: this is OK if the dynamic library never exposes the fields of a
+    \texttt{struct}
+  \end{slide}
 
-\begin{slide}
-	
-	\slidetitle{Running Processes On My Laptop}
-	
-	\centering
-	\includegraphics[width=60mm]{windows_num_process.png}
-		
-\end{slide}
+  \begin{slide}
 
-\begin{slide}
+    \slidetitle{
+      C Uses a Consistent ABI for \texttt{\bfseries\color{magenta}struct}s
+    }
 
-	\slidetitle{Sharing Resources}
-	
-	\vspace{-5mm}
-	
-	\begin{minipage}[t]{0.45\textwidth}
-	\vspace{0pt}\par
-	\centering
-		\begin{tikzpicture}
-		\fill [blue] (1.4,1) rectangle (1.6,0.2);
-		\fill [blue] (0,0) rectangle (3,0.2);
+    \texttt{struct}s are laid out in memory with the fields matching the
+    declaration order
 
-		\draw [ultra thick, purple] (0.2,0) -- (3,0);
+    \leftspace{}C compilers ensure the ABI of \texttt{struct}s are the
+    consistent for an architecture
+    \medskip
 
-		\fill [blue] (0,0) rectangle (0.2,-1);
+    Consider the following structures:
+    \medskip
+    \begin{columns}
+      \begin{column}{0.4\textwidth}
+        Library v1:
+        \begin{minted}{c}
+struct point {
+  int y;
+  int x;
+};
+        \end{minted}
+      \end{column}
+      \begin{column}{0.4\textwidth}
+        Library v2:
+        \begin{minted}{c}
+struct point {
+  int x;
+  int y;
+};
+        \end{minted}
+      \end{column}
+    \end{columns}
+    \medskip
 
+    For v1 the \texttt{x} field is offset by 4 bytes from the start of
+    \texttt{struct point}'s base
 
-		\draw [ultra thick, black] (0,0.2) -- (1.4,0.2) -- (1.4,1);
-		\draw [ultra thick, black] (1.6,1) -- (1.6,0.2) -- (3,0.2);
-		\draw [ultra thick, black] (0,0.2) -- (0,-1);
-		\draw [ultra thick, black] (3,0.2) -- (3,-1);
-		\draw [ultra thick, black] (0.2,-1) -- (0.2,0) -- (0.7,0) -- (0.7,-1);
-		\draw [ultra thick, black] (0.9,-1) -- (0.9,0) -- (1.4,0) -- (1.4,-1);
-		\draw [ultra thick, black] (1.6,-1) -- (1.6,0) -- (2.1,0) -- (2.1,-1);
-		\draw [ultra thick, black] (2.3,-1) -- (2.3,0) -- (2.8,0) -- (2.8,-1);
+    \leftspace{}For v2 it is offset by 0 bytes, and this difference
+    will cause problems
+  \end{slide}
 
-		\end{tikzpicture}
+  \begin{slide}
+    
+    \slidetitle{After Compilation the Translation Differs for Each Version}
+  
 
-		Time sharing (one at a time)
-		
-	\end{minipage}
-	\hfill
-	\begin{minipage}[t]{0.45\textwidth}
-	\vspace{0pt}\par
-	\centering
-		\begin{tikzpicture}
-		\fill [blue] (1.4,1) rectangle (1.6,0.2);
-		\fill [blue] (0,0) rectangle (3,0.2);
+    \includegraphics{point-representation.eps}
 
-		\draw [ultra thick, purple] (0,0) -- (3,0);
+  \end{slide}
 
-		\fill [blue!50] (0,0.03) rectangle (0.1,-1);
-		\fill [blue!50] (0.7,0.03) rectangle (0.8,-1);
-		\fill [blue!50] (1.4,0.03) rectangle (1.5,-1);
-		\fill [blue!50] (2.1,0.03) rectangle (2.2,-1);
-		\fill [blue!50] (2.8,0.03) rectangle (2.9,-1);
+  \begin{slide}
+    
+    \slidetitle{The Point API Has Four Functions}
 
-		\draw [ultra thick, black] (0,0.2) -- (1.4,0.2) -- (1.4,1);
-		\draw [ultra thick, black] (1.6,1) -- (1.6,0.2) -- (3,0.2);
-		\draw [ultra thick, black] (0,0.2) -- (0,-1);
-		\draw [ultra thick, black] (3,0.2) -- (3,-1);
-		\draw [ultra thick, black] (0.2,-1) -- (0.2,0) -- (0.7,0) -- (0.7,-1);
-		\draw [ultra thick, black] (0.9,-1) -- (0.9,0) -- (1.4,0) -- (1.4,-1);
-		\draw [ultra thick, black] (1.6,-1) -- (1.6,0) -- (2.1,0) -- (2.1,-1);
-		\draw [ultra thick, black] (2.3,-1) -- (2.3,0) -- (2.8,0) -- (2.8,-1);
+    \includegraphics{point-api.eps}
 
-		\end{tikzpicture}
+  \end{slide}
 
-		Space sharing (all a little)
-		
-	\end{minipage}
+  \begin{slide}
 
-\end{slide}
-	
-\begin{slide}
+    \slidetitle{ABI Stable Code Should Always Print ``1, 2'' for Both Lines}
+    
 
-	\slidetitle{Virtualizing the CPU}
-	
-	Goal: give each process the illusion of exclusive CPU access
-	\medskip
-	
-	Reality: the CPU is a shared resource among all processes
-	\bigskip
-	
-\end{slide}
+    \inputminted{c}{point-example.c}
 
-\begin{slide}
+  \end{slide}
 
-	\slidetitle{OS provides process abstraction}
-	
-	When the user executes a program, the OS creates a process
-	\bigskip
-	
-	OS time-shares CPU across multiple processes
-	\bigskip
-	
-	OS scheduler picks one of the executable processes to run
-	
-\end{slide}
-
-\begin{slide}
-	\slidetitle{Process State Diagram (You Could Rename Waiting to Ready)}
-
-	\begin{tikzpicture}[
-	  every initial by arrow/.style={rawarrow},
-	  every state/.style={ellipse, minimum width=2.5cm, minimum height=1cm, font=\small},
-	]
-	  \node [state, initial] (created) {Created};
-	  \node [state, right=of created] (waiting) {Waiting};
-	  \node [state, above right=of waiting] (running) {Running};
-	  \node [state, below right=of waiting] (blocked) {Blocked};
-	  \node [state, accepting, below right=of running] (terminated) {Terminated};
-	  \path [rawarrow] (created) edge (waiting)
-				 (waiting) edge [bend left] (running)
-				 (running) edge [bend left] (waiting)
-				 (running) edge (blocked)
-				 (blocked) edge (waiting)
-				 (running) edge (terminated);
-	\end{tikzpicture}
-\end{slide}
-
-\begin{slide}
-
-	\slidetitle{Process State Transitions}
-
+  \begin{slide}
+    
+    \slidetitle{Mismatched Versions Don't Agree on the Location of X and Y}
+  
 	\vspace{-3mm}
-	
-	Process 0 takes 5 timesteps to complete
-	
-	Process 0 initiates I/O after 3 time steps (takes 4 time steps)
-	
-	Process 1 takes 5 timesteps to complete
-	
-	Process State Transitions: Running Until Blocked or Completion 
-	
-	\bigskip
-	
-	\centering
-	\begin{tabular}{rllp{5cm}}
-		\textbf{Time} & \textbf{Process 0} & \textbf{Process 1} & \textbf{Notes} \\
-		1  & Running   & Ready     &  \\
-		2  &    &      &  \\
-		3  &    &      &  \\
-		4  &    &    &  \\
-		5  &    &    &  \\
-		6  &    &    &  \\
-		7  &    &    &  \\
-		8  &      &    &  \\
-		9  &    &          &  \\
-	\end{tabular}
+    \includegraphics[width=120mm]{point-libraries.eps}
 
-\end{slide}
+  \end{slide}
 
-\begin{slide}
-
-	\slidetitle{Process State Transitions}
-
-	\vspace{-3mm}
-	
-	Process 0 takes 5 timesteps to complete
-	
-	Process 0 initiates I/O after 3 time steps (takes 4 time steps)
-	
-	Process 1 takes 5 timesteps to complete
-	
-	Process State Transitions: Switch after running 2 timesteps 
-	
-	\bigskip
-	
-	\centering
-	\begin{tabular}{rllp{5cm}}
-		\textbf{Time} & \textbf{Process 0} & \textbf{Process 1} & \textbf{Notes} \\
-		1  & Running   & Ready     &  \\
-		2  &    &      &  \\
-		3  &    &      &  \\
-		4  &    &    &  \\
-		5  &    &    &  \\
-		6  &    &    &  \\
-		7  &    &    &  \\
-		8  &      &    &  \\
-		9  &    &          &  \\
-	\end{tabular}
-
-\end{slide}
-
-\begin{slide}
-
-	\slidetitle{Draw the Process Structure}
-
-\end{slide}
 
 \end{document}

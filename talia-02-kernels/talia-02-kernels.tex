@@ -93,6 +93,188 @@
 
 \begin{slide}
 
+	\slidetitle{Dual-mode Operation}
+	
+	\includegraphics[width=0.5\textwidth]{user-to-kernel-mode.jpeg}
+	
+	\bigskip
+	
+	  \begin{minted}{c}
+int main(void) {
+  write(1, "1", 1); // printf("1");
+  return 0;
+}
+  \end{minted}
+
+	\bigskip
+	
+	How does OS know this is a system call?
+	\medskip
+	
+	How does OS know which system call this is? (Recall we (users) have no access to kernel memory).
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Dual-mode Operation}
+	
+	\includegraphics[width=0.5\textwidth]{user-to-kernel-mode.jpeg}
+	
+	\bigskip
+	  \begin{minted}{c}
+int main(void) {
+  write(1, "1", 1); // printf("1");
+  return 0;
+}
+  \end{minted}
+
+	\bigskip
+	
+	How do we pass arguments into the kernel? In a normal function call we often use the stack, but here we are crossing into the kernel.
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Dual-mode Operation}
+	
+	\includegraphics[width=0.5\textwidth]{user-to-kernel-mode.jpeg}
+	
+	\bigskip
+	  \begin{minted}{c}
+int main(void) {
+  write(1, "1", 1); // printf("1");
+  return 0;
+}
+  \end{minted}
+
+	\bigskip
+	
+	Do we need any preparation before entering the kernel?
+
+	\medskip
+	
+	How do user code and kernel code know where to put the return value?
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Dual-mode Operation}
+	
+	\includegraphics[width=0.65\textwidth]{user-to-kernel-mode.jpeg}
+	
+
+	\bigskip
+	
+	Who changes the mode bit? The user program or the kernel?
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Dual-Mode Operation: Before, During, and After a System Call}
+
+	\includegraphics[width=0.5\textwidth]{user-to-kernel-mode.jpeg}
+
+	\bigskip
+
+	{\small
+	\begin{minipage}[t]{0.31\textwidth}
+		\textbf{Before}
+		
+		ISA: entry instruction
+		
+		\medskip
+		
+		ABI: syscall no., args, return value
+		
+		\medskip
+		
+		Compiler / libc: generate code to follow rules
+	\end{minipage}
+	\hfill
+	\begin{minipage}[t]{0.31\textwidth}
+		\textbf{During}
+		
+		User: place syscall no.\ and args
+		
+		\medskip
+		
+		User: execute \texttt{syscall}
+		
+		\medskip
+		
+		CPU: switch to kernel mode
+		
+		\medskip
+		
+		Kernel: validate and perform operation
+	\end{minipage}
+	\hfill
+	\begin{minipage}[t]{0.31\textwidth}
+		\textbf{After}
+		
+		Kernel: place return value
+		
+		\medskip
+		
+		CPU: restore user mode
+		
+		\medskip
+		
+		User: continue with result
+	\end{minipage}
+	}
+	
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{There's 3 Major ISAs in Use Today}
+
+  ISA stands for the \textit{instruction set architecture}
+
+  \leftspace{} It's the machine code, or numbers the CPU understands
+  \bigskip
+
+  \texttt{x86-64} (aka \texttt{amd64}): for desktops, non-Apple laptops,
+                                          servers
+  \medskip
+
+  \texttt{aarch64} (aka \texttt{arm64}): for phones, tablets, Apple laptops
+  \medskip
+
+  \texttt{riscv} (aka \texttt{rv64gc}): open-source implementation, similar to
+                                        ARM
+  \bigskip
+
+  We'll touch on all of them in this course
+\end{slide}
+
+\begin{slide}
+  
+  \slidetitle{API Tells You What and ABI Tells You How} 
+
+  Application Programming Interface (API) abstracts the details and describes
+  the arguments and return value of a function
+  \medskip
+
+  \leftspace{}e.g. A function takes 2 integer arguments
+  \bigskip
+
+  Application Binary Interface (ABI) specifies the details, specifically how to
+  pass arguments and where the return value is
+  \medskip
+
+  \leftspace{}e.g. The same function using the C calling convention
+  
+  \leftspace{}(arguments on the stack)
+\end{slide}
+
+\begin{slide}
+
 	\slidetitle{Dual-Mode Operation: The Mode Bit}
 
 	A \textbf{mode bit} is provided by the hardware to distinguish when the system is

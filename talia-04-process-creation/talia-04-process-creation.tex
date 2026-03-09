@@ -1,13 +1,328 @@
 \input{../preamble.tex}
 
 \lecturenumber{5}
-\title{Process APIs}
+\title{Process Creation}
 \version{2.0.0}
 
 \begin{document}
     \begin{frame}[plain, noframenumbering]
         \titlepage
     \end{frame}
+
+\begin{slide}
+
+	\slidetitle{Program and Process}
+	
+	A \textbf{program} consists of static code and data, e.g., on the disk.
+	\bigskip
+	
+	A \textbf{process} is an instance of a program (at any time there may be 0 or
+	more instances of a program running, e.g., a user may run multiple concurrent
+	shells).
+	
+	\vspace{-16mm}
+	
+	\includegraphics{../01-why-operating-systems/process-virtual-memory.eps}
+  
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{We Can Add More to a Process}
+
+	\vspace{-6mm}
+	\includegraphics{process.eps}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{A Process Control Block (PCB) Contains All Information}
+
+	Specifically, in Linux, this is the \texttt{\color{blue}
+	task\_struct} you can browse on
+
+	\href{https://github.com/torvalds/linux/blob/master/include/linux/sched.h\#L743}
+		 {GitHub}
+	\medskip
+
+	It contains:
+	\begin{itemize}
+	  \item Process ID (PID)
+	  \item Process state
+	  \item CPU registers
+	  \item Scheduling information
+	  \item Memory management information
+	  \item I/O status information
+	  \item Any other type of accounting information
+	\end{itemize}
+	\medskip
+
+	Each process gets a unique process ID (pid) to keep track of it
+
+\end{slide}
+	
+\begin{slide}
+
+	\slidetitle{Process Creation}
+	
+	\vspace{-5mm}
+	\resizebox{0.5\textwidth}{0.5\textwidth}{%
+
+		\begin{tikzpicture}
+
+		\node at (0,5) {CPU};
+		\node (A) at (0,3) [draw,ultra thick,minimum width=3cm, minimum height=3cm] {};
+		\node at (5,5) {Memory};
+		\node (B) at (5,3) [draw,ultra thick,minimum width=3cm, minimum height=3cm] {};
+
+		\node at (4.5,-2) {Disk};
+		\draw (2.5,-1) [ultra thick] circle (1.5cm);
+
+		\node at (2.5,-1.9) {Program};
+		\node (PRG) at (2.5,-1) [red,draw,ultra thick, text width=1.5cm, minimum width=1.8cm,
+		minimum height=1.2cm] {code data};
+
+		\node at (5,2) {Process};
+		\node (PRC) at (5,3.2) [blue,draw,ultra thick, text width=1.5cm, minimum width=1.5cm,
+		minimum height=1.2cm] {code data heap stack};
+
+		\draw [ultra thick] (0.2, 1) -- (4.8, 1);
+		\draw [ultra thick] (0.2, 1) -- (0.2, 1.5);
+		\draw [ultra thick] (4.8, 1) -- (4.8, 1.5);
+		\draw [ultra thick] (2.5, 1) -- (2.5, 0.5);
+
+
+		\draw [ultra thick, red] (2.5, -0.4) -- (2.5, 3.2);
+		\draw [ultra thick, red, ->] (2.5, 3.2) -- (4, 3.2);
+
+		\end{tikzpicture}
+	}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Process Creation}
+	
+	OS allocates internal data structures (PCB)
+	\bigskip
+	
+	OS allocates an address space
+    \bigskip
+	
+	OS opens basic files (STDIN, STDOUT, STDERR)
+	\bigskip
+	
+	OS initializes CPU registers
+	\bigskip
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Program, Process, Thread}
+	
+	A \textbf{program} is on-disk application, consisting of code and data; programs become a process when they are executed
+	\bigskip
+	
+    A \textbf{process} is a running instance of a program. A process starts with a single thread of execution and an address space.
+	\bigskip
+	
+    A process can launch multiple \textbf{threads} of execution in the same address space. Each thread receives its own stack but they share global data, code, and heap.
+	
+\end{slide}
+
+\begin{slide}
+	
+	\slidetitle{Running Processes On My Laptop}
+	
+	\centering
+	\includegraphics[width=60mm]{windows_num_process.png}
+		
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Sharing Resources}
+	
+	\vspace{-5mm}
+	
+	\begin{minipage}[t]{0.45\textwidth}
+	\vspace{0pt}\par
+	\centering
+		\begin{tikzpicture}
+		\fill [blue] (1.4,1) rectangle (1.6,0.2);
+		\fill [blue] (0,0) rectangle (3,0.2);
+
+		\draw [ultra thick, purple] (0.2,0) -- (3,0);
+
+		\fill [blue] (0,0) rectangle (0.2,-1);
+
+
+		\draw [ultra thick, black] (0,0.2) -- (1.4,0.2) -- (1.4,1);
+		\draw [ultra thick, black] (1.6,1) -- (1.6,0.2) -- (3,0.2);
+		\draw [ultra thick, black] (0,0.2) -- (0,-1);
+		\draw [ultra thick, black] (3,0.2) -- (3,-1);
+		\draw [ultra thick, black] (0.2,-1) -- (0.2,0) -- (0.7,0) -- (0.7,-1);
+		\draw [ultra thick, black] (0.9,-1) -- (0.9,0) -- (1.4,0) -- (1.4,-1);
+		\draw [ultra thick, black] (1.6,-1) -- (1.6,0) -- (2.1,0) -- (2.1,-1);
+		\draw [ultra thick, black] (2.3,-1) -- (2.3,0) -- (2.8,0) -- (2.8,-1);
+
+		\end{tikzpicture}
+
+		Time sharing (one at a time)
+		
+	\end{minipage}
+	\hfill
+	\begin{minipage}[t]{0.45\textwidth}
+	\vspace{0pt}\par
+	\centering
+		\begin{tikzpicture}
+		\fill [blue] (1.4,1) rectangle (1.6,0.2);
+		\fill [blue] (0,0) rectangle (3,0.2);
+
+		\draw [ultra thick, purple] (0,0) -- (3,0);
+
+		\fill [blue!50] (0,0.03) rectangle (0.1,-1);
+		\fill [blue!50] (0.7,0.03) rectangle (0.8,-1);
+		\fill [blue!50] (1.4,0.03) rectangle (1.5,-1);
+		\fill [blue!50] (2.1,0.03) rectangle (2.2,-1);
+		\fill [blue!50] (2.8,0.03) rectangle (2.9,-1);
+
+		\draw [ultra thick, black] (0,0.2) -- (1.4,0.2) -- (1.4,1);
+		\draw [ultra thick, black] (1.6,1) -- (1.6,0.2) -- (3,0.2);
+		\draw [ultra thick, black] (0,0.2) -- (0,-1);
+		\draw [ultra thick, black] (3,0.2) -- (3,-1);
+		\draw [ultra thick, black] (0.2,-1) -- (0.2,0) -- (0.7,0) -- (0.7,-1);
+		\draw [ultra thick, black] (0.9,-1) -- (0.9,0) -- (1.4,0) -- (1.4,-1);
+		\draw [ultra thick, black] (1.6,-1) -- (1.6,0) -- (2.1,0) -- (2.1,-1);
+		\draw [ultra thick, black] (2.3,-1) -- (2.3,0) -- (2.8,0) -- (2.8,-1);
+
+		\end{tikzpicture}
+
+		Space sharing (all a little)
+		
+	\end{minipage}
+
+\end{slide}
+	
+\begin{slide}
+
+	\slidetitle{Virtualizing the CPU}
+	
+	Goal: give each process the illusion of exclusive CPU access
+	\medskip
+	
+	Reality: the CPU is a shared resource among all processes
+	\bigskip
+	
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{OS provides process abstraction}
+	
+	When the user executes a program, the OS creates a process
+	\bigskip
+	
+	OS time-shares CPU across multiple processes
+	\bigskip
+	
+	OS scheduler picks one of the executable processes to run
+	
+\end{slide}
+
+\begin{slide}
+	\slidetitle{Process State Diagram (You Could Rename Waiting to Ready)}
+
+	\begin{tikzpicture}[
+	  every initial by arrow/.style={rawarrow},
+	  every state/.style={ellipse, minimum width=2.5cm, minimum height=1cm, font=\small},
+	]
+	  \node [state, initial] (created) {Created};
+	  \node [state, right=of created] (waiting) {Waiting};
+	  \node [state, above right=of waiting] (running) {Running};
+	  \node [state, below right=of waiting] (blocked) {Blocked};
+	  \node [state, accepting, below right=of running] (terminated) {Terminated};
+	  \path [rawarrow] (created) edge (waiting)
+				 (waiting) edge [bend left] (running)
+				 (running) edge [bend left] (waiting)
+				 (running) edge (blocked)
+				 (blocked) edge (waiting)
+				 (running) edge (terminated);
+	\end{tikzpicture}
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Process State Transitions}
+
+	\vspace{-3mm}
+	
+	Process 0 takes 5 timesteps to complete
+	
+	Process 0 initiates I/O after 3 time steps (takes 4 time steps)
+	
+	Process 1 takes 5 timesteps to complete
+	
+	Process State Transitions: Running Until Blocked or Completion 
+	
+	\bigskip
+	
+	\centering
+	\begin{tabular}{rllp{5cm}}
+		\textbf{Time} & \textbf{Process 0} & \textbf{Process 1} & \textbf{Notes} \\
+		1  & Running   & Ready     &  \\
+		2  &    &      &  \\
+		3  &    &      &  \\
+		4  &    &    &  \\
+		5  &    &    &  \\
+		6  &    &    &  \\
+		7  &    &    &  \\
+		8  &      &    &  \\
+		9  &    &          &  \\
+	\end{tabular}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Process State Transitions}
+
+	\vspace{-3mm}
+	
+	Process 0 takes 5 timesteps to complete
+	
+	Process 0 initiates I/O after 3 time steps (takes 4 time steps)
+	
+	Process 1 takes 5 timesteps to complete
+	
+	Process State Transitions: Switch after running 2 timesteps 
+	
+	\bigskip
+	
+	\centering
+	\begin{tabular}{rllp{5cm}}
+		\textbf{Time} & \textbf{Process 0} & \textbf{Process 1} & \textbf{Notes} \\
+		1  & Running   & Ready     &  \\
+		2  &    &      &  \\
+		3  &    &      &  \\
+		4  &    &    &  \\
+		5  &    &    &  \\
+		6  &    &    &  \\
+		7  &    &    &  \\
+		8  &      &    &  \\
+		9  &    &          &  \\
+	\end{tabular}
+
+\end{slide}
+
+\begin{slide}
+
+	\slidetitle{Draw the Process Structure}
+
+\end{slide}
 
 \begin{slide}
     \slidetitle{We Could Create Processes from Scratch}
