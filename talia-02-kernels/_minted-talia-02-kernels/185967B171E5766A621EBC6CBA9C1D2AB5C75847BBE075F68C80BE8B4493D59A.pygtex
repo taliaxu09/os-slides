@@ -1,0 +1,18 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+go}{execve(\PYGZdq{}./hello\PYGZus{}world\PYGZus{}c\PYGZdq{}, [\PYGZdq{}./hello\PYGZus{}world\PYGZus{}c\PYGZdq{}], 0x7ffcb3444f60 /* 46 vars */) = 0}
+\PYG{g+go}{brk(NULL)                               = 0x5636ab9ea000}
+\PYG{g+go}{openat(AT\PYGZus{}FDCWD, \PYGZdq{}/etc/ld.so.cache\PYGZdq{}, O\PYGZus{}RDONLY|O\PYGZus{}CLOEXEC) = 3}
+\PYG{g+go}{fstat(3, \PYGZob{}st\PYGZus{}mode=S\PYGZus{}IFREG|0644, st\PYGZus{}size=149337, ...\PYGZcb{}) = 0}
+\PYG{g+go}{mmap(NULL, 149337, PROT\PYGZus{}READ, MAP\PYGZus{}PRIVATE, 3, 0) = 0x7f4d43846000}
+\PYG{g+go}{close(3)                                = 0}
+\PYG{g+go}{openat(AT\PYGZus{}FDCWD, \PYGZdq{}/usr/lib/libc.so.6\PYGZdq{}, O\PYGZus{}RDONLY|O\PYGZus{}CLOEXEC) = 3}
+\PYG{g+go}{read(3, \PYGZdq{}\PYGZbs{}177ELF\PYGZbs{}2\PYGZbs{}1\PYGZbs{}1\PYGZbs{}3\PYGZbs{}0\PYGZbs{}0\PYGZbs{}0\PYGZbs{}0\PYGZbs{}0\PYGZbs{}0\PYGZbs{}0\PYGZbs{}0\PYGZbs{}3\PYGZbs{}0\PYGZgt{}\PYGZbs{}0\PYGZbs{}1\PYGZbs{}0\PYGZbs{}0\PYGZbs{}0000C\PYGZdq{}..., 832) = 832}
+\PYG{g+go}{lseek(3, 792, SEEK\PYGZus{}SET)                 = 792}
+\PYG{g+go}{read(3, \PYGZdq{}\PYGZbs{}4\PYGZbs{}0\PYGZbs{}0\PYGZbs{}0\PYGZbs{}24\PYGZbs{}0\PYGZbs{}0\PYGZbs{}0\PYGZbs{}3\PYGZbs{}0\PYGZbs{}0\PYGZbs{}0GNU\PYGZbs{}0\PYGZbs{}201\PYGZbs{}336\PYGZbs{}t\PYGZbs{}36\PYGZbs{}251c\PYGZbs{}324\PYGZdq{}..., 68) = 68}
+\PYG{g+go}{fstat(3, \PYGZob{}st\PYGZus{}mode=S\PYGZus{}IFREG|0755, st\PYGZus{}size=2136840, ...\PYGZcb{}) = 0}
+\PYG{g+go}{mmap(NULL, 8192, PROT\PYGZus{}READ|PROT\PYGZus{}WRITE, MAP\PYGZus{}PRIVATE|MAP\PYGZus{}ANONYMOUS, \PYGZhy{}1, 0) = 0x7f4d43844000}
+\PYG{g+go}{lseek(3, 792, SEEK\PYGZus{}SET)                 = 792}
+\PYG{g+go}{read(3, \PYGZdq{}\PYGZbs{}4\PYGZbs{}0\PYGZbs{}0\PYGZbs{}0\PYGZbs{}24\PYGZbs{}0\PYGZbs{}0\PYGZbs{}0\PYGZbs{}3\PYGZbs{}0\PYGZbs{}0\PYGZbs{}0GNU\PYGZbs{}0\PYGZbs{}201\PYGZbs{}336\PYGZbs{}t\PYGZbs{}36\PYGZbs{}251c\PYGZbs{}324\PYGZdq{}..., 68) = 68}
+\PYG{g+go}{lseek(3, 864, SEEK\PYGZus{}SET)                 = 864}
+\PYG{g+go}{read(3, \PYGZdq{}\PYGZbs{}4\PYGZbs{}0\PYGZbs{}0\PYGZbs{}0\PYGZbs{}20\PYGZbs{}0\PYGZbs{}0\PYGZbs{}0\PYGZbs{}5\PYGZbs{}0\PYGZbs{}0\PYGZbs{}0GNU\PYGZbs{}0\PYGZbs{}2\PYGZbs{}0\PYGZbs{}0\PYGZbs{}300\PYGZbs{}4\PYGZbs{}0\PYGZbs{}0\PYGZbs{}0\PYGZbs{}3\PYGZbs{}0\PYGZbs{}0\PYGZdq{}, 32) = 32}
+\end{Verbatim}
