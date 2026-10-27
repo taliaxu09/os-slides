@@ -5,23 +5,14 @@
 #include <unistd.h>
 
 int main(void) {
-  pid_t pid = fork();
-  if (pid == -1) {
-    return errno;
-  }
-  if (pid == 0) {
-    sleep(2);
-  }
-  else {
-    printf("Calling wait\n");
-    int wstatus;
-    pid_t wait_pid = wait(&wstatus);
-    if (WIFEXITED(wstatus)) {
-      printf("Wait returned for an exited process! pid: %d, status: %d\n", wait_pid, WEXITSTATUS(wstatus));
+    pid_t pid = fork();
+  
+    if (pid == 0){
+        printf("child\n");
+        return 0;
     }
-    else {
-      return ECHILD;
-    }
-  }
-  return 0;
+
+    wait(NULL);
+    printf("parent\n");
+    return 0;
 }

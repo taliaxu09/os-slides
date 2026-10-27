@@ -3,9 +3,11 @@
 
 int main() {
     int value = 2;
-    int pid = getpid();
-    fork();
-    value = 3;
-    printf("Hello, world, %d, %lx!\n", value, (long int)&value);
+    pid_t result =  fork();
+    
+    if (result == 0)
+        value = 3;
+
+    printf("%s: %d\n", result == 0? "child" : "parent", value);
     return 0;
 }
